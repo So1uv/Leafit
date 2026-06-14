@@ -37,7 +37,7 @@
 <table>
 <tr>
 <td width="42%" align="center">
-  <img src="docs/screenshots/onboarding.png" width="230" alt="Онбординг"/>
+  <img src="docs/screenshots/onboarding_screen.png" width="230" alt="Онбординг"/>
 </td>
 <td width="58%" valign="center">
 
@@ -69,7 +69,7 @@
 
 </td>
 <td width="42%" align="center">
-  <img src="docs/screenshots/home.png" width="230" alt="Главный экран"/>
+  <img src="docs/screenshots/home_screen.png" width="230" alt="Главный экран"/>
 </td>
 </tr>
 </table>
@@ -77,7 +77,7 @@
 <table>
 <tr>
 <td width="42%" align="center">
-  <img src="docs/screenshots/workout.png" width="230" alt="Тренировка"/>
+  <img src="docs/screenshots/workout_screen.png" width="230" alt="Тренировка"/>
 </td>
 <td width="58%" valign="center">
 
@@ -109,7 +109,7 @@
 
 </td>
 <td width="42%" align="center">
-  <img src="docs/screenshots/nutrition.png" width="230" alt="Питание"/>
+  <img src="docs/screenshots/nutrition_screen.png" width="230" alt="Питание"/>
 </td>
 </tr>
 </table>
@@ -117,7 +117,7 @@
 <table>
 <tr>
 <td width="42%" align="center">
-  <img src="docs/screenshots/sleep.png" width="230" alt="Сон"/>
+  <img src="docs/screenshots/sleep_screen.png" width="230" alt="Сон"/>
 </td>
 <td width="58%" valign="center">
 
@@ -149,7 +149,7 @@
 
 </td>
 <td width="42%" align="center">
-  <img src="docs/screenshots/settings.png" width="230" alt="Настройки и напоминания"/>
+  <img src="docs/screenshots/settings_screen.png" width="230" alt="Настройки и напоминания"/>
 </td>
 </tr>
 </table>
@@ -157,7 +157,7 @@
 <table>
 <tr>
 <td width="42%" align="center">
-  <img src="docs/screenshots/achievements.png" width="230" alt="Достижения"/>
+  <img src="docs/screenshots/home_achievements_buttons.png" width="230" alt="Достижения"/>
 </td>
 <td width="58%" valign="center">
 
@@ -189,7 +189,7 @@
 
 </td>
 <td width="42%" align="center">
-  <img src="docs/screenshots/profile.png" width="230" alt="Профиль"/>
+  <img src="docs/screenshots/profile_achievements.png" width="230" alt="Профиль"/>
 </td>
 </tr>
 </table>
@@ -233,3 +233,9 @@ git clone https://github.com/<USER>/Leafit.git
 <br/>
 
 <img src="docs/logo.png" width="40" alt=""/>
+
+<sub>Сделано с 💚 на Kotlin</sub>
+
+<br/>
+
+</div>
