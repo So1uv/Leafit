@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.fitnesstracker.app-mergeDebugResources-58:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Soluv\\.gradle\\caches\\8.11.1\\transforms\\75da6b799e109b15553f95aff6e82eb8\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}

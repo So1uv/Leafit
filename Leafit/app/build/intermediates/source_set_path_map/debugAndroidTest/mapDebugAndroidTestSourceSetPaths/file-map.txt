@@ -1,0 +1,4 @@
+com.example.fitnesstracker.test.app-androidTest-0 C:\Users\Soluv\Study\Kotlin\Code\Leafit\app\build\generated\res\resValues\androidTest\debug
+com.example.fitnesstracker.test.app-mergeDebugAndroidTestResources-1 C:\Users\Soluv\Study\Kotlin\Code\Leafit\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.example.fitnesstracker.test.app-mergeDebugAndroidTestResources-2 C:\Users\Soluv\Study\Kotlin\Code\Leafit\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.example.fitnesstracker.test.app-debugAndroidTest-3 C:\Users\Soluv\Study\Kotlin\Code\Leafit\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
