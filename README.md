@@ -10,7 +10,11 @@
     <img src="https://img.shields.io/badge/Architecture-MVVM-ff69b4?style=flat-square" alt="MVVM"/>
     <img src="https://img.shields.io/badge/Offline-100%25-10b981?style=flat-square" alt="Offline"/>
   </p>
-
+<p align="center">
+  <img src="https://img.shields.io/github/stars/So1uv/Leafit?style=social" alt="Stars"/>
+  <img src="https://img.shields.io/github/repo-size/So1uv/Leafit?style=flat-square&color=blue" alt="Repo Size"/>
+  <img src="https://img.shields.io/github/last-commit/So1uv/Leafit?style=flat-square&color=orange" alt="Last Commit"/>
+</p>
   <p>
     <b>Leafit</b> — это минималистичный и полностью локальный трекер активности, питания и сна. Создан для тех, кто хочет следить за своим здоровьем без сложных настроек, обязательных регистраций и постоянного подключения к интернету. Данные хранятся только на вашем устройстве.
   </p>
@@ -196,3 +200,36 @@
 1. Склонируйте репозиторий:
 ```bash
    git clone [https://github.com/](https://github.com/)<USER>/Leafit.git
+```
+   
+---
+
+## 👥 Разработчики
+
+<table align="left">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/So1uv">
+        <img src="https://github.com/So1uv.png" width="100px;" alt="So1uv" style="border-radius: 50%;"/>
+        <br />
+        <b>So1uv</b>
+      </a>
+      <br />
+      <i>Android Developer<br/>UI/UX Design</i>
+    </td>
+    <td align="center">
+      <a href="https://github.com/CronoxL9S">
+        <img src="https://github.com/CronoxL9S.png" width="100px;" alt="CronoxL9S" style="border-radius: 50%;"/>
+        <br />
+        <b>CronoxL9S</b>
+      </a>
+      <br />
+      <i>Android Developer<br/>Architecture & Logic</i>
+    </td>
+  </tr>
+</table>
+<div align="right">
+  <a href="#readme">
+    <img src="https://img.shields.io/badge/↑_Наверх-1f6f3e?style=flat-square" alt="Наверх"/>
+  </a>
+</div>
