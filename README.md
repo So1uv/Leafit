@@ -18,6 +18,11 @@
     <img src="https://img.shields.io/badge/Download_APK-Leafit-1f6f3e?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"/>
   </a>
 </p>
+<p align="left">
+  <img src="https://img.shields.io/badge/Status-Work_in_Progress-f59e0b?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Core_Features-Ready-10b981?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/New_Updates-Planned-3b82f6?style=for-the-badge" />
+</p>
 
 ## 🌿 Почему Leafit?
 
@@ -287,14 +292,36 @@ Leafit/
 </details>
 
 
-Проект легко собрать и запустить в любимой IDE (рекомендуется **Android Studio** последних версий):
-Склонируйте репозиторий:
-```bash
-git clone [https://github.com/](https://github.com/)<USER>/Leafit.git
-```
-   
----
+### 🛠 Как собрать и запустить проект
 
+**Минимальные требования:**
+* [Android Studio](https://developer.android.com/studio) (рекомендуется последняя стабильная версия)
+* Устройство или эмулятор с **Android 8.0 (API 26)** и выше.
+
+1. **Склонируйте репозиторий:**
+   Откройте терминал и выполните команду:
+   ```bash
+   git clone [https://github.com/So1uv/Leafit.git](https://github.com/So1uv/Leafit.git)
+   ```
+ 2. **Откройте проект:**
+Запустите Android Studio, выберите Open и укажите скачанную папку Leafit.
+
+ 3. **Синхронизируйте Gradle:**
+Дождитесь, пока Android Studio проиндексирует проект и скачает все нужные библиотеки (Compose, Room и т.д.). Если синхронизация не началась автоматически, нажмите иконку 🐘 (Sync Project with Gradle Files) в правом верхнем углу.
+
+ 4. **Запустите приложение:**
+Подключите свой смартфон по кабелю/Wi-Fi или запустите встроенный эмулятор. Нажмите зеленую кнопку Run (▶) на верхней панели (или Shift + F10).
+---
+## 🤝 Как внести свой вклад (Contributing)
+
+Мы открыты для улучшений и новых идей! Если вы хотите помочь развитию **Leafit**:
+
+1. **Форкните репозиторий** (кнопка `Fork`).
+2. **Склонируйте свой форк**:
+3. **Создайте ветку для вашей фичи: git checkout -b feature/моя-фича**
+4. **Закоммитьте изменения: git commit -m "feat: добавил новую функцию"**
+5. **Запушьте ветку: git push origin feature/моя-фича**
+6. **Откройте Pull Request в наш репозиторий!**
 ## 👥 Разработчики
 
 <table align="left">
