@@ -10,22 +10,14 @@
     <img src="https://img.shields.io/badge/Architecture-MVVM-ff69b4?style=flat-square" alt="MVVM"/>
     <img src="https://img.shields.io/badge/Offline-100%25-10b981?style=flat-square" alt="Offline"/>
   </p>
-<p align="left">
-  <img src="https://img.shields.io/github/stars/So1uv/Leafit?style=social" alt="Stars"/>
-  <img src="https://img.shields.io/github/repo-size/So1uv/Leafit?style=flat-square&color=blue" alt="Repo Size"/>
-  <img src="https://img.shields.io/github/last-commit/So1uv/Leafit?style=flat-square&color=orange" alt="Last Commit"/>
-</p>
   <p>
     <b>Leafit</b> — это минималистичный и полностью локальный трекер активности, питания и сна. Создан для тех, кто хочет следить за своим здоровьем без сложных настроек.
   </p>
-
-  <p>
-    <a href="#-возможности">Возможности</a> •
-    <a href="#-стек-технологий">Стек технологий</a> •
-    <a href="#-запуск">Запуск</a> 
-    <!-- • <a href="https://github.com/<USER>/Leafit/releases">⬇️ Скачать APK</a> -->
-  </p>
-</div>
+<p align="left">
+  <a href="https://github.com/So1uv/Leafit/releases/latest">
+    <img src="https://img.shields.io/badge/Download_APK-Leafit-1f6f3e?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"/>
+  </a>
+</p>
 
 ## 🌿 Почему Leafit?
 
