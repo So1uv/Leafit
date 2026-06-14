@@ -1,4 +1,4 @@
-<div align="center">
+
 
 <h1>Leafit</h1>
 
@@ -17,16 +17,6 @@
 </p>
 
 </div>
-
-<br/>
-
-<div align="center">
-  <a href="#-возможности">Возможности</a> &nbsp;·&nbsp;
-  <a href="#-технологии">Технологии</a> &nbsp;·&nbsp;
-  <a href="#-запуск">Запуск</a>
-</div>
-
----
 
 ## ✨ Возможности
 
@@ -235,7 +225,3 @@ git clone https://github.com/<USER>/Leafit.git
 <img src="docs/logo.png" width="40" alt=""/>
 
 <sub>Сделано с 💚 на Kotlin</sub>
-
-<br/>
-
-</div>
