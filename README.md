@@ -1,4 +1,4 @@
-<div align="center">
+<div align="left">
   <img src="docs/screenshots/Banner.png" alt="Leafit Banner"/>
   
   <h3>Здоровый образ жизни. Одно приложение. Ничего лишнего.</h3>
@@ -10,25 +10,36 @@
     <img src="https://img.shields.io/badge/Architecture-MVVM-ff69b4?style=flat-square" alt="MVVM"/>
     <img src="https://img.shields.io/badge/Offline-100%25-10b981?style=flat-square" alt="Offline"/>
   </p>
-<p align="center">
+<p align="left">
   <img src="https://img.shields.io/github/stars/So1uv/Leafit?style=social" alt="Stars"/>
   <img src="https://img.shields.io/github/repo-size/So1uv/Leafit?style=flat-square&color=blue" alt="Repo Size"/>
   <img src="https://img.shields.io/github/last-commit/So1uv/Leafit?style=flat-square&color=orange" alt="Last Commit"/>
 </p>
   <p>
-    <b>Leafit</b> — это минималистичный и полностью локальный трекер активности, питания и сна. Создан для тех, кто хочет следить за своим здоровьем без сложных настроек, обязательных регистраций и постоянного подключения к интернету. Данные хранятся только на вашем устройстве.
+    <b>Leafit</b> — это минималистичный и полностью локальный трекер активности, питания и сна. Создан для тех, кто хочет следить за своим здоровьем без сложных настроек.
   </p>
 
   <p>
     <a href="#-возможности">Возможности</a> •
     <a href="#-стек-технологий">Стек технологий</a> •
     <a href="#-запуск">Запуск</a> 
-    <!-- Раскомментируй, когда добавишь APK в Releases -->
     <!-- • <a href="https://github.com/<USER>/Leafit/releases">⬇️ Скачать APK</a> -->
   </p>
 </div>
 
----
+## 🌿 Почему Leafit?
+
+Leafit создавался как простой и честный фитнес-трекер без лишних барьеров.
+Приложение не требует регистрации, не использует серверную часть и хранит данные локально на устройстве пользователя.
+
+| Направление         |           Типичный подход          |              **Leafit**              |
+| :------------------ | :--------------------------------: | :----------------------------------: |
+| **Регистрация**     |  Email, пароль или социальный вход |           **Не требуется**           |
+| **Хранение данных** |  Сервер или облачная синхронизация |        **Локальная база Room**       |
+| **Интернет**        | Часто нужен для полноценной работы | **Основные функции работают офлайн** |
+| **Фокус продукта**  |       Много сложных сценариев      |      **Ежедневный самоконтроль**     |
+| **Ввод данных**     |    Перегруженные формы и экраны    |      **Быстрые ручные действия**     |
+| **Мотивация**       |    Рейтинги, давление, подписки    |  **Локальные достижения и прогресс** |
 
 ## ✨ Возможности
 
@@ -182,24 +193,112 @@
 
 ## 🛠 Стек технологий
 
-Приложение разработано с использованием современных подходов Android-разработки:
-
-* **UI:** Jetpack Compose, Material Design 3
-* **Архитектура:** MVVM (Model-View-ViewModel), Clean Architecture
-* **Навигация:** Jetpack Navigation Compose
-* **Локальная БД:** Room Database
-* **Асинхронность:** Kotlin Coroutines & Flows
-* **Фоновые задачи:** AlarmManager / WorkManager (для напоминаний)
+| Category | Technology |
+| :--- | :--- |
+| Language | Kotlin |
+| UI | Jetpack Compose |
+| Design | Material Design 3 Expressive |
+| Architecture | MVVM + Repository Pattern |
+| Database | Room |
+| Async | Coroutines, Flow, StateFlow |
+| Navigation | Navigation Compose |
+| Background | Foreground Service, AlarmManager |
 
 ---
+## 📁 Структура и запуск проекта
 
-## 🚀 Запуск для разработчиков
+Проект разделён на несколько основных слоёв: локальные данные, интерфейс, навигация, ViewModel и вспомогательная логика.
 
-Проект легко собрать и запустить в любимой IDE (рекомендуется **Android Studio** последних версий).
+<details>
+<summary><b> Показать полную структуру проекта</b></summary>
 
-1. Склонируйте репозиторий:
+```text
+Leafit/
+├── app/
+│   ├── build.gradle                 # Конфигурация Android-модуля
+│   ├── proguard-rules.pro            # Правила ProGuard
+│   │
+│   └── src/main/
+│       ├── AndroidManifest.xml       # Разрешения, Activity, Service, Receiver
+│       ├── ic_launcher-playstore.png
+│       │
+│       ├── java/com/example/fitnesstracker/
+│       │   ├── MainActivity.kt       # Точка входа в приложение
+│       │   │
+│       │   ├── data/                 # Локальный слой данных
+│       │   │   ├── database/
+│       │   │   │   └── AppDatabase.kt
+│       │   │   │
+│       │   │   ├── dao/
+│       │   │   │   ├── AchievementDao.kt
+│       │   │   │   ├── MealDao.kt
+│       │   │   │   ├── SleepDao.kt
+│       │   │   │   ├── UserProfileDao.kt
+│       │   │   │   ├── WaterDao.kt
+│       │   │   │   └── WorkoutDao.kt
+│       │   │   │
+│       │   │   ├── entities/
+│       │   │   │   ├── Achievement.kt
+│       │   │   │   ├── Meal.kt
+│       │   │   │   ├── SleepRecord.kt
+│       │   │   │   ├── UserProfile.kt
+│       │   │   │   ├── WaterRecord.kt
+│       │   │   │   └── Workout.kt
+│       │   │   │
+│       │   │   └── repository/
+│       │   │       └── Repositories.kt
+│       │   │
+│       │   ├── ui/                   # Интерфейс на Jetpack Compose
+│       │   │   ├── components/       # Переиспользуемые UI-компоненты
+│       │   │   ├── navigation/
+│       │   │   │   └── Navigation.kt
+│       │   │   ├── screens/          # Экраны приложения
+│       │   │   │   ├── appsettings/
+│       │   │   │   ├── home/
+│       │   │   │   ├── nutrition/
+│       │   │   │   ├── onboarding/
+│       │   │   │   ├── settings/
+│       │   │   │   ├── sleep/
+│       │   │   │   └── workout/
+│       │   │   └── theme/
+│       │   │       └── Theme.kt
+│       │   │
+│       │   ├── viewmodel/            # ViewModel-слой
+│       │   │   ├── HomeViewModel.kt
+│       │   │   ├── MainViewModel.kt
+│       │   │   ├── NutritionViewModel.kt
+│       │   │   ├── SettingsViewModel.kt
+│       │   │   ├── SleepViewModel.kt
+│       │   │   ├── WorkoutViewModel.kt
+│       │   │   └── ViewModelFactory.kt
+│       │   │
+│       │   └── utils/                # Вспомогательная логика
+│       │       ├── StepCounter.kt
+│       │       ├── StepCounterService.kt
+│       │       ├── Utils.kt
+│       │       └── WaterReminderReceiver.kt
+│       │
+│       └── res/                      # Ресурсы приложения
+│           ├── drawable/
+│           ├── mipmap-*/
+│           └── values/
+│
+├── gradle/
+│   ├── libs.versions.toml
+│   └── wrapper/
+│
+├── build.gradle
+├── gradle.properties
+└── settings.gradle
+```
+
+</details>
+
+
+Проект легко собрать и запустить в любимой IDE (рекомендуется **Android Studio** последних версий):
+Склонируйте репозиторий:
 ```bash
-   git clone [https://github.com/](https://github.com/)<USER>/Leafit.git
+git clone [https://github.com/](https://github.com/)<USER>/Leafit.git
 ```
    
 ---
