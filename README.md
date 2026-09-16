@@ -357,20 +357,10 @@ Ideas, bug reports, translations and focused pull requests are welcome.
     </td>
     <td align="center" width="220">
       <a href="https://github.com/CronoxL9S"><img src="https://github.com/CronoxL9S.png?size=160" width="80" alt="CronoxL9S" /><br /><strong>CronoxL9S</strong></a>
-      <br />Android development<br />Architecture &amp; logic
+      <br />Ideas, mentoring
     </td>
   </tr>
 </table>
-
-<details>
-<summary><strong>Design inspiration and acknowledgements</strong></summary>
-
-- **Zenith** — a visual reference for expressive Android layouts and motion.
-- **Google Material 3** — the foundation for the interface's component and color language.
-- **Material Symbols Rounded** and **Roboto Flex** — icons and typography. Their license files are included in `third_party/`.
-- **MapLibre** and **OpenStreetMap contributors** — map rendering and map data.
-
-</details>
 
 ---
 
