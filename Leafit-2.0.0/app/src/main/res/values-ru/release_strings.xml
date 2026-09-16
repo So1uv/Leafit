@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="release_app_description">Движение и отдых в своём ритме.</string>
-    <string name="release_build">Сборка %1$d</string>
-    <string name="release_description">Маршруты и подходы, дневник сна и заметки о дне.</string>
-    <string name="release_backup_export_hint">Сохранить копию записей</string>
-    <string name="release_backup_import_hint">Восстановить записи из файла</string>
-</resources>

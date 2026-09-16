@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="week_previous">Previous week</string>
-    <string name="week_next">Next week</string>
-    <string name="history_expand">Expand record</string>
-    <string name="history_collapse">Collapse record</string>
-</resources>

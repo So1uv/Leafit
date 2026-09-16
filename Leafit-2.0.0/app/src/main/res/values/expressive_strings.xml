@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="week_previous">Попередній тиждень</string>
-    <string name="week_next">Наступний тиждень</string>
-    <string name="history_expand">Розгорнути запис</string>
-    <string name="history_collapse">Згорнути запис</string>
-</resources>
