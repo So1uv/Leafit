@@ -329,12 +329,6 @@ Within `app/src/main/java/com/example/fitnesstracker/`:
 Bug reports, translations, focused pull requests and feature suggestions are welcome. For a bug, include the device model, Android version, Leafit version and steps to reproduce it. A screenshot or short screen recording is useful when the issue is visual.
 
 For an idea, describe the task you want to make easier. For a code change, explain what changed and how you checked it; include light and dark screenshots when a UI change needs them.
-
-[Report an issue](https://github.com/So1uv/Leafit/issues) &nbsp; · &nbsp; [Browse pull requests](https://github.com/So1uv/Leafit/pulls)
-
-<br />
-
-<div align="center">
   
 <br />
 
