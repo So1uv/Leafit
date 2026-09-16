@@ -1,5 +1,5 @@
 <div align="left">
-  <img src="docs/screenshots/Banner.png" alt="Leafit Banner"/>
+  <img src="docs/screenshots/Top.png" alt="Leafit Banner"/>
   
   <h3>Здоровый образ жизни. Одно приложение. Ничего лишнего.</h3>
 
