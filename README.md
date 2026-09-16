@@ -18,9 +18,9 @@ Leafit brings the details of your day into one place, with an interface inspired
   <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Figma/figma2.svg">&nbsp;&nbsp;
   <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/AndroidStudio/androidstudio2.svg">&nbsp;&nbsp;
   <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Kotlin/kotlin2.svg">&nbsp;&nbsp;
-  <a href="https://ko-fi.com/soluv"><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Ko-fi/ko-fi2.svg">&nbsp;&nbsp;
+  <a href="https://ko-fi.com/soluv"><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Ko-fi/ko-fi2.svg"></a>&nbsp;&nbsp;
   <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv33.svg">&nbsp;&nbsp;
-  </p>
+</p>
 
 [Explore the screens](#screens) &nbsp; · &nbsp; [Discover the features](#features) &nbsp; · &nbsp; [Design & personalization](#design) &nbsp; · &nbsp; [Data & privacy](#data) &nbsp; · &nbsp; [For developers](#developers)
 
