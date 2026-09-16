@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_app_description">Movement and rest at your own pace.</string>
+    <string name="release_build">Build %1$d</string>
+    <string name="release_description">Routes and sets, a sleep journal and notes about your day.</string>
+    <string name="release_backup_export_hint">Save a copy of your records</string>
+    <string name="release_backup_import_hint">Restore records from a file</string>
+</resources>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />
+    <application android:name=".LeafitApplication" android:allowBackup="true" android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name" android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true" android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.FitnessTracker">
+        <service android:name=".workout.WorkoutTimerService" android:exported="false"
+            android:foregroundServiceType="specialUse" android:stopWithTask="false">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-started workout, set stopwatch and rest countdown with visible pause, resume and finish controls; keeps the active session across screen off without requiring sensors." />
+        </service>
+        <receiver android:name=".workout.WorkoutTimerActionReceiver" android:exported="false" />
+        <receiver android:name=".workout.RestTimerReceiver" android:exported="false" />
+        <activity android:name=".sharing.WorkoutShareActivity" android:exported="false" />
+        <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.workout.cards"
+            android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/workout_card_paths" />
+        </provider>
+        <activity android:name=".tracking.LiveWorkoutActivity" android:exported="false" android:launchMode="singleTop" />
+        <service android:name=".tracking.LiveWorkoutService" android:exported="false"
+            android:foregroundServiceType="location" android:stopWithTask="false" />
+        <activity android:name=".MainActivity" android:exported="true"
+            android:theme="@style/Theme.FitnessTracker.Splash" android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity>
+        <service android:name=".utils.StepCounterService" android:exported="false"
+            android:foregroundServiceType="health" android:stopWithTask="false" />
+        <receiver android:name=".utils.StepBootReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".utils.BedtimeReminderReceiver" android:exported="false" />
+        <receiver android:name=".utils.WaterReminderReceiver" android:exported="false" />
+        <receiver android:name=".widgets.TodayWidget" android:label="@string/widget_today" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today_info" />
+        </receiver>
+        <receiver android:name=".widgets.SleepWidget" android:label="@string/widget_sleep" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_sleep_info" />
+        </receiver>
+        <receiver android:name=".widgets.SessionWidget" android:label="@string/widget_session" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_session_info" />
+        </receiver>
+    </application>
+</manifest>

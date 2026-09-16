@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:background="@drawable/widget_background" android:padding="16dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:padding="5dp" android:background="@drawable/widget_rosette"
+            android:src="@drawable/widget_exercise" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/widget_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginStart="10dp" android:text="@string/widget_session" android:textSize="14sp" android:maxLines="1" android:ellipsize="end"
+            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_text" />
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="42dp">
+        <Chronometer android:id="@+id/widget_clock" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical"
+            android:textSize="34sp" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_text" android:visibility="gone" />
+        <TextView android:id="@+id/widget_value" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical"
+            android:text="@string/widget_ready" android:textSize="30sp" android:maxLines="1" android:ellipsize="end"
+            android:autoSizeTextType="uniform" android:autoSizeMinTextSize="18sp" android:autoSizeMaxTextSize="30sp"
+            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_text" />
+    </FrameLayout>
+    <TextView android:id="@+id/widget_detail" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="@string/widget_session_hint" android:textSize="12sp" android:maxLines="1" android:ellipsize="end"
+        android:fontFamily="@font/roboto_flex_400" android:textColor="@color/widget_muted" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="8dp">
+        <TextView android:id="@+id/widget_primary" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+            android:background="@drawable/widget_pill" android:gravity="center" android:paddingHorizontal="12dp" android:text="@string/widget_open"
+            android:textSize="14sp" android:maxLines="1" android:ellipsize="end" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+        <TextView android:id="@+id/widget_secondary" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+            android:layout_marginStart="8dp" android:background="@drawable/widget_pill" android:gravity="center" android:paddingHorizontal="12dp"
+            android:text="@string/timer_finish" android:textSize="14sp" android:maxLines="1" android:ellipsize="end"
+            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <color name="widget_surface">#F3F7F2</color>
+    <color name="widget_container">#E3EDE5</color>
+    <color name="widget_primary_container">#D2EADF</color>
+    <color name="widget_on_primary">#203E2B</color>
+    <color name="widget_text">#23312A</color>
+    <color name="widget_muted">#58665E</color>
+    <color name="widget_sleep_container">#E9E1EF</color>
+    <color name="widget_on_sleep">#50415F</color>
+</resources>
