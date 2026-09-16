@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="shortcut_water_background">#D8ECE7</color>
+    <color name="shortcut_water_foreground">#244F48</color>
+    <color name="shortcut_workout_background">#D2EADF</color>
+    <color name="shortcut_workout_foreground">#203E2B</color>
+    <color name="shortcut_sleep_background">#E9E1EF</color>
+    <color name="shortcut_sleep_foreground">#50415F</color>
+</resources>

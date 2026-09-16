@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="week_previous">Предыдущая неделя</string>
+    <string name="week_next">Следующая неделя</string>
+    <string name="history_expand">Развернуть запись</string>
+    <string name="history_collapse">Свернуть запись</string>
+</resources>
