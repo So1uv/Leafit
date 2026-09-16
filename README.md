@@ -1,7 +1,7 @@
 <a name="top"></a>
 
 <div align="center">
-  <img src="docs/assets/leafit-banner.svg" width="100%" alt="Leafit — Your day. Your rhythm. Android journal for movement, meals and rest." />
+  <img src="docs/assets/Top.png" width="100%" alt="Leafit — Your day. Your rhythm. Android journal for movement, meals and rest." />
 
   <p>
     <a href="https://github.com/So1uv/Leafit/releases"><img src="https://img.shields.io/badge/Leafit-2.0.0-376B57?style=for-the-badge" alt="Leafit 2.0.0" /></a>
