@@ -13,10 +13,14 @@
 Leafit brings the details of your day into one place, with an interface inspired by<br />
 **Material 3 Expressive**: soft tonal surfaces, tactile controls and thoughtful motion.
 
-<picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/release-meta-mobile.svg" />
-  <img src="docs/leafit/release-meta.svg" width="100%" alt="Leafit 2.0.0 · Android 8.0+ · Three languages · No account required" />
-</picture>
+<p align="center">
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Android/android2.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Figma/figma2.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/AndroidStudio/androidstudio2.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Kotlin/kotlin2.svg">&nbsp;&nbsp;
+  <a href="https://ko-fi.com/soluv"><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Ko-fi/ko-fi2.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv33.svg">&nbsp;&nbsp;
+  </p>
 
 [Explore the screens](#screens) &nbsp; · &nbsp; [Discover the features](#features) &nbsp; · &nbsp; [Design & personalization](#design) &nbsp; · &nbsp; [Data & privacy](#data) &nbsp; · &nbsp; [For developers](#developers)
 
