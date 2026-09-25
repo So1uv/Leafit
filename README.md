@@ -329,7 +329,23 @@ Within `app/src/main/java/com/example/fitnesstracker/`:
 Bug reports, translations, focused pull requests and feature suggestions are welcome. For a bug, include the device model, Android version, Leafit version and steps to reproduce it. A screenshot or short screen recording is useful when the issue is visual.
 
 For an idea, describe the task you want to make easier. For a code change, explain what changed and how you checked it; include light and dark screenshots when a UI change needs them.
-  
+
+## Tested in the real world
+
+Beyond emulators, Leafit is tested on physical devices across different Android ecosystems:
+
+**Samsung Galaxy S10** · `One UI` · `Android 12`
+
+**Xiaomi 15** · `HyperOS` · `Android 15/16`
+
+**Google Pixel 7** · `Pixel` · `Android 16/17`
+
+> [!NOTE]
+> Tested devices confirm real-world functionality on the configurations above. Behavior may still vary depending on Android version, firmware, and manufacturer-specific settings.
+> This helps catch manufacturer-specific differences in permissions, background execution, notifications, haptics, layouts and system behavior.
+
+<br />
+
 <br />
 
 <a href="https://github.com/So1uv/Leafit/releases/latest"><img src="docs/leafit/get-leafit.svg" width="100%" alt="Make space for your day. Download Leafit 2.0.0 from GitHub Releases." /></a>
