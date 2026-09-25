@@ -334,11 +334,11 @@ For an idea, describe the task you want to make easier. For a code change, expla
 
 Beyond emulators, Leafit is tested on physical devices across different Android ecosystems:
 
-**Samsung Galaxy S10** · `One UI` · `Android 12`
+- **Samsung Galaxy S10** · `One UI` · `Android 12`
 
-**Xiaomi 15** · `HyperOS` · `Android 15/16`
+- **Xiaomi 15** · `HyperOS` · `Android 15/16`
 
-**Google Pixel 7** · `Pixel` · `Android 16/17`
+- **Google Pixel 7** · `Pixel` · `Android 16/17`
 
 > [!NOTE]
 > Tested devices confirm real-world functionality on the configurations above. Behavior may still vary depending on Android version, firmware, and manufacturer-specific settings.
