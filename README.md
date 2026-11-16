@@ -2,8 +2,8 @@
 
 <p align="center">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/hero-mobile.webp" />
-    <img src="docs/leafit/hero.webp" width="100%" alt="Leafit 2.5 — your day, your rhythm. Home, live GPS workout and sleep tracker screens." />
+    <source media="(max-width: 600px)" srcset="docs/readme/00-hero-mobile.webp" />
+    <img src="docs/readme/00-hero.webp" width="100%" alt="Leafit 2.5 — your day, your rhythm. Home, live GPS workout and sleep tracker screens." />
   </picture>
 </p>
 
@@ -64,8 +64,8 @@ Each panel below combines real screenshots of Leafit 2.5 with an overview of the
 
 <a href="docs/screenshots/home.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/home-mobile.webp" />
-    <img src="docs/leafit/home.webp" width="100%" alt="Home: daily activity rings, weekly activity, My body weight trend, challenges and the day note." />
+    <source media="(max-width: 600px)" srcset="docs/readme/01-home-mobile.webp" />
+    <img src="docs/readme/01-home.webp" width="100%" alt="Home: daily activity rings, weekly activity, My body weight trend, challenges and the day note." />
   </picture>
 </a>
 
@@ -83,8 +83,8 @@ The **day note** leaves room for context: free thoughts, a timeline of the day, 
 
 <a href="docs/screenshots/gps-live.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/workouts-mobile.webp" />
-    <img src="docs/leafit/workouts.webp" width="100%" alt="Workouts: session timer, activity and subtype picker, live GPS map with distance, speed and pace." />
+    <source media="(max-width: 600px)" srcset="docs/readme/02-workouts-mobile.webp" />
+    <img src="docs/readme/02-workouts.webp" width="100%" alt="Workouts: session timer, activity and subtype picker, live GPS map with distance, speed and pace." />
   </picture>
 </a>
 
@@ -102,8 +102,8 @@ For outdoor sessions, turn on **Record route on the map**. A full-screen OpenStr
 
 <a href="docs/screenshots/wrapped.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/wrapped-mobile.webp" />
-    <img src="docs/leafit/wrapped.webp" width="100%" alt="Leafit Wrapped: a shareable workout card editor with style, data, text and format tabs." />
+    <source media="(max-width: 600px)" srcset="docs/readme/03-wrapped-mobile.webp" />
+    <img src="docs/readme/03-wrapped.webp" width="100%" alt="Leafit Wrapped: a shareable workout card editor with style, data, text and format tabs." />
   </picture>
 </a>
 
@@ -121,8 +121,8 @@ Choose a **card, 9:16, 4:5 or 1:1** layout, or export a **transparent sticker PN
 
 <a href="docs/screenshots/water.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/meals-mobile.webp" />
-    <img src="docs/leafit/meals.webp" width="100%" alt="Meals and water: daily energy against the goal, macros, water glasses and meal groups." />
+    <source media="(max-width: 600px)" srcset="docs/readme/04-meals-mobile.webp" />
+    <img src="docs/readme/04-meals.webp" width="100%" alt="Meals and water: daily energy against the goal, macros, water glasses and meal groups." />
   </picture>
 </a>
 
@@ -140,8 +140,8 @@ The water card counts glasses, adds 150, 250 or 500 ml with one tap, undoes the 
 
 <a href="docs/screenshots/sleep-tracker.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/sleep-mobile.webp" />
-    <img src="docs/leafit/sleep.webp" width="100%" alt="Sleep: your sleep summary, live sleep tracker, alarms, sleep timeline, quality rating and tags." />
+    <source media="(max-width: 600px)" srcset="docs/readme/05-sleep-mobile.webp" />
+    <img src="docs/readme/05-sleep.webp" width="100%" alt="Sleep: your sleep summary, live sleep tracker, alarms, sleep timeline, quality rating and tags." />
   </picture>
 </a>
 
@@ -162,8 +162,8 @@ The **sleep tracker** runs in the background while the phone lies near your pill
 
 <a href="docs/screenshots/achievements.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/goals-mobile.webp" />
-    <img src="docs/leafit/goals.webp" width="100%" alt="Goals: achievements with progress and filters, challenges and the day note." />
+    <source media="(max-width: 600px)" srcset="docs/readme/06-goals-mobile.webp" />
+    <img src="docs/readme/06-goals.webp" width="100%" alt="Goals: achievements with progress and filters, challenges and the day note." />
   </picture>
 </a>
 
@@ -179,8 +179,8 @@ The **sleep tracker** runs in the background while the phone lies near your pill
 
 <a href="docs/screenshots/profile.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/profile-mobile.webp" />
-    <img src="docs/leafit/profile.webp" width="100%" alt="Profile: BMI, workouts and sleep records, personal goals and the edit profile sheet." />
+    <source media="(max-width: 600px)" srcset="docs/readme/07-profile-mobile.webp" />
+    <img src="docs/readme/07-profile.webp" width="100%" alt="Profile: BMI, workouts and sleep records, personal goals and the edit profile sheet." />
   </picture>
 </a>
 
@@ -196,8 +196,8 @@ The profile keeps your goals for steps, water and sleep, the activity map with y
 
 <a href="docs/screenshots/settings.webp">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/settings-mobile.webp" />
-    <img src="docs/leafit/settings.webp" width="100%" alt="Settings: appearance, language, background step counting, timers, widgets and data backup." />
+    <source media="(max-width: 600px)" srcset="docs/readme/08-settings-mobile.webp" />
+    <img src="docs/readme/08-settings.webp" width="100%" alt="Settings: appearance, language, background step counting, timers, widgets and data backup." />
   </picture>
 </a>
 
@@ -212,8 +212,8 @@ Search any setting. Choose a light, dark or system theme, wallpaper colors on An
 ## More ways to make the journal yours
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/notify-widgets-mobile.webp" />
-  <img src="docs/leafit/notify-widgets.webp" width="100%" alt="Live notifications for workouts, GPS and sleep; home screen widgets from 1×1 to 4×3." />
+  <source media="(max-width: 600px)" srcset="docs/readme/09a-notify-widgets-mobile.webp" />
+  <img src="docs/readme/09a-notify-widgets.webp" width="100%" alt="Live notifications for workouts, GPS and sleep; home screen widgets from 1×1 to 4×3." />
 </picture>
 
 ### Follow the session outside the app
@@ -225,8 +225,8 @@ Every live notification shares one layout: an icon, a title, a large value or ru
 <br />
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/haptics-notes-mobile.webp" />
-  <img src="docs/leafit/haptics-notes.webp" width="100%" alt="Adjustable haptic feedback and day notes with blocks, tasks and pinned entries." />
+  <source media="(max-width: 600px)" srcset="docs/readme/09b-haptics-notes-mobile.webp" />
+  <img src="docs/readme/09b-haptics-notes.webp" width="100%" alt="Adjustable haptic feedback and day notes with blocks, tasks and pinned entries." />
 </picture>
 
 ### Feedback you can feel, notes you can find
@@ -243,8 +243,8 @@ Day notes are built from blocks — thoughts, a timeline, lists and tasks — an
 
 <a href="docs/screenshots">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/gallery-mobile.webp" />
-    <img src="docs/leafit/gallery.webp" width="100%" alt="More Leafit screens: first-run setup, achievements, workout type, meal groups, sleep alarms, activity map and data settings." />
+    <source media="(max-width: 600px)" srcset="docs/readme/10-gallery-mobile.webp" />
+    <img src="docs/readme/10-gallery.webp" width="100%" alt="More Leafit screens: first-run setup, achievements, workout type, meal groups, sleep alarms, activity map and data settings." />
   </picture>
 </a>
 
@@ -255,8 +255,8 @@ Day notes are built from blocks — thoughts, a timeline, lists and tasks — an
 ## Your journal, on your device
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/data-design-mobile.webp" />
-  <img src="docs/leafit/data-design.webp" width="100%" alt="Local journal storage with no account and JSON backup; Material 3 Expressive color, shape and motion." />
+  <source media="(max-width: 600px)" srcset="docs/readme/09c-data-design-mobile.webp" />
+  <img src="docs/readme/09c-data-design.webp" width="100%" alt="Local journal storage with no account and JSON backup; Material 3 Expressive color, shape and motion." />
 </picture>
 
 ### Local records, available offline
@@ -358,8 +358,8 @@ Beyond emulators, Leafit is tested on physical devices across different Android 
 
 <a href="https://github.com/So1uv/Leafit/releases/latest">
   <picture>
-    <source media="(max-width: 600px)" srcset="docs/leafit/get-leafit-mobile.webp" />
-    <img src="docs/leafit/get-leafit.webp" width="100%" alt="Make space for your day. Download Leafit 2.5.0 from GitHub Releases." />
+    <source media="(max-width: 600px)" srcset="docs/readme/11-get-leafit-mobile.webp" />
+    <img src="docs/readme/11-get-leafit.webp" width="100%" alt="Make space for your day. Download Leafit 2.5.0 from GitHub Releases." />
   </picture>
 </a>
 
