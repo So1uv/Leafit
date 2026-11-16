@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.ui.screens.appsettings
 
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import com.example.fitnesstracker.ui.components.LeafScreenScaffold
 import com.example.fitnesstracker.ui.components.rememberLeafHeaderState
 import com.example.fitnesstracker.ui.theme.LeafCard as Card
@@ -13,6 +15,9 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.semantics.Role
 import com.example.fitnesstracker.ui.components.LeafIcons
+import com.example.fitnesstracker.ui.components.LeafIconBadge
+import com.example.fitnesstracker.ui.components.LeafIconSize
+import com.example.fitnesstracker.ui.components.LeafTone
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.animateColorAsState
@@ -22,9 +27,11 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +62,7 @@ fun AppSettingsScreen(
 ) {
     val context = LocalContext.current
     var waterReminders by remember { mutableStateOf(WaterReminder.isEnabled(context)) }
+    var quietHours by remember { mutableStateOf(WaterReminder.quietHours(context)) }
     var bgSteps by remember { mutableStateOf(com.example.fitnesstracker.utils.StepTrackingPreferences.isBackgroundEnabled(context)) }
     val stepPermission = androidx.activity.compose.rememberLauncherForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
@@ -64,6 +72,32 @@ fun AppSettingsScreen(
         if (granted) com.example.fitnesstracker.utils.StepCounterService.start(context)
     }
     var showResetDialog by remember { mutableStateOf(false) }
+    var search by rememberSaveable { mutableStateOf("") }
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val hasDynamic = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+    val sectionKeys = listOf("search", "appearance_header", "theme") + (if (hasDynamic) listOf("dynamic") else emptyList()) +
+        listOf("language", "notifications_header", "water", "quiet", "bedtime",
+            "activity_header", "steps", "background", "training", "challenges",
+            "interaction_header", "accessibility", "widgets", "data_header", "data", "reset", "about_header", "app_version")
+    val targets = listOf(
+        "theme" to stringResource(R.string.settings_theme),
+        "language" to stringResource(R.string.settings_language),
+        "water" to stringResource(R.string.settings_water_reminder),
+        "quiet" to stringResource(R.string.settings_water_quiet),
+        "bedtime" to stringResource(R.string.settings_bedtime),
+        "steps" to stringResource(R.string.settings_bg_steps),
+        "data" to stringResource(R.string.settings_data_section),
+        "data" to stringResource(R.string.backup_title),
+        "reset" to stringResource(R.string.settings_reset),
+        "training" to stringResource(R.string.timer_settings_title),
+        "accessibility" to stringResource(R.string.haptic_title),
+        "accessibility" to stringResource(R.string.haptic_strength),
+        "widgets" to stringResource(R.string.widget_settings_title),
+        "challenges" to stringResource(R.string.challenges_title),
+        "background" to stringResource(R.string.settings_background_status),
+        "app_version" to stringResource(R.string.release_build, 18L)) +
+        if (hasDynamic) listOf("dynamic" to stringResource(R.string.settings_dynamic_color)) else emptyList()
 
     if (showResetDialog) {
         LeafEditSheet(
@@ -91,71 +125,95 @@ fun AppSettingsScreen(
         }
     ) { padding ->
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(top = padding.calculateTopPadding() + 12.dp, bottom = 48.dp)
         ) {
 
 
-            item {
-                SettingsGroupLabel(stringResource(R.string.settings_theme_section))
-                ThemeModeSelector(
-                    selected = themeMode,
-                    onChange = onThemeModeChange
-                )
+            item(key = "search") {
+                com.example.fitnesstracker.ui.components.AppSearchBar(search, { search = it },
+                    stringResource(R.string.settings_search), Modifier.fillMaxWidth())
+                val query = search.trim()
+                val hits = if (query.isBlank()) emptyList()
+                    else targets.filter { it.second.contains(query, ignoreCase = true) }.distinctBy { it.first }
+                if (query.isNotBlank() && hits.isEmpty())
+                    Text(stringResource(R.string.settings_no_results), Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (hits.isNotEmpty()) Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    hits.forEachIndexed { index, (key, title) ->
+                        Surface(onClick = {
+                            search = ""
+                            scope.launch { listState.animateScrollToItem(sectionKeys.indexOf(key).coerceAtLeast(0)) }
+                        }, shape = com.example.fitnesstracker.ui.components.groupedLeafShape(index, hits.size),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Icon(LeafIcons.Search, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(title, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                                Icon(LeafIcons.ChevronRight, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                    }
+                }
             }
 
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) item {
+            item(key = "appearance_header") { SettingsGroupLabel(stringResource(R.string.settings_theme_section)) }
+            item(key = "theme") {
+                ThemeModeSelector(selected = themeMode, onChange = onThemeModeChange)
+            }
+            if (hasDynamic) item(key = "dynamic") {
                 var dynamic by remember { mutableStateOf(com.example.fitnesstracker.ui.theme.ThemePreferences.dynamicColor(context)) }
                 SettingsSwitchItem(
-                    icon = LeafIcons.Palette, iconColor = MaterialTheme.colorScheme.primary,
+                    icon = LeafIcons.Palette, tone = LeafTone.Primary,
                     title = stringResource(R.string.settings_dynamic_color),
                     subtitle = stringResource(R.string.settings_dynamic_color_hint),
                     checked = dynamic,
                     onToggle = { dynamic = it; com.example.fitnesstracker.ui.theme.ThemePreferences.setDynamicColor(context, it) }
                 )
             }
+            item(key = "language") { LanguageSelector() }
 
-            item {
-                SettingsGroupLabel(stringResource(R.string.settings_language))
-                LanguageSelector()
-            }
-
-            item {
-                SettingsGroupLabel(stringResource(R.string.settings_notifications_section))
+            item(key = "notifications_header") { SettingsGroupLabel(stringResource(R.string.settings_notifications_section)) }
+            item(key = "water") {
                 SettingsSwitchItem(
-                    icon = com.example.fitnesstracker.ui.components.LeafIcons.WaterDrop, iconColor = MaterialTheme.colorScheme.primary,
+                    icon = LeafIcons.WaterFull, tone = LeafTone.Primary,
                     title = stringResource(R.string.settings_water_reminder),
                     subtitle = stringResource(R.string.settings_water_reminder_sub),
-                    checked = waterReminders,
-                    groupIndex = 0, groupCount = 3,
-                    onToggle = {
-                        waterReminders = it
-                        WaterReminder.setEnabled(context, it)
-                    }
+                    checked = waterReminders, groupIndex = 0, groupCount = 3,
+                    onToggle = { waterReminders = it; WaterReminder.setEnabled(context, it) }
                 )
-                Spacer(Modifier.height(8.dp))
+            }
+            item(key = "quiet") {
+                SettingsSwitchItem(
+                    icon = LeafIcons.MoonStars, tone = LeafTone.Tertiary,
+                    title = stringResource(R.string.settings_water_quiet),
+                    subtitle = stringResource(R.string.settings_water_quiet_sub),
+                    checked = quietHours, groupIndex = 1, groupCount = 3,
+                    onToggle = { quietHours = it; WaterReminder.setQuietHours(context, it) }
+                )
+            }
+            item(key = "bedtime") {
                 var bedtimeOn by remember { mutableStateOf(com.example.fitnesstracker.utils.BedtimeReminder.isEnabled(context)) }
                 SettingsSwitchItem(
-                    icon = com.example.fitnesstracker.ui.components.LeafIcons.Bedtime, iconColor = MaterialTheme.colorScheme.tertiary,
+                    icon = LeafIcons.Bedtime, tone = LeafTone.Tertiary,
                     title = stringResource(R.string.settings_bedtime),
                     subtitle = stringResource(R.string.settings_bedtime_sub,
                         com.example.fitnesstracker.utils.BedtimeReminder.getHour(context),
                         com.example.fitnesstracker.utils.BedtimeReminder.getMinute(context)),
-                    checked = bedtimeOn,
-                    groupIndex = 1, groupCount = 3,
-                    onToggle = {
-                        bedtimeOn = it
-                        com.example.fitnesstracker.utils.BedtimeReminder.setEnabled(context, it)
-                    }
+                    checked = bedtimeOn, groupIndex = 2, groupCount = 3,
+                    onToggle = { bedtimeOn = it; com.example.fitnesstracker.utils.BedtimeReminder.setEnabled(context, it) }
                 )
-                Spacer(Modifier.height(8.dp))
+            }
+
+            item(key = "activity_header") { SettingsGroupLabel(stringResource(R.string.b7_settings_activity)) }
+            item(key = "steps") {
                 SettingsSwitchItem(
-                    icon = com.example.fitnesstracker.ui.components.LeafIcons.DirectionsWalk, iconColor = MaterialTheme.colorScheme.secondary,
+                    icon = LeafIcons.Steps, tone = LeafTone.Secondary,
                     title = stringResource(R.string.settings_bg_steps),
                     subtitle = stringResource(R.string.settings_bg_steps_sub),
-                    checked = bgSteps,
-                    groupIndex = 2, groupCount = 3,
+                    checked = bgSteps, groupIndex = 0, groupCount = 2,
                     onToggle = {
                         if (it && !com.example.fitnesstracker.utils.StepCounter.hasActivityRecognitionPermission(context)) {
                             stepPermission.launch(android.Manifest.permission.ACTIVITY_RECOGNITION)
@@ -168,43 +226,37 @@ fun AppSettingsScreen(
                     }
                 )
             }
+            item(key = "background") {
+                val restricted = android.os.Build.VERSION.SDK_INT >= 28 &&
+                    context.getSystemService(android.app.ActivityManager::class.java).isBackgroundRestricted
+                SettingsNavItem(
+                    icon = LeafIcons.Shield, tone = if (restricted) LeafTone.Error else LeafTone.Secondary,
+                    title = stringResource(R.string.settings_background_status),
+                    subtitle = stringResource(if (restricted) R.string.settings_background_restricted else R.string.settings_background_ready),
+                    groupIndex = 1, groupCount = 2,
+                    onClick = { runCatching { context.startActivity(android.content.Intent(
+                        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        android.net.Uri.parse("package:${context.packageName}"))) } })
+            }
+            item(key = "training") { ExperienceSettings("timers") }
+            item(key = "challenges") { com.example.fitnesstracker.ui.screens.home.ChallengeVisibilitySettings() }
 
-            item {
-                SettingsGroupLabel(stringResource(R.string.settings_data_section))
-                BackupSection()
-                Spacer(Modifier.height(8.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth().bouncyClick { showResetDialog = true },
-                    shape    = RoundedCornerShape(26.dp),
-                    colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f))
-                ) {
-                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            modifier = Modifier.size(42.dp),
-                            shape = RoundedCornerShape(14.dp),
-                            color = MaterialTheme.colorScheme.errorContainer
-                        ) {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Icon(LeafIcons.DeleteForever, null,
-                                    tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(22.dp))
-                            }
-                        }
-                        Spacer(Modifier.width(14.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text(stringResource(R.string.settings_reset), fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.titleMedium)
-                            Text(stringResource(R.string.settings_reset_sub),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                        Icon(com.example.fitnesstracker.ui.components.LeafIcons.ChevronRight, null, tint = MaterialTheme.colorScheme.error)
-                    }
-                }
+            item(key = "interaction_header") { SettingsGroupLabel(stringResource(R.string.b7_settings_interaction)) }
+            item(key = "accessibility") { ExperienceSettings("haptics") }
+            item(key = "widgets") { ExperienceSettings("widgets") }
+
+            item(key = "data_header") { SettingsGroupLabel(stringResource(R.string.settings_data_section)) }
+            item(key = "data") { BackupSection() }
+            item(key = "reset") {
+                SettingsNavItem(
+                    icon = LeafIcons.DeleteForever, tone = LeafTone.Error,
+                    title = stringResource(R.string.settings_reset),
+                    subtitle = stringResource(R.string.settings_reset_sub),
+                    titleColor = MaterialTheme.colorScheme.error,
+                    onClick = { showResetDialog = true })
             }
 
-            item(key = "experience") { ExperienceSettings() }
-
+            item(key = "about_header") { SettingsGroupLabel(stringResource(R.string.b7_settings_about)) }
             item(key = "app_version") { AppVersionCard() }
         }
     }
@@ -215,26 +267,17 @@ private fun ThemeModeSelector(selected: AppThemeMode, onChange: (AppThemeMode) -
     val haptic = LocalHapticFeedback.current
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(30.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Box(Modifier.size(42.dp), Alignment.Center) {
-                        Icon(LeafIcons.Palette, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(22.dp))
-                    }
-                }
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.settings_theme), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(stringResource(R.string.settings_theme_system), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Contrast, stringResource(R.string.settings_theme),
+                subtitle = stringResource(when (selected) {
+                    AppThemeMode.LIGHT -> R.string.settings_theme_light
+                    AppThemeMode.DARK -> R.string.settings_theme_dark
+                    AppThemeMode.SYSTEM -> R.string.settings_theme_system
+                }))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).selectableGroup()) {
                 ThemeModeChip(
                     text = stringResource(R.string.settings_theme_light),
@@ -304,8 +347,8 @@ private fun ThemeModeChip(
         ThemeMiniPreview(icon = icon)
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Icon(icon, null, tint = fg, modifier = Modifier.size(18.dp))
-            Text(text, style = MaterialTheme.typography.labelMedium, color = fg, fontWeight = FontWeight.Medium,
-                modifier = Modifier.weight(1f, fill = false))
+            com.example.fitnesstracker.ui.components.LeafFitText(text, Modifier.weight(1f, fill = false),
+                style = MaterialTheme.typography.labelMedium, color = fg)
         }
     }
 }
@@ -339,12 +382,32 @@ private fun ThemeMiniPreview(icon: ImageVector) {
 
 @Composable
 private fun SettingsGroupLabel(text: String) {
-    Text(text, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 4.dp, top = 12.dp, bottom = 4.dp))
+    Text(text, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 8.dp, top = 20.dp, bottom = 4.dp))
 }
 
 @Composable
-private fun SettingsSwitchItem(icon: ImageVector, iconColor: Color, title: String, subtitle: String, checked: Boolean,
+private fun SettingsNavItem(icon: ImageVector, tone: LeafTone, title: String, subtitle: String,
+    groupIndex: Int = 0, groupCount: Int = 1, titleColor: Color = Color.Unspecified, onClick: () -> Unit) {
+    val shape = com.example.fitnesstracker.ui.components.groupedLeafShape(groupIndex, groupCount)
+    Surface(onClick = onClick, shape = shape, color = MaterialTheme.colorScheme.surfaceContainer,
+        modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            LeafIconBadge(icon, size = LeafIconSize.Medium, tone = tone)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(title, style = MaterialTheme.typography.titleMedium,
+                    color = if (titleColor == Color.Unspecified) MaterialTheme.colorScheme.onSurface else titleColor)
+                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Spacer(Modifier.width(8.dp))
+            Icon(LeafIcons.ChevronRight, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun SettingsSwitchItem(icon: ImageVector, tone: LeafTone, title: String, subtitle: String, checked: Boolean,
     groupIndex: Int = 0, groupCount: Int = 1, onToggle: (Boolean) -> Unit) {
     val haptic = LocalHapticFeedback.current
     val interaction = remember { MutableInteractionSource() }
@@ -356,18 +419,11 @@ private fun SettingsSwitchItem(icon: ImageVector, iconColor: Color, title: Strin
                 indication = null, onValueChange = {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove); onToggle(it)
                 })) {
-        Row(Modifier.padding(horizontal = 18.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Surface(
-                shape = RoundedCornerShape(14.dp),
-                color = iconColor.copy(alpha = 0.16f)
-            ) {
-                Box(Modifier.size(42.dp), Alignment.Center) {
-                    Icon(icon, null, tint = iconColor, modifier = Modifier.size(22.dp))
-                }
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            LeafIconBadge(icon, size = LeafIconSize.Medium, tone = tone)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(title, style = MaterialTheme.typography.titleMedium)
                 Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Spacer(Modifier.width(8.dp))
@@ -375,9 +431,9 @@ private fun SettingsSwitchItem(icon: ImageVector, iconColor: Color, title: Strin
                 thumbContent = if (checked) { { Icon(com.example.fitnesstracker.ui.components.LeafIcons.Check,
                     null, Modifier.size(16.dp)) } } else null,
                 colors = SwitchDefaults.colors(
-                    checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-                    checkedThumbColor = MaterialTheme.colorScheme.primary,
-                    checkedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedIconColor = MaterialTheme.colorScheme.primary,
                     uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     uncheckedBorderColor = Color.Transparent),
@@ -393,13 +449,13 @@ private fun LanguageSelector() {
     val activity = context as? android.app.Activity
     var current by remember { mutableStateOf(LanguagePreferences.get(context)) }
     var expanded by remember { mutableStateOf(false) }
-    Surface(onClick = { expanded = true }, shape = RoundedCornerShape(26.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-        Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    Surface(onClick = { expanded = true }, shape = RoundedCornerShape(28.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             LanguageFlag(current)
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.titleMedium)
                 Text(languageName(current), style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -455,22 +511,8 @@ private fun BackupSection() {
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Box(Modifier.size(42.dp), Alignment.Center) {
-                        Icon(LeafIcons.SaveAlt, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(22.dp))
-                    }
-                }
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.backup_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(status ?: stringResource(R.string.backup_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (status != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Database, stringResource(R.string.backup_title),
+                subtitle = status ?: stringResource(R.string.backup_subtitle))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 BackupActionRow(stringResource(R.string.backup_export), stringResource(R.string.release_backup_export_hint),
                     LeafIcons.Upload, top = true, onClick = { exportJson.launch("leafit_snapshot.json") })
@@ -489,10 +531,10 @@ private fun BackupActionRow(title: String, subtitle: String, icon: ImageVector, 
             bottomStart = if (top) 10.dp else 22.dp, bottomEnd = if (top) 10.dp else 22.dp)) {
         Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).padding(14.dp), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(icon, null, Modifier.size(22.dp), tint = colors.primary)
+            LeafIconBadge(icon, size = LeafIconSize.Small, tone = LeafTone.Neutral)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                Text(title, style = MaterialTheme.typography.titleSmall)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
             }
             Icon(LeafIcons.ChevronRight, null, Modifier.size(20.dp), tint = colors.onSurfaceVariant)
         }

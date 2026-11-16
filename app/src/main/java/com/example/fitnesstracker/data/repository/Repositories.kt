@@ -92,7 +92,7 @@ class AchievementRepository(private val dao: AchievementDao) {
     }
     suspend fun resetAll() = dao.resetAll()
     suspend fun ensureDefaults(defaults: List<Achievement>) {
-        dao.insertAll(defaults) // IGNORE preserves existing unlocks while adding new badges.
+        dao.insertAll(defaults)
     }
 }
 

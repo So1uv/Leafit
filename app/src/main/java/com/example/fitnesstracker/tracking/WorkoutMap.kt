@@ -111,7 +111,6 @@ internal fun WorkoutMap(session: LiveSession, accent: Color, recenter: Int, bott
             map = currentMap
             currentMap.uiSettings.isCompassEnabled = false
             currentMap.uiSettings.isLogoEnabled = false
-            // A visible, linked Compose attribution is placed above the HUD instead.
             currentMap.uiSettings.isAttributionEnabled = false
             currentMap.uiSettings.isTiltGesturesEnabled = false
             currentMap.setMaxZoomPreference(19.0)

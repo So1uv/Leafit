@@ -6,19 +6,26 @@ import android.util.Base64
 import com.example.fitnesstracker.data.database.AppDatabase
 import com.example.fitnesstracker.data.entities.*
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
+import com.example.fitnesstracker.workout.WorkoutSessionEngine
+import com.example.fitnesstracker.workout.WorkoutJournal
+import com.example.fitnesstracker.workout.WorkoutTemplate
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
 object BackupManager {
 
-    const val SNAPSHOT_VERSION = 1
+    const val SNAPSHOT_VERSION = 3
 
-    suspend fun exportJson(context: Context, uri: Uri): Boolean = try {
+    suspend fun exportJson(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) { try {
         val json = buildSnapshot(context)
-        context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+        val output = context.contentResolver.openOutputStream(uri) ?: return@withContext false
+        output.use { it.write(json.toByteArray()) }
         true
-    } catch (e: Exception) { false }
+    } catch (e: CancellationException) { throw e } catch (e: Exception) { false } }
 
     suspend fun buildSnapshot(context: Context): String {
         val db = AppDatabase.getInstance(context)
@@ -107,13 +114,32 @@ object BackupManager {
                 })
             }
         })
+        val life = LifeStore.get(context).snapshot()
+        life.optJSONArray("progress")?.let { entries ->
+            for (i in 0 until entries.length()) {
+                val row = entries.optJSONObject(i) ?: continue
+                val path = row.optString("photo")
+                val file = File(path)
+                if (file.parentFile == File(context.filesDir, "progress_photos") &&
+                    file.isFile && file.length() <= 12_000_000L) {
+                    row.put("photoData", Base64.encodeToString(file.readBytes(), Base64.NO_WRAP))
+                }
+            }
+        }
+        root.put("life", life)
+        val engine = WorkoutSessionEngine.get(context)
+        engine.ready.first { it }
+        root.put("templates", JSONArray().apply { engine.templates.value.forEach { template ->
+            put(JSONObject().put("id", template.id).put("name", template.name)
+                .put("plan", WorkoutJournal.toJson(template.plan)).put("equipment", JSONArray(template.equipment)))
+        } })
         return root.toString(2)
     }
 
-    suspend fun importJson(context: Context, uri: Uri, replaceProfile: Boolean = false): Boolean = try {
-        val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: return false
+    suspend fun importJson(context: Context, uri: Uri, replaceProfile: Boolean = false): Boolean = withContext(Dispatchers.IO) { try {
+        val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: return@withContext false
         applySnapshot(context, text, replaceProfile)
-    } catch (e: Exception) { false }
+    } catch (e: CancellationException) { throw e } catch (e: Exception) { false } }
 
     fun isValidSnapshot(text: String): Boolean = try {
         val o = JSONObject(text)
@@ -122,6 +148,7 @@ object BackupManager {
 
     suspend fun applySnapshot(context: Context, text: String, replaceProfile: Boolean): Boolean = try {
         val root = JSONObject(text)
+        check(isValidSnapshot(text) && root.optInt("snapshotVersion") in 1..SNAPSHOT_VERSION)
         val db = AppDatabase.getInstance(context)
 
         if (replaceProfile) {
@@ -204,6 +231,38 @@ object BackupManager {
                     proteinsPer100 = o.optDouble("proteinsPer100",0.0).toFloat(),
                     fatsPer100 = o.optDouble("fatsPer100",0.0).toFloat(), carbsPer100 = o.optDouble("carbsPer100",0.0).toFloat()
                 )) }
+        }
+        root.optJSONObject("life")?.let { life ->
+            life.optJSONArray("progress")?.let { entries ->
+                val folder = File(context.filesDir, "progress_photos").apply { mkdirs() }
+                for (i in 0 until entries.length()) {
+                    val row = entries.optJSONObject(i) ?: continue
+                    val encoded = row.optString("photoData")
+                    row.remove("photo")
+                    if (encoded.isNotBlank() && encoded.length < 17_000_000) {
+                        runCatching {
+                            val bytes = Base64.decode(encoded, Base64.NO_WRAP)
+                            val file = File(folder, java.util.UUID.randomUUID().toString() + ".jpg")
+                            file.writeBytes(bytes)
+                            row.put("photo", file.absolutePath)
+                        }
+                    }
+                    row.remove("photoData")
+                }
+            }
+            LifeStore.get(context).restore(life)
+        }
+        root.optJSONArray("templates")?.let { entries ->
+            val engine = WorkoutSessionEngine.get(context)
+            engine.ready.first { it }
+            val templates = (0 until entries.length()).mapNotNull { index ->
+                val row = entries.optJSONObject(index) ?: return@mapNotNull null
+                val plan = row.optJSONObject("plan") ?: return@mapNotNull null
+                WorkoutTemplate(id = row.optString("id").ifBlank { java.util.UUID.randomUUID().toString() },
+                    name = row.optString("name").take(120), plan = WorkoutJournal.fromJson(plan),
+                    equipment = row.optJSONArray("equipment")?.let { tags -> (0 until tags.length()).map { tags.optString(it) } }.orEmpty())
+            }
+            withContext(Dispatchers.Main.immediate) { templates.forEach(engine::restoreTemplate) }
         }
         true
     } catch (e: Exception) { false }

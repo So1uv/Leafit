@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b9_note_tasks_done">%1$d of %2$d done</string>
+    <string name="b9_note_add_task">Add a task</string>
+    <string name="b9_wrap_tab_style">Style</string>
+    <string name="b9_wrap_tab_data">Data</string>
+    <string name="b9_wrap_tab_words">Text</string>
+    <string name="b9_wrap_tab_format">Format</string>
+    <string name="b9_wrap_format_auto">Card</string>
+    <string name="b9_wrap_format_story">9:16</string>
+    <string name="b9_wrap_format_post">4:5</string>
+    <string name="b9_wrap_format_square">1:1</string>
+    <string name="b9_wrap_sticker">Sticker, no background</string>
+    <string name="b9_wrap_sticker_hint">Transparent PNG — place the card over your own photo in a story.</string>
+    <string name="b9_wrap_insights">Comparison and records</string>
+    <string name="b9_wrap_insights_empty">Not enough workouts to compare yet.</string>
+    <string name="b9_wrap_context">IN CONTEXT</string>
+    <string name="b9_wrap_vs_last">%1$s vs last time</string>
+    <string name="b9_wrap_record_duration">Longest yet</string>
+    <string name="b9_wrap_record_distance">Farthest yet</string>
+    <string name="b9_wrap_week_count">Workout #%1$d this week</string>
+    <string name="b9_wrap_streak">%1$d-day streak</string>
+    <string name="b9_wrap_save">Save</string>
+    <string name="b9_wrap_saved">Saved to Pictures/Leafit</string>
+    <string name="b9_wrap_share">Share</string>
+    <string name="b9_wrap_caption_ideas">Caption ideas</string>
+    <string name="b9_wrap_idea_1">One more step to the goal</string>
+    <string name="b9_wrap_idea_2">Done. No excuses</string>
+    <string name="b9_wrap_idea_3">New personal best!</string>
+    <string name="b9_wrap_idea_4">Movement is a mood</string>
+</resources>

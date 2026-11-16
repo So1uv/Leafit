@@ -71,8 +71,7 @@ fun ImageCropDialog(
             ) {
                 Text(
                     stringResource(R.string.crop_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 if (bitmap != null) {

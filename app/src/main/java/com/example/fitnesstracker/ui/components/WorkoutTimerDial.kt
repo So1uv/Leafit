@@ -38,7 +38,6 @@ fun WorkoutTimerDial(elapsedSeconds: Long, running: Boolean, paused: Boolean, mo
     val faceShape = remember { LeafRosette(8) }
     val accent = animateColorAsState(if (paused) colors.tertiary else colors.primary,
         tween(220), label = "timerAccent")
-    // Animate elapsed time before wrapping, so 59 → 60 moves forward through the top.
     val seconds = animateFloatAsState(elapsedSeconds.coerceAtLeast(0).toFloat(),
         tween(if (paused || !running) 0 else 420, easing = LinearEasing), label = "timerSeconds")
     val status = stringResource(when {

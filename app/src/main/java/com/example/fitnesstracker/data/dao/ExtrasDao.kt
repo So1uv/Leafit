@@ -39,7 +39,6 @@ interface ExtrasDao {
         val wasLatest = latestWeight()?.id == record.id
         deleteWeight(record)
         if (wasLatest) latestWeight()?.let { syncProfileWeight(it.weightKg) }
-        // An empty journal does not invent a replacement for the profile value.
     }
 
     @Query("DELETE FROM weight_records")

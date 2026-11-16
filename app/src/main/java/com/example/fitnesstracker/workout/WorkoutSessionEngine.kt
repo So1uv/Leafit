@@ -25,6 +25,9 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
     val liveState = _liveState.asStateFlow()
     private val _finishRequested = MutableStateFlow(false)
     val finishRequested = _finishRequested.asStateFlow()
+    private val _lastResult = MutableStateFlow<Workout?>(null)
+    val lastResult = _lastResult.asStateFlow()
+    fun dismissLastResult() { _lastResult.value = null }
     private var scheduledRest = 0L
     private val prefs = app.getSharedPreferences("workout_journal", android.content.Context.MODE_PRIVATE)
     private val stepCounter = StepCounter.getInstance(app.applicationContext)
@@ -52,6 +55,9 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
     val setTimer = _setTimer.asStateFlow()
     private val _setSeconds = MutableStateFlow(0L)
     val setSeconds = _setSeconds.asStateFlow()
+    private val _interval = MutableStateFlow<IntervalGuide?>(null)
+    val interval = _interval.asStateFlow()
+    private var intervalDeadline = 0L
     private var setStartedMs = 0L
     private val _saving = MutableStateFlow(false)
     val saving = _saving.asStateFlow()
@@ -66,7 +72,8 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
     private var timer: Job? = null
     private val plans = mutableMapOf<String, WorkoutPlan>()
     private data class Checkpoint(val plan: WorkoutPlan, val plans: Map<String, WorkoutPlan>, val templates: List<WorkoutTemplate>,
-        val active: Boolean, val startedAt: Long, val token: String, val elapsedMs: Long, val steps: Int, val rest: Int)
+        val active: Boolean, val startedAt: Long, val token: String, val elapsedMs: Long, val steps: Int,
+        val rest: Int, val interval: IntervalGuide?)
     private val writes = Channel<Checkpoint>(Channel.CONFLATED)
 
     init {
@@ -82,7 +89,8 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
                         _templates.value = (0 until templateArray.length()).mapNotNull { i ->
                             val t = templateArray.optJSONObject(i) ?: return@mapNotNull null
                             val p = t.optJSONObject("plan") ?: return@mapNotNull null
-                            WorkoutTemplate(t.optString("id").ifBlank { journalId() }, t.optString("name"), WorkoutJournal.fromJson(p))
+                            WorkoutTemplate(t.optString("id").ifBlank { journalId() }, t.optString("name"), WorkoutJournal.fromJson(p),
+                                t.optJSONArray("equipment")?.let { tags -> (0 until tags.length()).map { tags.optString(it) } }.orEmpty())
                         }
                         json.optJSONObject("plan")?.let { _plan.value = WorkoutJournal.fromJson(it) }
                     }
@@ -93,6 +101,7 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
                         _elapsedSeconds.value = carriedMs / 1000
                         _workoutSteps.value = json.optInt("steps").coerceAtLeast(0)
                         _restRemaining.value = json.optInt("rest").coerceIn(0, 3600)
+                        _interval.value = json.optJSONObject("interval")?.let(IntervalGuide::from)
                         _isRunning.value = true; _isPaused.value = true
                         _message.value = R.string.journal_recovered
                     } else _plan.value = _plan.value.fresh()
@@ -107,9 +116,10 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
                         val state = JSONObject().put("plan", WorkoutJournal.toJson(snapshot.plan))
                             .put("active", snapshot.active).put("startedAt", snapshot.startedAt).put("token", snapshot.token)
                             .put("elapsedMs", snapshot.elapsedMs).put("steps", snapshot.steps).put("rest", snapshot.rest)
+                            .put("interval", snapshot.interval?.json())
                             .put("plans", JSONObject().apply { snapshot.plans.forEach { (key, p) -> put(key, WorkoutJournal.toJson(p)) } })
                             .put("templates", JSONArray().apply { snapshot.templates.forEach { t ->
-                                put(JSONObject().put("id", t.id).put("name", t.name).put("plan", WorkoutJournal.toJson(t.plan)))
+                                put(JSONObject().put("id", t.id).put("name", t.name).put("plan", WorkoutJournal.toJson(t.plan)).put("equipment", JSONArray(t.equipment)))
                             } })
                         check(prefs.edit().putString("state", state.toString()).commit())
                     }
@@ -136,7 +146,8 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
         })
         publishDisplay()
         writes.trySend(Checkpoint(snapshotPlan, plans.toMap(), _templates.value, _isRunning.value,
-            startedAt, token, elapsedMs(), _workoutSteps.value, _restRemaining.value))
+            startedAt, token, elapsedMs(), _workoutSteps.value, _restRemaining.value,
+            _interval.value?.copy(remaining = intervalRemaining())))
     }
     suspend fun clearJournal() {
         ready.first { it }
@@ -170,7 +181,7 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
         val item = list.removeAt(from); list.add(to, item); updatePlan(_plan.value.copy(exercises = list))
     }
     fun startSetTimer(exerciseId: String, setId: String) {
-        if (!_isRunning.value || _isPaused.value || _saving.value || _setTimer.value != null) return
+        if (!_isRunning.value || _isPaused.value || _saving.value || _setTimer.value != null || _interval.value?.phase in listOf("work", "rest")) return
         val entry = _plan.value.exercises.firstOrNull { it.id == exerciseId && it.mode == EntryMode.TIME } ?: return
         if (entry.sets.none { it.id == setId && !it.completed }) return
         setStartedMs = elapsedMs(); _setSeconds.value = 0L
@@ -202,9 +213,75 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
         checkpoint()
     }
     fun skipRest() { _restRemaining.value = 0; restUntil = 0; WorkoutTimerService.clearRestAlert(app); checkpoint() }
+    private fun intervalRemaining(): Int = if (intervalDeadline > 0L && !_isPaused.value)
+        ((intervalDeadline - SystemClock.elapsedRealtime() + 999L) / 1000L).toInt().coerceAtLeast(0)
+        else _interval.value?.remaining ?: 0
+
+    fun startInterval(work: Int, rest: Int, rounds: Int) {
+        if (!_isRunning.value || _isPaused.value || _saving.value || _setTimer.value != null || _plan.value.exercises.isEmpty()) return
+        val seconds = work.coerceIn(5, 3600)
+        skipRest()
+        _interval.value = IntervalGuide(seconds, rest.coerceIn(0, 1800), rounds.coerceIn(1, 20),
+            1, 0, "work", seconds)
+        intervalDeadline = SystemClock.elapsedRealtime() + seconds * 1000L
+        checkpoint()
+        Haptics.play(app, HapticTexture.START)
+    }
+
+    fun stopInterval() {
+        _interval.value = null
+        intervalDeadline = 0L
+        checkpoint()
+    }
+
+    fun skipIntervalPhase() {
+        if (_interval.value == null || _isPaused.value) return
+        advanceInterval(completed = false)
+    }
+
+    private fun advanceInterval(completed: Boolean = true) {
+        val guide = _interval.value ?: return
+        val exercises = _plan.value.exercises
+        if (guide.phase == "done" || exercises.isEmpty()) return
+        if (completed && guide.phase == "work") {
+            val entry = exercises.getOrNull(guide.exerciseIndex)
+            if (entry?.mode == EntryMode.TIME) {
+                val row = entry.sets.firstOrNull { !it.completed }
+                val sets = if (row == null) entry.sets + JournalSet(seconds = guide.workSeconds, completed = true)
+                    else entry.sets.map { if (it.id == row.id) it.copy(seconds = guide.workSeconds, completed = true) else it }
+                saveExercise(entry.copy(sets = sets))
+            }
+        }
+        val isLast = guide.exerciseIndex == exercises.lastIndex && guide.round == guide.rounds
+        val next = when {
+            guide.phase == "work" && isLast -> guide.copy(phase = "done", remaining = 0)
+            guide.phase == "work" && guide.restSeconds > 0 ->
+                guide.copy(phase = "rest", remaining = guide.restSeconds)
+            guide.exerciseIndex + 1 < exercises.size ->
+                guide.copy(exerciseIndex = guide.exerciseIndex + 1, phase = "work", remaining = guide.workSeconds)
+            guide.round < guide.rounds ->
+                guide.copy(round = guide.round + 1, exerciseIndex = 0, phase = "work", remaining = guide.workSeconds)
+            else -> guide.copy(phase = "done", remaining = 0)
+        }
+        _interval.value = next
+        intervalDeadline = if (next.phase == "done") 0L else SystemClock.elapsedRealtime() + next.remaining * 1000L
+        checkpoint()
+        Haptics.play(app, HapticTexture.CONFIRM)
+        WorkoutTimerService.guideChanged(app, next.phase, exercises.getOrNull(next.exerciseIndex)?.name.orEmpty())
+    }
     fun saveTemplate(name: String) {
         if (name.isBlank() || _saving.value) return
-        _templates.value = _templates.value + WorkoutTemplate(name = name.trim().take(120), plan = _plan.value.fresh())
+        _templates.value = _templates.value + WorkoutTemplate(name = name.trim().take(120), plan = _plan.value.fresh(), equipment = _plan.value.equipmentTags(app))
+        checkpoint()
+    }
+    fun importTemplate(template: WorkoutTemplate) {
+        if (_templates.value.any { it.id == template.id }) return
+        _templates.value = _templates.value + template.copy(id = journalId())
+        checkpoint()
+    }
+    fun restoreTemplate(template: WorkoutTemplate) {
+        if (!_ready.value || _templates.value.any { it.id == template.id }) return
+        _templates.value = _templates.value + template
         checkpoint()
     }
     fun useTemplate(template: WorkoutTemplate) {
@@ -228,6 +305,8 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
     fun pauseWorkout(feedback: Boolean = true) {
         if (!_isRunning.value || _isPaused.value) return
         carriedMs = elapsedMs(); _elapsedSeconds.value = carriedMs / 1000
+        _interval.value = _interval.value?.copy(remaining = intervalRemaining())
+        intervalDeadline = 0L
         if (restUntil > 0) _restRemaining.value = ((restUntil - SystemClock.elapsedRealtime() + 999) / 1000).toInt().coerceAtLeast(0)
         _isPaused.value = true; timer?.cancel(); stepCounter.stop("workout"); checkpoint()
         if (feedback) Haptics.play(app, HapticTexture.PAUSE)
@@ -235,6 +314,9 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
     fun resumeWorkout() {
         if (!_isRunning.value || !_isPaused.value || _saving.value) return
         segmentStart = SystemClock.elapsedRealtime(); restUntil = if (_restRemaining.value > 0) segmentStart + _restRemaining.value * 1000L else 0L
+        intervalDeadline = _interval.value?.takeIf { it.phase != "done" }?.let {
+            SystemClock.elapsedRealtime() + it.remaining * 1000L
+        } ?: 0L
         lastStepTotal = stepCounter.stepsToday.value; _isPaused.value = false; stepCounter.start("workout")
         launchTimer(); checkpoint()
         ensureService()
@@ -252,6 +334,11 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
                     _restRemaining.value = ((restUntil - SystemClock.elapsedRealtime() + 999) / 1000).toInt().coerceAtLeast(0)
                     if (_restRemaining.value == 0) onRestDeadline(token, restUntil)
                 }
+                if (intervalDeadline > 0) {
+                    val remaining = intervalRemaining()
+                    _interval.value = _interval.value?.copy(remaining = remaining)
+                    if (remaining <= 0) advanceInterval()
+                }
                 if (seconds / 5 != lastSaved) { lastSaved = seconds / 5; checkpoint() }
                 delay(250)
             }
@@ -264,16 +351,18 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
         scope.launch {
             try {
                 val payload = withContext(Dispatchers.Default) { JSONObject(WorkoutJournal.encode(current)).put("token", token).toString() }
-                workoutRepo.insertSessionOnce(Workout(startTime = startedAt, endTime = System.currentTimeMillis(),
+                val completed = Workout(startTime = startedAt, endTime = System.currentTimeMillis(),
                     durationSeconds = carriedMs / 1000, steps = _workoutSteps.value, distanceMeters = current.recordedMeters,
-                    type = current.type, note = note.trim(), metrics = payload), token)
+                    type = current.type, note = note.trim(), metrics = payload)
+                val savedId = workoutRepo.insertSessionOnce(completed, token)
                 reset()
+                _lastResult.value = completed.copy(id = savedId)
                 Haptics.play(app, HapticTexture.CONFIRM)
                 try {
                     achievementRepo.unlock("first_workout")
                     if (workoutRepo.count() >= 10) achievementRepo.unlock("ten_workouts")
                 } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { /* The workout is already saved; badge failure must not report data loss. */ }
+                catch (_: Exception) { }
             } catch (e: CancellationException) { throw e }
             catch (_: Exception) { _message.value = R.string.journal_save_error }
             finally { _saving.value = false }
@@ -284,6 +373,7 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
         timer?.cancel(); stepCounter.stop("workout")
         _isRunning.value = false; _isPaused.value = false; _elapsedSeconds.value = 0; _workoutSteps.value = 0; _message.value = null
         _setTimer.value = null; _setSeconds.value = 0L; _finishRequested.value = false
+        _interval.value = null; intervalDeadline = 0L
         _restRemaining.value = 0; carriedMs = 0; restUntil = 0; startedAt = 0; token = ""
         _plan.value = _plan.value.fresh(); plans[_plan.value.type] = _plan.value; checkpoint()
     }
@@ -312,6 +402,7 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
         val active = _isRunning.value
         val paused = _isPaused.value
         val set = _setTimer.value
+        val guide = _interval.value
         val base = if (active && !paused) segmentStart - carriedMs else 0L
         val display = SessionDisplay(active, paused, token, _plan.value.title, _plan.value.type,
             base, if (paused) carriedMs / 1000 else 0L,
@@ -319,7 +410,10 @@ class WorkoutSessionEngine private constructor(private val app: Context) {
             set?.let { _plan.value.exercises.firstOrNull { e -> e.id == it.exerciseId }?.name }.orEmpty(),
             set != null, if (set != null && !paused) base + setStartedMs else 0L,
             if (set != null && paused) ((carriedMs - setStartedMs) / 1000).coerceAtLeast(0) else 0L,
-            _plan.value.completedCount, _plan.value.setCount)
+            _plan.value.completedCount, _plan.value.setCount,
+            if (guide != null && guide.phase != "done" && active && !paused) intervalDeadline else 0L,
+            if (guide != null && guide.phase != "done" && paused) guide.remaining else 0,
+            guide?.phase.orEmpty(), guide?.let { _plan.value.exercises.getOrNull(it.exerciseIndex)?.name }.orEmpty())
         val displayChanged = _liveState.value != display
         _liveState.value = display
         val deadline = if (active && !paused) restUntil else 0L

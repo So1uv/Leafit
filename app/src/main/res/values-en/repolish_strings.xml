@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nutrition_energy_title">Daily energy</string>
+    <string name="water_daily_target">Daily guide · %1$d ml</string>
+</resources>

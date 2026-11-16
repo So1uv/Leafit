@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,10 +21,10 @@ fun appHeaderHeight(): Dp = 64.dp + 24.dp * (LocalDensity.current.fontScale - 1f
 fun SectionHeader(title: String, subtitle: String, icon: ImageVector,
     modifier: Modifier = Modifier, actions: (@Composable RowScope.() -> Unit)? = null,
     headerState: LeafHeaderState? = null) {
-    Row(modifier.fillMaxWidth().height(appHeaderHeight()), verticalAlignment = Alignment.CenterVertically,
+    Row(modifier.fillMaxWidth().heightIn(min = appHeaderHeight()), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(Modifier.weight(1f).leafHeaderMotion(headerState), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            LeafTitle(title, style = MaterialTheme.typography.headlineSmall, maxLines = 1)
+            LeafTitle(title, style = MaterialTheme.typography.headlineMedium, maxLines = 2)
             if (subtitle.isNotBlank()) Text(subtitle, style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)

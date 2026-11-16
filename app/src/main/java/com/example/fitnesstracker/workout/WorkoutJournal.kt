@@ -43,7 +43,7 @@ data class WorkoutPlan(
     })
 }
 
-data class WorkoutTemplate(val id: String = journalId(), val name: String, val plan: WorkoutPlan)
+data class WorkoutTemplate(val id: String = journalId(), val name: String, val plan: WorkoutPlan, val equipment: List<String> = emptyList())
 
 object WorkoutJournal {
     const val KIND = "leaf_workout_v2"
@@ -85,3 +85,17 @@ object WorkoutJournal {
             title = json.optString("title").take(120), restSeconds = json.optInt("rest", 60).coerceIn(0, 3600), exercises = exercises)
     }
 }
+
+fun WorkoutPlan.estimatedMinutes(): Int {
+    val seconds = exercises.sumOf { entry ->
+        entry.sets.sumOf { row -> (row.seconds ?: 45).coerceAtLeast(5) + entry.restSeconds }
+    } - (exercises.lastOrNull()?.restSeconds ?: 0)
+    return ((seconds.coerceAtLeast(0) + 59) / 60)
+}
+
+fun WorkoutPlan.equipmentTags(context: android.content.Context): List<String> = exercises.mapNotNull { entry ->
+    WorkoutCatalog.exercises.firstOrNull { context.getString(it.labelRes) == entry.name }
+        ?.let { ExerciseLibrary.info(it).equipment }
+        ?: com.example.fitnesstracker.utils.LifeStore.get(context).state.value.customExercises
+            .firstOrNull { it.name == entry.name }?.equipment
+}.distinct()

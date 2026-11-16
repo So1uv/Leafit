@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b13_alarm_dismiss">Вимкнути</string>
+    <string name="b13_alarms">Будильники</string>
+    <string name="b13_alarms_empty">Додайте будильник — він спрацює і без трекера</string>
+    <string name="b13_alarm_next">Наступний через %1$d год %2$d хв</string>
+    <string name="b13_alarm_add">Додати будильник</string>
+    <string name="b13_alarm_edit">Будильник</string>
+    <string name="b13_alarm_once">Один раз</string>
+    <string name="b13_alarm_daily">Щодня</string>
+    <string name="b13_alarm_label">Назва</string>
+    <string name="b13_alarm_repeat">Повтор</string>
+    <string name="b13_alarm_smart">Розумне пробудження</string>
+    <string name="b13_alarm_smart_hint">З трекером може задзвонити раніше, коли сон легкий</string>
+    <string name="b13_alarm_exact">Дозвольте точні будильники, інакше система може затримати дзвінок</string>
+    <string name="b13_alarm_exact_action">Дозволити</string>
+    <string name="b13_alarm_test">Перевірити дзвінок</string>
+    <string name="b13_alarm_ring">Дзвінок</string>
+    <string name="b13_sleep_moves">Рухів: %1$d</string>
+    <string name="b13_sleep_lullaby">Звук для засинання</string>
+    <string name="b13_sleep_lullaby_on">Грає звук для засинання</string>
+    <string name="b13_lullaby_off">Вимк.</string>
+    <string name="b13_lullaby_white">Білий</string>
+    <string name="b13_lullaby_pink">Рожевий</string>
+    <string name="b13_lullaby_brown">Коричн.</string>
+    <string name="b13_lullaby_minutes">Тривалість звуку, хв</string>
+    <string name="b13_lullaby_volume">Гучність звуку, %</string>
+    <string name="b13_history_all">Усі</string>
+    <string name="b13_history_tracked">Трекер</string>
+    <string name="b13_history_manual">Вручну</string>
+    <string name="b13_history_filter_empty">У цій категорії записів немає</string>
+    <string name="b13_tracked_badge">Записано трекером</string>
+    <string name="b13_stat_moves">рухів</string>
+    <string name="b13_stat_loudest">пік, дБ</string>
+    <string name="b13_stat_average">середній шум, дБ</string>
+    <string name="b13_stat_efficiency">спокійний сон, %</string>
+    <string name="b13_chart_noise">Звуки за ніч</string>
+    <string name="b13_chart_phases">Фази за рухами</string>
+    <string name="b13_phase_deep">Глибокий %1$d хв</string>
+    <string name="b13_phase_light">Легкий %1$d хв</string>
+    <string name="b13_phase_restless">Неспокійний %1$d хв</string>
+    <string name="b13_chart_empty">Мікрофон не записав даних за цю ніч</string>
+    <string name="b13_alarm_rings">Задзвонить %1$s о %2$s — через %3$d год %4$d хв</string>
+    <string name="b13_alarm_when">О котрій задзвонить</string>
+</resources>

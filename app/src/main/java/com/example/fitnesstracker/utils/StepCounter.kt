@@ -43,6 +43,8 @@ class StepCounter private constructor(context: Context) : SensorEventListener {
     val stepsToday: StateFlow<Int> = _stepsToday
     val available: StateFlow<Boolean> = MutableStateFlow(sensor != null)
     private var snapshot = StepSnapshot("", 0, -1, boot)
+    private var lastPersistAt = 0L
+    private val savePending = Runnable { persist() }
 
     private val refresh = object : Runnable {
         override fun run() {
@@ -83,7 +85,7 @@ class StepCounter private constructor(context: Context) : SensorEventListener {
         owners.add(owner)
         if (listening) return true
         listening = runCatching {
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL, handler)
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL, 30_000_000, handler)
         }.getOrDefault(false)
         if (listening) handler.post(refresh) else owners.remove(owner)
         return listening
@@ -96,6 +98,8 @@ class StepCounter private constructor(context: Context) : SensorEventListener {
         sensorManager.unregisterListener(this)
         listening = false
         handler.removeCallbacks(refresh)
+        handler.removeCallbacks(savePending)
+        handler.post(savePending)
     }
 
     fun release() = stop()
@@ -110,8 +114,17 @@ class StepCounter private constructor(context: Context) : SensorEventListener {
             persist()
             return
         }
+        val dayChanged = eventDay != snapshot.day
+        if (dayChanged && snapshot.day.isNotBlank()) persist()
         snapshot = StepAccumulator.update(snapshot, eventDay, total, boot)
-        persist()
+        _stepsToday.value = if (snapshot.day == LocalDate.now().toString()) snapshot.steps else 0
+        if (dayChanged || SystemClock.elapsedRealtime() - lastPersistAt >= 15_000L) {
+            handler.removeCallbacks(savePending)
+            persist()
+        } else {
+            handler.removeCallbacks(savePending)
+            handler.postDelayed(savePending, 15_000L)
+        }
         refreshDay()
     }
 
@@ -123,9 +136,11 @@ class StepCounter private constructor(context: Context) : SensorEventListener {
     }
 
     private fun persist() {
+        if (snapshot.day.isBlank()) return
+        lastPersistAt = SystemClock.elapsedRealtime()
         prefs.edit().putString(KEY_DAY, snapshot.day)
             .putInt(KEY_CURRENT_STEPS, snapshot.steps)
-            .putInt("last_total", snapshot.total).putInt("boot_count", snapshot.boot).commit()
+            .putInt("last_total", snapshot.total).putInt("boot_count", snapshot.boot).apply()
         val dayStart = LocalDate.parse(snapshot.day).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
         writes.trySend(StepRecord(dayStart = dayStart, steps = snapshot.steps))
         _stepsToday.value = if (snapshot.day == LocalDate.now().toString()) snapshot.steps else 0

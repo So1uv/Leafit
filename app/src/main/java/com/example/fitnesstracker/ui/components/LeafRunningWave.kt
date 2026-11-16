@@ -13,23 +13,24 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.sin
 
-/** A decorative running state. Pausing cancels the animation at its current phase. */
 @Composable
 fun LeafRunningWave(running: Boolean, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.primary) {
-    val phase = remember { Animatable(0f) }
-    val active = running && LocalLeafPageActive.current
-    LaunchedEffect(active) {
-        if (active) phase.animateTo(phase.value + 1f,
-            infiniteRepeatable(tween(1600, easing = LinearEasing)))
+    val cycle = remember { Animatable(0f) }
+    val allowed = running && LocalLeafMotionActive.current
+    LaunchedEffect(allowed) {
+        if (allowed) cycle.animateTo(cycle.value + 1f, infiniteRepeatable(tween(1800, easing = LinearEasing)))
     }
-    val amplitude by animateFloatAsState(if (running) 1f else .15f, spring(1f, 500f), label = "waveRest")
+    val amplitude = animateFloatAsState(if (running) .28f else .045f, spring(1f, 480f), label = "runningAmplitude")
+    val line = remember { Path() }
     Canvas(modifier) {
-        val path = Path()
-        repeat(121) { sample ->
-            val x = size.width * sample / 120f
-            val y = size.height / 2f + sin((sample / 120f * 6f + phase.value) * 2f * PI).toFloat() * size.height * .28f * amplitude
-            if (sample == 0) path.moveTo(x, y) else path.lineTo(x, y)
+        if (size.width <= 0f) return@Canvas
+        line.reset()
+        val samples = (size.width / 3.dp.toPx()).toInt().coerceIn(24, 120)
+        for (index in 0..samples) {
+            val fraction = index.toFloat() / samples
+            val y = size.height * (.5f + amplitude.value * sin((fraction * 6f + cycle.value) * 2f * PI).toFloat())
+            if (index == 0) line.moveTo(0f, y) else line.lineTo(size.width * fraction, y)
         }
-        drawPath(path, color.copy(alpha = if (running) .75f else .35f), style = Stroke(2.dp.toPx(), cap = StrokeCap.Round))
+        drawPath(line, color.copy(alpha = if (running) .75f else .35f), style = Stroke(2.dp.toPx(), cap = StrokeCap.Round))
     }
 }

@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafIconButton as IconButton
+
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -34,11 +36,9 @@ fun HistoryRecordCard(title: String, date: String, icon: ImageVector,
     LeafCard(modifier.fillMaxWidth(), shape = groupedLeafShape(groupIndex, groupCount),
         colors = CardDefaults.cardColors(containerColor = colors.surfaceContainer)) {
         LeafSurface(onClick = onToggle, color = Color.Transparent, shape = groupedLeafShape(groupIndex, groupCount)) {
-            Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically,
+            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                LeafSurface(shape = RoundedCornerShape(16.dp), color = badgeColor) {
-                    Box(Modifier.size(44.dp), Alignment.Center) { Icon(icon, null, Modifier.size(24.dp), tint = badgeInk) }
-                }
+                LeafIconBadge(icon, container = badgeColor, content = badgeInk)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(date, style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant,
@@ -48,14 +48,13 @@ fun HistoryRecordCard(title: String, date: String, icon: ImageVector,
                     Modifier.size(22.dp).graphicsLayer { rotationZ = rotation.value }, tint = colors.onSurfaceVariant)
             }
         }
-        // AnimatedVisibility alone owns height. Hidden details leave composition after the exit.
         AnimatedVisibility(expanded,
             enter = expandVertically(spring(dampingRatio = 1f, stiffness = Spring.StiffnessMediumLow)) + fadeIn(tween(150)),
             exit = shrinkVertically(spring(dampingRatio = 1f, stiffness = Spring.StiffnessMediumLow)) + fadeOut(tween(100))) {
             Column(Modifier.fillMaxWidth().padding(start = 14.dp, end = 14.dp, bottom = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 LeafSurface(shape = RoundedCornerShape(20.dp), color = colors.surfaceContainerLow) {
-                    Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
+                    Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
                 }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
                     LeafTonalButton(onClick = onEdit, shape = CircleShape) {
@@ -76,16 +75,11 @@ fun HistoryRecordCard(title: String, date: String, icon: ImageVector,
 fun HistorySectionLabel(title: String, count: Int, icon: ImageVector) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.secondaryContainer) {
-            Box(Modifier.size(32.dp), Alignment.Center) {
-                Icon(icon, null, tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.size(18.dp))
-            }
-        }
-        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+        LeafIconBadge(icon, size = LeafIconSize.Small, tone = LeafTone.Secondary)
+        Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
         Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
             Text(count.toString(), Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                 style = MaterialTheme.typography.labelMedium.copy(fontFeatureSettings = "tnum"),
-                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }

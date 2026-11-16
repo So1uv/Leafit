@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal"
+    android:gravity="center_vertical" android:background="@drawable/widget_green_background"
+    android:paddingStart="10dp" android:paddingEnd="8dp" android:paddingTop="6dp" android:paddingBottom="6dp">
+    <ImageView android:id="@+id/widget_icon" android:layout_width="40dp" android:layout_height="40dp" android:padding="9dp"
+        android:background="@drawable/widget_icon_plate" android:src="@drawable/widget_exercise" android:tint="@color/widget_on_primary"
+        android:importantForAccessibility="no" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+        android:layout_marginStart="10dp" android:orientation="vertical">
+        <TextView android:id="@+id/widget_title" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:maxLines="1" android:ellipsize="end" android:textSize="12sp" android:alpha="0.85" android:text="@string/widget_session"
+            android:fontFamily="@font/roboto_flex_500" android:textColor="@color/widget_on_primary" />
+        <FrameLayout android:layout_width="match_parent" android:layout_height="30dp">
+            <Chronometer android:id="@+id/widget_clock" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:gravity="center_vertical" android:textSize="24sp" android:fontFamily="@font/roboto_flex_600"
+                android:textColor="@color/widget_on_primary" android:visibility="gone" />
+            <TextView android:id="@+id/widget_value" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:gravity="center_vertical" android:maxLines="1" android:text="@string/widget_ready"
+                android:autoSizeTextType="uniform" android:autoSizeMinTextSize="13sp" android:autoSizeMaxTextSize="24sp"
+                android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+        </FrameLayout>
+    </LinearLayout>
+    <TextView android:id="@+id/widget_secondary" android:layout_width="wrap_content" android:layout_height="40dp"
+        android:layout_marginStart="6dp" android:background="@drawable/widget_pill" android:gravity="center" android:paddingHorizontal="12dp"
+        android:maxLines="1" android:textSize="13sp" android:fontFamily="@font/roboto_flex_600"
+        android:textColor="@color/widget_on_primary" android:visibility="gone" />
+    <TextView android:id="@+id/widget_primary" android:layout_width="wrap_content" android:layout_height="40dp"
+        android:layout_marginStart="6dp" android:background="@drawable/widget_action_background" android:gravity="center"
+        android:paddingHorizontal="14dp" android:maxLines="1" android:text="@string/widget_open" android:textSize="13sp"
+        android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_primary_container" />
+</LinearLayout>

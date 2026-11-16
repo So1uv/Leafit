@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="experience_title">Отклик и быстрый доступ</string>
-    <string name="haptic_title">Тактильные текстуры</string>
+    <string name="experience_title">Отклик и виджеты</string>
+    <string name="haptic_title">Вибрация</string>
     <string name="haptic_hint">Мягкие отклики для выбора, паузы и подтверждения. Учитывают отключение вибрации в системе.</string>
     <string name="haptic_strength">Сила отклика</string>
     <string name="haptic_preview">Попробовать текстуру</string>
@@ -18,7 +18,7 @@
     <string name="timer_rest_channel">Завершение отдыха</string>
     <string name="timer_rest_done">Таймер отдыха завершён</string>
     <string name="timer_rest_done_hint">Можно продолжить или отдохнуть ещё.</string>
-    <string name="timer_settings_title">Таймеры вне приложения</string>
+    <string name="timer_settings_title">Таймеры в фоне</string>
     <string name="timer_settings_hint">Уведомление показывает тренировку, подход или отдых. Разрешение на точные таймеры помогает вовремя оповестить при заблокированном экране. Без него Android может задержать сигнал.</string>
     <string name="timer_notification_settings">Настройки уведомлений</string>
     <string name="timer_exact_settings">Точные таймеры</string>
@@ -42,7 +42,7 @@
     <string name="widget_gps">Маршрут записывается</string>
     <string name="widget_distance">%1$s км · GPS</string>
     <string name="widget_sets">Подходы: %1$d / %2$d</string>
-    <string name="share_workout">Поделиться тренировкой</string>
+    <string name="share_workout">Leafit Wrapped</string>
     <string name="share_card_brand">МОЁ ДВИЖЕНИЕ</string>
     <string name="share_duration">Длительность</string>
     <string name="share_km">километров</string>
@@ -60,7 +60,7 @@
     <string name="share_error">Не удалось создать или открыть карточку. Попробуйте ещё раз.</string>
     <string name="share_preview_description">Предпросмотр карточки тренировки</string>
     <string name="share_send">Поделиться PNG</string>
-    <string name="share_customize">Изменить оформление</string>
+    <string name="share_customize">Оформление</string>
     <string name="share_card_options">Оформление карточки</string>
     <string name="share_dark_card">Тёмная карточка</string>
     <string name="share_map">С картой</string>

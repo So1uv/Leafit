@@ -6,8 +6,8 @@ enum class WorkoutType(
     val key: String,
     val icon: ImageVector
 ) {
-    GENERAL("general", com.example.fitnesstracker.ui.components.LeafIcons.FitnessCenter),
-    RUN("run", com.example.fitnesstracker.ui.components.LeafIcons.DirectionsRun),
+    GENERAL("general", LeafIcons.SportsGymnastics),
+    RUN("run", LeafIcons.Sprint),
     WALK("walk", com.example.fitnesstracker.ui.components.LeafIcons.DirectionsWalk),
     CYCLE("cycle", LeafIcons.DirectionsBike),
     GYM("gym", com.example.fitnesstracker.ui.components.LeafIcons.FitnessCenter),

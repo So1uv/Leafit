@@ -1,7 +1,8 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

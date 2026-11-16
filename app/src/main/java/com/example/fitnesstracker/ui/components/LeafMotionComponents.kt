@@ -45,7 +45,6 @@ fun LeafTitle(text: String, modifier: Modifier = Modifier, style: TextStyle = Ma
     }
 }
 
-/** Uses the navigation transition's progress, so predictive back can seek and cancel it. */
 @Composable
 fun AnimatedContentScope.LeafPage(content: @Composable () -> Unit) {
     val radius = transition.animateDp(label = "pageCorners") { state ->
@@ -69,8 +68,8 @@ fun LeafButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Bool
     val radius by animateDpAsState(if (pressed && enabled) 18.dp else 40.dp, spring(.92f, 600f), label = "buttonShape")
     val haptic = LocalHapticFeedback.current
     androidx.compose.material3.Button(onClick = {
-        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove); onClick()
-    }, enabled = enabled, modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress); onClick()
+    }, enabled = enabled, modifier = modifier.heightIn(min = 48.dp).graphicsLayer { scaleX = scale; scaleY = scale },
         shape = if (shape == CircleShape) RoundedCornerShape(radius) else shape,
         colors = colors, elevation = elevation, border = border, contentPadding = contentPadding,
         interactionSource = source, content = content)
@@ -91,7 +90,11 @@ fun LeafSwitch(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, modifier
     colors: SwitchColors = SwitchDefaults.colors(uncheckedBorderColor = Color.Transparent),
     interactionSource: MutableInteractionSource? = null) {
     val scale by animateFloatAsState(if (checked) 1.04f else 1f, spring(.7f, 500f), label = "switchScale")
-    androidx.compose.material3.Switch(checked, onCheckedChange, modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+    val haptic = LocalHapticFeedback.current
+    androidx.compose.material3.Switch(checked, onCheckedChange?.let { change -> { value ->
+        change(value)
+        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+    } }, modifier.graphicsLayer { scaleX = scale; scaleY = scale },
         thumbContent = {
             AnimatedContent(checked, transitionSpec = {
                 (fadeIn(tween(140)) + scaleIn(spring(.82f, 500f), initialScale = .7f))
@@ -104,7 +107,11 @@ fun LeafSwitch(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, modifier
 }
 
 class LeafRosette(private val lobes: Int = 8) : Shape {
+    private var cachedSize = Size.Unspecified
+    private var cachedOutline: Outline? = null
+
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        cachedOutline?.let { if (cachedSize == size) return it }
         val path = Path()
         for (i in 0..160) {
             val a = i * 2.0 * PI / 160
@@ -113,8 +120,31 @@ class LeafRosette(private val lobes: Int = 8) : Shape {
             val y = (size.height / 2 + sin(a) * radius).toFloat()
             if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
-        path.close(); return Outline.Generic(path)
+        path.close()
+        return Outline.Generic(path).also { cachedSize = size; cachedOutline = it }
     }
+
+    override fun equals(other: Any?): Boolean = other is LeafRosette && other.lobes == lobes
+    override fun hashCode(): Int = lobes
+}
+
+@Composable
+fun LeafEnter(order: Int, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    val played = androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    val progress = remember { Animatable(if (played.value) 1f else 0f) }
+    LaunchedEffect(Unit) {
+        if (played.value) return@LaunchedEffect
+        kotlinx.coroutines.delay(order.coerceIn(0, 8) * 55L)
+        progress.animateTo(1f, spring(.82f, 320f))
+        played.value = true
+    }
+    Box(modifier.graphicsLayer {
+        val t = progress.value
+        alpha = t.coerceIn(0f, 1f)
+        translationY = (1f - t) * 28.dp.toPx()
+        scaleX = .96f + .04f * t
+        scaleY = scaleX
+    }) { content() }
 }
 
 @Composable
@@ -136,16 +166,14 @@ fun LeafLoadingIndicator(modifier: Modifier = Modifier, color: Color = MaterialT
 }
 
 fun groupedLeafShape(index: Int, count: Int): RoundedCornerShape = RoundedCornerShape(
-    topStart = if (index == 0) 28.dp else 10.dp, topEnd = if (index == 0) 28.dp else 10.dp,
-    bottomStart = if (index == count - 1) 28.dp else 10.dp, bottomEnd = if (index == count - 1) 28.dp else 10.dp)
+    topStart = if (index == 0) 28.dp else 6.dp, topEnd = if (index == 0) 28.dp else 6.dp,
+    bottomStart = if (index == count - 1) 28.dp else 6.dp, bottomEnd = if (index == count - 1) 28.dp else 6.dp)
 
 @Composable
 fun LeafEmptyState(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        Surface(shape = LeafRosette(), color = MaterialTheme.colorScheme.secondaryContainer) {
-            Box(Modifier.size(54.dp), Alignment.Center) { Icon(icon, null, tint = MaterialTheme.colorScheme.onSecondaryContainer) }
-        }
+        LeafIconBadge(icon, size = LeafIconSize.Large, tone = LeafTone.Secondary, shape = LeafRosette())
         Text(text, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

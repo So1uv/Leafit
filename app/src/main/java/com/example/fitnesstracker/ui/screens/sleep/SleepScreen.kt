@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.screens.sleep
 
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
+import com.example.fitnesstracker.ui.components.collectAsLeafState
 import com.example.fitnesstracker.ui.components.LeafScreenScaffold
 import com.example.fitnesstracker.ui.components.rememberLeafHeaderState
 import com.example.fitnesstracker.ui.theme.LeafCard as Card
@@ -54,14 +57,23 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SleepScreen(vm: SleepViewModel, onBack: () -> Unit = {}) {
-    val history       by vm.history.collectAsState()
-    val selectedDay   by vm.selectedDay.collectAsState()
-    val weekHours     by vm.weekSleepHours.collectAsState()
+    val history       by vm.history.collectAsLeafState()
+    val selectedDay   by vm.selectedDay.collectAsLeafState()
+    val weekHours     by vm.weekSleepHours.collectAsLeafState()
 
-    val newestId = history.maxByOrNull { it.wakeTime }?.id
-    var expandedRecordId by androidx.compose.runtime.saveable.rememberSaveable(newestId) { mutableStateOf(newestId) }
+    val newestId = remember(history) { history.maxByOrNull { it.wakeTime }?.id }
+    var expandedRecordId by androidx.compose.runtime.saveable.rememberSaveable(newestId) { mutableStateOf<Long?>(null) }
     val listState = rememberLazyListState()
+    val context = androidx.compose.ui.platform.LocalContext.current
     var showDatePicker by remember { mutableStateOf(false) }
+    var manualOpen by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(true) }
+    var historyFilter by androidx.compose.runtime.saveable.rememberSaveable { mutableIntStateOf(0) }
+    val shownHistory = remember(history, historyFilter) {
+        history.filter { record ->
+            val tracked = com.example.fitnesstracker.sleep.SleepNightStore.startOf(record.note) != null
+            historyFilter == 0 || (historyFilter == 1) == tracked
+        }
+    }
 
     if (showDatePicker) {
         SleepDateSelectDialog(
@@ -91,53 +103,66 @@ fun SleepScreen(vm: SleepViewModel, onBack: () -> Unit = {}) {
 
 
 
-            item {
-                AddSleepInline(
-                    selectedDay = selectedDay,
-                    onSave = { vm.saveRecord(it) }
-                )
-            }
+            item(key = "sleep_summary", contentType = "sleep_summary") { SleepSummaryCard(history, selectedDay) }
 
-            item {
-                SleepWeekChart(hours = weekHours)
-            }
+            item(key = "sleep_tracker", contentType = "sleep_tracker") { SleepTrackerCard() }
 
-            item {
-                com.example.fitnesstracker.ui.components.HistorySectionLabel(
-                    stringResource(R.string.sleep_history_title), history.size, LeafIcons.Bedtime)
-            }
+            item(key = "sleep_alarms", contentType = "sleep_alarms") { SleepAlarmsCard() }
 
-            if (history.isEmpty()) {
-                item {
-                    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
-                        Column(
-                            Modifier.fillMaxWidth().padding(vertical = 36.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Box(
-                                Modifier.size(64.dp).clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.55f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(com.example.fitnesstracker.ui.components.LeafIcons.Bedtime, null, modifier = Modifier.size(30.dp),
-                                    tint = MaterialTheme.colorScheme.tertiary)
+            item(key = "sleep_input", contentType = "sleep_input") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val chevron by animateFloatAsState(if (manualOpen) 180f else 0f, spring(.8f, 400f), label = "manualChevron")
+                    Surface(onClick = { manualOpen = !manualOpen }, modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
+                        Row(Modifier.padding(horizontal = 20.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            com.example.fitnesstracker.ui.components.LeafIconBadge(LeafIcons.Edit,
+                                tone = com.example.fitnesstracker.ui.components.LeafTone.Secondary)
+                            Column(Modifier.weight(1f)) {
+                                Text(stringResource(R.string.b12_sleep_manual), style = MaterialTheme.typography.titleMedium)
+                                Text(stringResource(R.string.b12_sleep_manual_hint), style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Spacer(Modifier.height(12.dp))
-                            Text(stringResource(R.string.sleep_records_empty), style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Medium)
-                            Text(stringResource(R.string.sleep_records_empty_hint), style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(LeafIcons.ExpandMore, null, Modifier.graphicsLayer { rotationZ = chevron })
                         }
                     }
+                    androidx.compose.animation.AnimatedVisibility(manualOpen) {
+                        AddSleepInline(selectedDay = selectedDay, onSave = { vm.saveRecord(it) })
+                    }
+                }
+            }
+
+            item(key = "sleep_week", contentType = "sleep_week") { SleepWeekChart(weekHours) }
+
+            item(key = "sleep_history_header", contentType = "sleep_history_header") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    com.example.fitnesstracker.ui.components.HistorySectionLabel(
+                        stringResource(R.string.sleep_history_title), shownHistory.size, LeafIcons.Bedtime)
+                    if (history.isNotEmpty()) com.example.fitnesstracker.ui.components.ExpressiveChoiceRow(
+                        listOf(stringResource(R.string.b13_history_all), stringResource(R.string.b13_history_tracked),
+                            stringResource(R.string.b13_history_manual)),
+                        listOf(LeafIcons.History, LeafIcons.GraphicEq, LeafIcons.Edit), historyFilter, { historyFilter = it })
+                }
+            }
+
+            if (shownHistory.isEmpty()) {
+                item(key = "sleep_history_empty") {
+                    com.example.fitnesstracker.ui.components.FeatureEmpty(
+                        stringResource(if (history.isEmpty()) R.string.sleep_records_empty else R.string.b13_history_filter_empty),
+                        stringResource(R.string.sleep_records_empty_hint), LeafIcons.Bedtime)
                 }
             } else {
-                itemsIndexed(history, key = { _, record -> record.id }) { index, record ->
+                itemsIndexed(shownHistory, key = { _, record -> record.id }, contentType = { _, _ -> "sleep_record" }) { index, record ->
                     SleepRecordCard(
                         record = record, expanded = expandedRecordId == record.id,
                         onToggle = { expandedRecordId = if (expandedRecordId == record.id) null else record.id },
-                        modifier = Modifier.animateItem(placementSpec = null), groupIndex = index, groupCount = history.size,
-                        onDelete = { vm.deleteRecord(it) },
+                        modifier = Modifier.animateItem(placementSpec = null), groupIndex = index, groupCount = shownHistory.size,
+                        onDelete = {
+                            com.example.fitnesstracker.sleep.SleepNightStore.startOf(it.note)?.let { start ->
+                                com.example.fitnesstracker.sleep.SleepNightStore.delete(context, start)
+                            }
+                            vm.deleteRecord(it)
+                        },
                         onEdit = { vm.saveRecord(it) }
                     )
                 }
@@ -167,20 +192,13 @@ private fun AddSleepInline(selectedDay: Long, onSave: (SleepRecord) -> Unit) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(30.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
-                    Box(Modifier.size(44.dp), Alignment.Center) {
-                        Icon(com.example.fitnesstracker.ui.components.LeafIcons.Bedtime, null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(22.dp))
-                    }
-                }
-                Text(stringResource(R.string.sleep_add_record), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-            }
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Bedtime, stringResource(R.string.sleep_add_record),
+                tone = com.example.fitnesstracker.ui.components.LeafTone.Tertiary)
 
             var manualEntry by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(true) }
 
@@ -220,31 +238,26 @@ private fun AddSleepInline(selectedDay: Long, onSave: (SleepRecord) -> Unit) {
 
 
             run {
-                val durMin = com.example.fitnesstracker.utils.SleepTimeMath.durationMinutes(bedMinutes, wakeMinutes)
                 Surface(
                     shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(com.example.fitnesstracker.ui.components.LeafIcons.Bedtime, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.sleep_cycles_title),
-                                style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium,
+                            com.example.fitnesstracker.ui.components.LeafIconBadge(LeafIcons.Bedtime,
+                                size = com.example.fitnesstracker.ui.components.LeafIconSize.Small,
+                                tone = com.example.fitnesstracker.ui.components.LeafTone.Tertiary)
+                            Spacer(Modifier.width(12.dp))
+                            Text(stringResource(R.string.sleep_timeline_title),
+                                style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.weight(1f))
-                            val cycles = com.example.fitnesstracker.ui.components.cycleCount(durMin)
-                            Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
-                                Text(stringResource(R.string.sleep_cycles_count, cycles),
-                                    style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
-                            }
                         }
                         Spacer(Modifier.height(12.dp))
-                        com.example.fitnesstracker.ui.components.SleepHypnogram(durationMinutes = durMin, startMinutes = bedMinutes)
-                        Spacer(Modifier.height(12.dp))
-                        com.example.fitnesstracker.ui.components.SleepCycleSummary(durMin)
+                        com.example.fitnesstracker.ui.components.SleepTimeline(
+                            bedTime = if (wakeMinutes > bedMinutes) buildTs(bedMinutes / 60, bedMinutes % 60)
+                                else buildTs(bedMinutes / 60, bedMinutes % 60, -1),
+                            wakeTime = buildTs(wakeMinutes / 60, wakeMinutes % 60), quality = quality, showDuration = manualEntry)
 
                     }
                 }
@@ -319,25 +332,37 @@ private fun SleepRecordCard(record: SleepRecord, onDelete: (SleepRecord) -> Unit
         )
     }
 
-    val durationH = (record.wakeTime - record.bedTime) / 3600000f
     val tags = remember(record.tags) { record.tags.split(",").filter { it.isNotBlank() } }
+    val tracked = remember(record.note) { com.example.fitnesstracker.sleep.SleepNightStore.startOf(record.note) != null }
 
     com.example.fitnesstracker.ui.components.HistoryRecordCard(
         title = "${DateUtils.formatTime(record.bedTime)} → ${DateUtils.formatTime(record.wakeTime)}",
         date = DateUtils.formatDate(record.bedTime),
-        icon = qualityIcons[(record.qualityScore - 1).coerceIn(0, 4)],
+        icon = if (tracked) LeafIcons.GraphicEq else qualityIcons[(record.qualityScore - 1).coerceIn(0, 4)],
         badgeColor = qualityTone(record.qualityScore).first, badgeInk = qualityTone(record.qualityScore).second,
         expanded = expanded, onToggle = onToggle,
         modifier = modifier, groupIndex = groupIndex, groupCount = groupCount,
         onEdit = { showEdit = true }, onDelete = { showConfirm = true }) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("${"%.1f".format(durationH)} ${stringResource(R.string.unit_h)}",
-                style = MaterialTheme.typography.headlineSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Surface(shape = RoundedCornerShape(50), color = qualityTone(record.qualityScore).first) {
                 Text(qualityLabel(record.qualityScore), Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.labelLarge, color = qualityTone(record.qualityScore).second)
             }
+            if (tracked) Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer) {
+                Row(Modifier.padding(start = 10.dp, end = 14.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Icon(LeafIcons.GraphicEq, null, Modifier.size(16.dp))
+                    Text(stringResource(R.string.b13_tracked_badge), style = MaterialTheme.typography.labelLarge)
+                }
+            }
+            Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.surfaceContainerHighest) {
+                Text(DateUtils.formatDuration(((record.wakeTime - record.bedTime) / 1000L).coerceAtLeast(0L)),
+                    Modifier.padding(horizontal = 12.dp, vertical = 8.dp), style = MaterialTheme.typography.labelLarge)
+            }
         }
+        com.example.fitnesstracker.ui.components.SleepTimeline(record.bedTime, record.wakeTime, record.qualityScore)
+        SleepNightReport(record.note)
         if (tags.isNotEmpty()) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             tags.forEach { tag ->
                 Surface(shape = CircleShape, color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -378,48 +403,58 @@ private fun qualityTone(quality: Int): Pair<Color, Color> {
 
 @Composable
 private fun QualityPicker(quality: Int, onSelect: (Int) -> Unit) {
-    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val haptic = LocalHapticFeedback.current
     val palette = MaterialTheme.colorScheme
-    val (selectedBg, selectedFg) = qualityTone(quality)
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(stringResource(R.string.sleep_quality), style = MaterialTheme.typography.titleMedium)
-        Row(Modifier.fillMaxWidth().selectableGroup(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            qualityIcons.forEachIndexed { index, icon ->
-                val selected = quality == index + 1
-                val (container, foreground) = qualityTone(index + 1)
-                val label = qualityLabel(index + 1)
-                val interactions = remember { MutableInteractionSource() }
-                val pressed by interactions.collectIsPressedAsState()
-                val scale by animateFloatAsState(if (pressed) 0.9f else if (selected) 1.08f else 1f,
-                    spring(dampingRatio = 0.7f, stiffness = 650f), label = "qualitySelection")
-                val bg by animateColorAsState(if (selected) androidx.compose.ui.graphics.lerp(container, foreground, .13f) else container,
-                    tween(180), label = "qualityTone")
-                val corner by androidx.compose.animation.core.animateDpAsState(if (selected) 18.dp else 32.dp,
-                    spring(.85f, 500f), label = "qualityCorner")
-                Box(Modifier.weight(1f).height(64.dp).clip(RoundedCornerShape(corner))
-                    .background(bg).selectable(selected, role = androidx.compose.ui.semantics.Role.RadioButton,
-                        interactionSource = interactions, indication = null,
-                        onClick = { if (!selected) { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove); onSelect(index + 1) } }), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(icon, label, tint = foreground,
-                            modifier = Modifier.size(30.dp).graphicsLayer { scaleX = scale; scaleY = scale })
+    val current = quality.coerceIn(1, 5)
+    val tone = qualityTone(current)
+    Surface(shape = RoundedCornerShape(28.dp), color = palette.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                val container by animateColorAsState(tone.second, tween(220), label = "qualityHero")
+                val ink by animateColorAsState(tone.first, tween(220), label = "qualityHeroInk")
+                Box(Modifier.size(64.dp).clip(com.example.fitnesstracker.ui.components.LeafRosette(8)).background(container),
+                    contentAlignment = Alignment.Center) {
+                    AnimatedContent(current, transitionSpec = {
+                        (fadeIn(tween(160)) + androidx.compose.animation.scaleIn(spring(.6f, 500f), initialScale = .6f)) togetherWith fadeOut(tween(90))
+                    }, label = "qualityFace") { value ->
+                        Icon(com.example.fitnesstracker.ui.components.LeafFilledIcons.of(qualityIcons[value - 1]) ?: qualityIcons[value - 1],
+                            null, Modifier.size(36.dp), tint = ink)
                     }
                 }
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(stringResource(R.string.sleep_quality), style = MaterialTheme.typography.labelLarge, color = palette.onSurfaceVariant)
+                    AnimatedContent(current, transitionSpec = { fadeIn(tween(160)) togetherWith fadeOut(tween(90)) },
+                        label = "qualityLabel") { value ->
+                        Text(qualityLabel(value), style = MaterialTheme.typography.headlineSmall, maxLines = 1)
+                    }
+                }
+                Surface(shape = CircleShape, color = tone.first, contentColor = tone.second) {
+                    Text("$current/5", Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge)
+                }
             }
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(qualityLabel(1), style = MaterialTheme.typography.labelSmall, color = palette.onSurfaceVariant,
-                modifier = Modifier.weight(1f))
-            Text(qualityLabel(5), style = MaterialTheme.typography.labelSmall, color = palette.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.End, modifier = Modifier.weight(1f))
-        }
-        Surface(shape = RoundedCornerShape(18.dp), color = selectedBg) {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Icon(qualityIcons[(quality - 1).coerceIn(0, 4)], null, tint = selectedFg, modifier = Modifier.size(20.dp))
-                LeafTitle(qualityLabel(quality), style = MaterialTheme.typography.labelLarge, color = selectedFg,
-                    modifier = Modifier.weight(1f))
-                Text("$quality / 5", style = MaterialTheme.typography.labelMedium, color = selectedFg)
+            Row(Modifier.fillMaxWidth().selectableGroup(), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                qualityIcons.forEachIndexed { index, icon ->
+                    val value = index + 1
+                    val selected = current == value
+                    val pair = qualityTone(value)
+                    val weight by animateFloatAsState(if (selected) 1.9f else 1f, spring(.7f, 420f), label = "qualityWeight")
+                    val outer by androidx.compose.animation.core.animateDpAsState(if (selected) 28.dp else 10.dp, spring(.8f, 500f),
+                        label = "qualityCorner")
+                    val start = if (index == 0) 28.dp else outer
+                    val end = if (index == qualityIcons.lastIndex) 28.dp else outer
+                    val bg by animateColorAsState(if (selected) pair.second else pair.first, tween(200), label = "qualityTone")
+                    val ink by animateColorAsState(if (selected) pair.first else pair.second, tween(200), label = "qualityInk")
+                    Box(Modifier.weight(weight).height(60.dp)
+                        .clip(RoundedCornerShape(topStart = start, bottomStart = start, topEnd = end, bottomEnd = end)).background(bg)
+                        .selectable(selected, role = androidx.compose.ui.semantics.Role.RadioButton,
+                            interactionSource = remember { MutableInteractionSource() }, indication = null,
+                            onClick = {
+                                if (!selected) { haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove); onSelect(value) }
+                            }), contentAlignment = Alignment.Center) {
+                        Icon(if (selected) com.example.fitnesstracker.ui.components.LeafFilledIcons.of(icon) ?: icon else icon,
+                            qualityLabel(value), Modifier.size(if (selected) 30.dp else 24.dp), tint = ink)
+                    }
+                }
             }
         }
     }
@@ -510,19 +545,11 @@ private fun EditSleepDialog(record: SleepRecord, onSave: (SleepRecord) -> Unit, 
 private fun SleepWeekChart(hours: List<Float>) {
     val values = List(7) { hours.getOrElse(it) { 0f }.let { n -> if (n.isFinite()) n.coerceAtLeast(0f) else 0f } }
     val recorded = values.filter { it > 0f }
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(32.dp),
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
-                    Box(Modifier.size(48.dp), Alignment.Center) {
-                        Icon(LeafIcons.Bedtime, null, tint = MaterialTheme.colorScheme.onTertiaryContainer)
-                    }
-                }
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.sleep_week_title), style = MaterialTheme.typography.titleLarge)
-                }
-            }
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Bedtime, stringResource(R.string.sleep_week_title),
+                tone = com.example.fitnesstracker.ui.components.LeafTone.Tertiary)
             com.example.fitnesstracker.ui.components.LeafWeekHistory(
                 com.example.fitnesstracker.ui.components.LeafWeekMetric.SLEEP, values,
                 stringResource(R.string.unit_h), MaterialTheme.colorScheme.tertiary, decimals = 1)
@@ -536,3 +563,91 @@ private fun SleepDateSelectDialog(selectedDay: Long, onSelect: (Long) -> Unit, o
     com.example.fitnesstracker.ui.components.LeafDatePicker(selectedDay, onSelect, onDismiss)
 }
 
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SleepSummaryCard(history: List<SleepRecord>, selectedDay: Long) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val colors = MaterialTheme.colorScheme
+    val goal = remember { com.example.fitnesstracker.utils.GoalPreferences.getSleepGoalMinutes(context).coerceIn(60, 16 * 60) }
+    val revision by com.example.fitnesstracker.sleep.SleepAlarms.revision.collectAsState()
+    val alarm = remember(revision) { com.example.fitnesstracker.sleep.SleepAlarms.upcoming(context) }
+    val today = remember(selectedDay) { DateUtils.dayStart(selectedDay) == DateUtils.todayStart() }
+    val dayEnd = remember(selectedDay) { DateUtils.dayEnd(selectedDay) }
+    val dayStart = remember(selectedDay) { DateUtils.dayStart(selectedDay) }
+    val recent = remember(history, dayEnd) { history.filter { it.wakeTime <= dayEnd }.sortedByDescending { it.wakeTime }.take(7) }
+    val last = remember(recent, today, dayStart) {
+        if (today) recent.firstOrNull() else recent.firstOrNull { it.wakeTime >= dayStart || it.bedTime >= dayStart }
+    }
+    fun minutes(record: SleepRecord) = ((record.wakeTime - record.bedTime) / 60000L).toInt().coerceAtLeast(0)
+    Surface(shape = RoundedCornerShape(32.dp), color = colors.primaryContainer, contentColor = colors.onPrimaryContainer,
+        modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Bedtime, stringResource(R.string.b14_summary_title),
+                subtitle = stringResource(R.string.b14_summary_goal, goal / 60, goal % 60),
+                tone = com.example.fitnesstracker.ui.components.LeafTone.Solid)
+            if (last == null) Text(stringResource(if (recent.isEmpty()) R.string.b14_summary_empty else R.string.b15_summary_no_day,
+                DateUtils.formatDate(selectedDay)), style = MaterialTheme.typography.bodyLarge)
+            if (last != null || recent.isNotEmpty()) {
+                if (last != null) Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    val slept = minutes(last)
+                    Text(if (today) stringResource(R.string.b14_summary_last) else DateUtils.formatDate(last.wakeTime),
+                        style = MaterialTheme.typography.labelLarge)
+                    com.example.fitnesstracker.ui.components.LeafFitText(stringResource(R.string.b14_summary_duration, slept / 60, slept % 60),
+                        style = MaterialTheme.typography.displayMedium)
+                    com.example.fitnesstracker.ui.components.LeafWavyProgress(slept.toFloat() / goal, true,
+                        Modifier.fillMaxWidth().height(18.dp), colors.primary, colors.onPrimaryContainer.copy(alpha = .16f))
+                }
+                val average = recent.sumOf { minutes(it) } / recent.size
+                val debt = recent.sumOf { (goal - minutes(it)).coerceAtLeast(0) }
+                val beds = recent.map { record ->
+                    val calendar = Calendar.getInstance().apply { timeInMillis = record.bedTime }
+                    (calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE) + 12 * 60) % (24 * 60)
+                }
+                val bedAverage = beds.sum() / beds.size
+                val spread = if (beds.size < 2) 0 else beds.maxOf { kotlin.math.abs(it - bedAverage) }
+                val bedClock = (bedAverage + 12 * 60) % (24 * 60)
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        SummaryTile(stringResource(R.string.b14_summary_duration, average / 60, average % 60),
+                            stringResource(R.string.b14_summary_average), 0, Modifier.weight(1f))
+                        SummaryTile(stringResource(R.string.b14_summary_duration, debt / 60, debt % 60),
+                            stringResource(R.string.b14_summary_debt), 1, Modifier.weight(1f))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        SummaryTile("%02d:%02d".format(bedClock / 60, bedClock % 60), stringResource(R.string.b14_summary_bedtime), 2,
+                            Modifier.weight(1f))
+                        SummaryTile(stringResource(when { spread <= 30 -> R.string.b14_regular_high; spread <= 75 -> R.string.b14_regular_mid
+                            else -> R.string.b14_regular_low }), stringResource(R.string.b14_summary_regular), 3, Modifier.weight(1f))
+                    }
+                }
+            }
+            if (alarm != null && today) {
+                val bedtime = alarm.second - (goal + 15) * 60000L
+                Surface(shape = RoundedCornerShape(20.dp), color = colors.primary, contentColor = colors.onPrimary,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Icon(LeafIcons.Lightbulb, null, Modifier.size(22.dp))
+                        Text(stringResource(R.string.b14_summary_advice, DateUtils.formatTime(bedtime), DateUtils.formatTime(alarm.second)),
+                            Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SummaryTile(value: String, label: String, index: Int, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    Surface(shape = RoundedCornerShape(topStart = if (index == 0) 20.dp else 6.dp, topEnd = if (index == 1) 20.dp else 6.dp,
+        bottomStart = if (index == 2) 20.dp else 6.dp, bottomEnd = if (index == 3) 20.dp else 6.dp),
+        color = colors.surface.copy(alpha = .55f), contentColor = colors.onSurface, modifier = modifier) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+            com.example.fitnesstracker.ui.components.LeafFitText(value, style = MaterialTheme.typography.titleMedium)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        }
+    }
+}

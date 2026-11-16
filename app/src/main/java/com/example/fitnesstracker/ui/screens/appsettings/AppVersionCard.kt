@@ -18,6 +18,8 @@ import androidx.core.content.pm.PackageInfoCompat
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.ui.components.LeafIcons
 import com.example.fitnesstracker.ui.components.LeafRosette
+import com.example.fitnesstracker.ui.components.LeafIconBadge
+import com.example.fitnesstracker.ui.components.LeafIconSize
 import com.example.fitnesstracker.ui.theme.LeafSurface
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -36,15 +38,9 @@ internal fun AppVersionCard() {
         LeafSurface(shape = RoundedCornerShape(20.dp), color = colors.surfaceContainerLow) {
             Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    LeafSurface(shape = logoShape, color = colors.primaryContainer,
-                        contentColor = colors.onPrimaryContainer) {
-                        Box(Modifier.size(64.dp), Alignment.Center) {
-                            Icon(LeafIcons.Exercise, null, Modifier.size(32.dp))
-                        }
-                    }
+                    LeafIconBadge(LeafIcons.Eco, size = LeafIconSize.Hero, shape = logoShape)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
                         Text(stringResource(R.string.release_app_description),
                             style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                     }
@@ -63,13 +59,13 @@ internal fun AppVersionCard() {
                     info?.let { packageInfo ->
                         LeafSurface(shape = CircleShape, color = colors.surfaceContainerHighest,
                             contentColor = colors.onSurfaceVariant) {
-                            Text(stringResource(R.string.release_build, PackageInfoCompat.getLongVersionCode(packageInfo)),
+                            Text(stringResource(R.string.release_build, PackageInfoCompat.getLongVersionCode(packageInfo) - 2500L),
                                 Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                                 style = MaterialTheme.typography.labelMedium)
                         }
                     }
                 }
-                Text(stringResource(R.string.release_description), style = MaterialTheme.typography.bodyMedium,
+                Text(stringResource(R.string.b6_release), style = MaterialTheme.typography.bodyMedium,
                     color = colors.onSurfaceVariant)
             }
         }

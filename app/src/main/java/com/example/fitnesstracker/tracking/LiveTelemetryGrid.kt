@@ -33,7 +33,7 @@ internal fun LiveTelemetryGrid(session: LiveSession, readOnly: Boolean, modifier
         stringResource(R.string.live_avg_pace), stringResource(R.string.live_fast_pace), stringResource(R.string.live_slow_pace))
     val units = listOf(stringResource(R.string.unit_kmh), stringResource(R.string.unit_min_km),
         stringResource(R.string.unit_min_km), stringResource(R.string.unit_min_km))
-    val icons = listOf(LeafIcons.Speed, LeafIcons.Timer, LeafIcons.DirectionsRun, LeafIcons.DirectionsWalk)
+    val icons = listOf(LeafIcons.Speed, LeafIcons.Pace, LeafIcons.Sprint, LeafIcons.DirectionsWalk)
     val colors = MaterialTheme.colorScheme
     val fontScale = LocalDensity.current.fontScale
     BoxWithConstraints(modifier.fillMaxWidth()) {

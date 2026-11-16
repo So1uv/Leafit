@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -50,14 +52,15 @@ fun ExpressiveBottomBar(controller: LeafTabController, modifier: Modifier = Modi
     val density = LocalDensity.current
     val haptic = LocalHapticFeedback.current
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val selected by remember(controller) { derivedStateOf { controller.pager.currentPage } }
+    val selected by remember(controller) { derivedStateOf { controller.selectedPage } }
     val count = bottomNavItems.size
     val expansion = List(count) { index ->
         animateFloatAsState(if (selected == index) 1f else 0f,
             spring(dampingRatio = .88f, stiffness = 550f), label = "tabWidth$index")
     }
     val minimum = with(density) { 52.dp.toPx() }
-    val height = 60.dp + 12.dp * (density.fontScale - 1f).coerceAtLeast(0f)
+    val squeeze by animateFloatAsState(if (controller.dragging) 1f else 0f, spring(.7f, 500f), label = "tabSqueeze")
+    val height = 64.dp + 12.dp * (density.fontScale - 1f).coerceAtLeast(0f)
 
     fun widths(width: Float): List<Float> {
         val base = minimum.coerceAtMost(width / count)
@@ -66,7 +69,8 @@ fun ExpressiveBottomBar(controller: LeafTabController, modifier: Modifier = Modi
         return expansion.map { base + extra * it.value.coerceAtLeast(0f) / sum }
     }
 
-    LeafSurface(modifier, shape = CircleShape, color = colors.surfaceContainerLow) {
+    LeafSurface(modifier.shadow(10.dp, CircleShape, clip = false, ambientColor = colors.primary.copy(alpha = .25f),
+        spotColor = colors.primary.copy(alpha = .25f)), shape = CircleShape, color = colors.surfaceContainerHigh) {
         Layout(modifier = Modifier.fillMaxWidth().padding(4.dp).height(height).selectableGroup()
             .drawBehind {
                 val cells = widths(size.width)
@@ -77,9 +81,9 @@ fun ExpressiveBottomBar(controller: LeafTabController, modifier: Modifier = Modi
                 val start = cells.take(from).sum() + if (from != to) cells[from] * fraction else 0f
                 val width = cells[from] + (cells[to] - cells[from]) * fraction
                 val x = if (rtl) size.width - start - width else start
-                drawRoundRect(colors.secondaryContainer,
-                    topLeft = Offset(x + 2.dp.toPx(), 2.dp.toPx()),
-                    size = Size((width - 4.dp.toPx()).coerceAtLeast(0f), size.height - 4.dp.toPx()),
+                drawRoundRect(colors.primaryContainer,
+                    topLeft = Offset(x + 2.dp.toPx(), (2.dp + 5.dp * squeeze).toPx()),
+                    size = Size((width - 4.dp.toPx()).coerceAtLeast(0f), size.height - (4.dp + 10.dp * squeeze).toPx()),
                     cornerRadius = CornerRadius(size.height / 2f))
             }
             .pointerInput(controller, rtl, minimum) {
@@ -117,7 +121,7 @@ fun ExpressiveBottomBar(controller: LeafTabController, modifier: Modifier = Modi
                 bottomNavItems.forEachIndexed { index, item ->
                     val active = selected == index
                     val label = stringResource(item.labelRes)
-                    val tint = if (active) colors.onSecondaryContainer else colors.onSurfaceVariant
+                    val tint = if (active) colors.onPrimaryContainer else colors.onSurfaceVariant
                     Row(Modifier.fillMaxHeight().clip(CircleShape)
                         .selectable(active, role = Role.Tab, indication = null,
                             interactionSource = remember { MutableInteractionSource() },
@@ -128,13 +132,17 @@ fun ExpressiveBottomBar(controller: LeafTabController, modifier: Modifier = Modi
                                 }
                             }).semantics { contentDescription = label }.padding(horizontal = 10.dp),
                         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                        Icon(if (active) item.selectedIcon else item.icon, null, Modifier.size(24.dp), tint)
+                        val bounce by animateFloatAsState(if (active) 1f else 0f, spring(.42f, 420f), label = "tabBounce")
+                        Icon(if (active) item.selectedIcon else item.icon, null, Modifier.size(24.dp).graphicsLayer {
+                            val scale = 1f + .16f * bounce
+                            scaleX = scale; scaleY = scale
+                            rotationZ = -8f * (bounce - bounce * bounce) * 4f
+                        }, tint)
                         AnimatedVisibility(active,
                             enter = expandHorizontally(spring(.9f, 550f), expandFrom = Alignment.Start) + fadeIn(tween(140)),
                             exit = shrinkHorizontally(spring(1f, 650f), shrinkTowards = Alignment.Start) + fadeOut(tween(80))) {
-                            Text(label, Modifier.padding(start = 8.dp).clearAndSetSemantics { },
-                                style = MaterialTheme.typography.labelLarge, color = tint,
-                                maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            LeafFitText(label, Modifier.padding(start = 8.dp).clearAndSetSemantics { },
+                                style = MaterialTheme.typography.titleSmall, color = tint)
                         }
                     }
                 }

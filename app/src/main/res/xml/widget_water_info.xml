@@ -1,0 +1,4 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="150dp" android:minHeight="180dp" android:minResizeWidth="40dp" android:minResizeHeight="40dp"
+    android:targetCellWidth="2" android:targetCellHeight="2" android:initialLayout="@layout/widget_summary" android:previewLayout="@layout/widget_preview_water"
+    android:description="@string/b5_widget_water_hint" android:resizeMode="horizontal|vertical" android:updatePeriodMillis="1800000" android:widgetCategory="home_screen" android:configure="com.example.fitnesstracker.widgets.WidgetConfigurationActivity" android:widgetFeatures="reconfigurable|configuration_optional" />

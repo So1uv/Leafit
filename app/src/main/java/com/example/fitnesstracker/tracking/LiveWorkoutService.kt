@@ -133,21 +133,11 @@ internal suspend fun saveLiveSession(
                 .toString()
         }
 
-        AppDatabase
-            .getInstance(context)
-            .workoutDao()
-            .insertLiveOnce(
-                Workout(
-                    startTime = snapshot.startedAt,
-                    endTime = System.currentTimeMillis(),
-                    durationSeconds = snapshot.elapsedMs / 1000,
-                    distanceMeters = snapshot.distanceMeters,
-                    note = note,
-                    type = snapshot.type,
-                    metrics = payload
-                ),
-                snapshot.token
-            )
+        val result = Workout(startTime = snapshot.startedAt, endTime = System.currentTimeMillis(),
+            durationSeconds = snapshot.elapsedMs / 1000, distanceMeters = snapshot.distanceMeters,
+            note = note, type = snapshot.type, metrics = payload)
+        val savedId = AppDatabase.getInstance(context).workoutDao().insertLiveOnce(result, snapshot.token)
+        LiveWorkoutStore.setCompleted(result.copy(id = savedId))
 
         LiveWorkoutStore.persist(
             context,
@@ -217,7 +207,6 @@ class LiveWorkoutService : Service() {
 
     private lateinit var fused: FusedLocationProviderClient
 
-    // FIX: NotificationManager is now a class field.
     private lateinit var notificationManager: NotificationManager
 
     private var lastTick = 0L
@@ -265,7 +254,6 @@ class LiveWorkoutService : Service() {
             LocationServices
                 .getFusedLocationProviderClient(this)
 
-        // FIX: assign the class field instead of creating local "manager".
         notificationManager =
             getSystemService(NotificationManager::class.java)
 
@@ -278,6 +266,7 @@ class LiveWorkoutService : Service() {
                 setShowBadge(false)
             }
         )
+        com.example.fitnesstracker.utils.LeafNotify.organize(this)
 
         try {
             if (!LiveWorkoutController.precise(this)) {
@@ -872,7 +861,6 @@ class LiveWorkoutService : Service() {
         if (key != notificationKey) {
             notificationKey = key
 
-            // FIX: use the class-level NotificationManager.
             runCatching {
                 notificationManager.notify(
                     NOTIFICATION,
@@ -906,6 +894,18 @@ class LiveWorkoutService : Service() {
                 Intent.FLAG_ACTIVITY_SINGLE_TOP
             )
 
+        val km1 = s.distanceMeters / 1000f
+        val paceText = if (km1 >= 0.05f && s.elapsedMs > 0) {
+            val secPerKm = (s.elapsedMs / 1000f / km1).toInt().coerceIn(0, 99 * 60)
+            context.getString(R.string.b7_notif_pace, secPerKm / 60, secPerKm % 60)
+        } else null
+        val gpsText = when (s.status) {
+            GpsStatus.WAITING -> context.getString(R.string.b7_notif_gps_wait)
+            GpsStatus.WEAK -> context.getString(R.string.b7_notif_gps_weak)
+            GpsStatus.GOOD, GpsStatus.RECOVERED -> context.getString(R.string.b7_notif_gps_ok)
+            else -> null
+        }
+
         return NotificationCompat.Builder(
             this,
             CHANNEL
@@ -913,6 +913,8 @@ class LiveWorkoutService : Service() {
             .setSmallIcon(
                 R.drawable.ic_running
             )
+            .setColor(com.example.fitnesstracker.utils.LeafNotify.ACCENT)
+            .setSubText(listOfNotNull(paceText, gpsText).joinToString(" · "))
             .setContentTitle(
                 text(
                     if (
@@ -963,12 +965,37 @@ class LiveWorkoutService : Service() {
             .setOnlyAlertOnce(true)
             .setSilent(true)
             .setCategory(
-                NotificationCompat.CATEGORY_SERVICE
+                NotificationCompat.CATEGORY_WORKOUT
             )
             .setVisibility(
                 NotificationCompat.VISIBILITY_PRIVATE
             )
-            .build()
+            .also { builder ->
+                val paused = s.phase == LivePhase.PAUSED
+                if (paused || s.phase == LivePhase.ACTIVE) builder.addAction(
+                    0,
+                    text(if (paused) R.string.timer_resume else R.string.timer_pause),
+                    PendingIntent.getService(
+                        this,
+                        if (paused) 412 else 411,
+                        Intent(this, LiveWorkoutService::class.java).setAction(if (paused) "resume" else "pause"),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+            }
+            .let { builder ->
+                val active = s.phase == LivePhase.ACTIVE
+                com.example.fitnesstracker.utils.LeafNotify.card(
+                    this,
+                    builder,
+                    R.drawable.ic_running,
+                    text(if (s.phase == LivePhase.PAUSED) R.string.live_paused else R.string.live_notification_title),
+                    com.example.fitnesstracker.utils.DateUtils.formatDuration(s.elapsedMs / 1000),
+                    caption = context.getString(R.string.widget_distance, km),
+                    stats = listOfNotNull(context.getString(R.string.widget_distance, km), paceText, gpsText),
+                    clockBase = if (active) SystemClock.elapsedRealtime() - s.elapsedMs else 0L
+                )
+            }
     }
 
     private fun text(

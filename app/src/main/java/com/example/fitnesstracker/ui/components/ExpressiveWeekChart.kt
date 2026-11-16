@@ -60,7 +60,8 @@ fun ExpressiveWeekChart(values: List<Float>, unit: String, accent: Color,
     var selected by rememberSaveable(weekStart.toString()) { mutableIntStateOf(if (todayIndex in 0..6) todayIndex else 0) }
     val labels = stringResource(R.string.home_weekdays).split(",")
     val monday = weekStart
-    val numberFormat = NumberFormat.getNumberInstance(appLocale()).apply { maximumFractionDigits = decimals }
+    val locale = appLocale()
+    val numberFormat = remember(locale, decimals) { NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = decimals } }
     fun reading(value: Float) = numberFormat.format(value.toDouble())
     val dateFormat = DateTimeFormatter.ofPattern("EEEE, d MMMM", appLocale())
     val maxValue = safe.maxOrNull() ?: 0f
@@ -83,7 +84,6 @@ fun ExpressiveWeekChart(values: List<Float>, unit: String, accent: Color,
         Text(stringResource(R.string.chart_scale, reading(ceiling), unit),
             style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            // Keep labels and touch targets usable with a narrow viewport or enlarged system text.
             val plotWidth = maxOf(maxWidth, (44.dp + 8.dp * (fontScale - 1f).coerceAtLeast(0f)) * 7)
             val gridColor = colors.onSurfaceVariant.copy(alpha = .12f)
             Row(Modifier.horizontalScroll(rememberScrollState())) {

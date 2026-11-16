@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b16_step">Крок %1$d з %2$d</string>
+    <string name="b16_optional">Необовʼязково — можна заповнити пізніше в профілі</string>
+    <string name="b16_bmi">Індекс маси тіла</string>
+    <string name="b16_photo">Фото профілю</string>
+    <string name="b16_photo_hint">Натисніть, щоб вибрати</string>
+    <string name="b16_about_you">Про вас</string>
+</resources>

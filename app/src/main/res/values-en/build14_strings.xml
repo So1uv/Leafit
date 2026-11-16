@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b14_stat_clips">clips</string>
+    <string name="b14_stat_quiet">quiet, %</string>
+    <string name="b14_stat_talk">min voice</string>
+    <string name="b14_player_title">Clip %1$d of %2$d</string>
+    <string name="b14_player_play">Listen</string>
+    <string name="b14_player_stop">Stop</string>
+    <string name="b14_player_prev">Previous clip</string>
+    <string name="b14_player_next">Next clip</string>
+    <string name="b14_player_chain">Play clips one after another</string>
+    <string name="b14_player_empty">No clips that night: the microphone heard nothing louder than the background.</string>
+    <string name="b14_chart_title">Room loudness</string>
+    <string name="b14_chart_hint">The line is noise by minute, dots are sounds. Tap a dot to listen.</string>
+    <string name="b14_chart_point">%1$s · %2$d dB</string>
+    <string name="b14_chart_loud">loud</string>
+    <string name="b14_chart_quiet">quiet</string>
+    <string name="b14_events_title">All sounds: %1$d</string>
+    <string name="b14_summary_title">Your sleep</string>
+    <string name="b14_summary_last">Last night</string>
+    <string name="b14_summary_goal">Goal %1$d h %2$d min</string>
+    <string name="b14_summary_duration">%1$d h %2$d min</string>
+    <string name="b14_summary_average">7-night average</string>
+    <string name="b14_summary_debt">weekly sleep debt</string>
+    <string name="b14_summary_bedtime">usual bedtime</string>
+    <string name="b14_summary_regular">regularity</string>
+    <string name="b14_summary_advice">Go to bed by %1$s to be rested for the %2$s alarm</string>
+    <string name="b14_summary_empty">Add your first night to see averages and advice</string>
+    <string name="b14_regular_high">high</string>
+    <string name="b14_regular_mid">medium</string>
+    <string name="b14_regular_low">low</string>
+</resources>

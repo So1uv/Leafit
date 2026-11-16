@@ -1,28 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root"
     android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
-    android:background="@drawable/widget_background" android:padding="16dp">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:padding="5dp" android:background="@drawable/widget_rosette"
-            android:src="@drawable/widget_exercise" android:importantForAccessibility="no" />
+    android:background="@drawable/widget_green_background" android:paddingStart="14dp" android:paddingEnd="6dp"
+    android:paddingTop="10dp" android:paddingBottom="14dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:gravity="center_vertical">
+        <ImageView android:id="@+id/widget_icon" android:layout_width="36dp" android:layout_height="36dp" android:padding="8dp"
+            android:background="@drawable/widget_icon_plate" android:tint="@color/widget_on_primary" android:src="@drawable/widget_exercise"
+            android:importantForAccessibility="no" />
         <TextView android:id="@+id/widget_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:layout_marginStart="10dp" android:text="@string/widget_session" android:textSize="14sp" android:maxLines="1" android:ellipsize="end"
-            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_text" />
+            android:layout_marginStart="10dp" android:text="@string/widget_session" android:textSize="13sp" android:maxLines="1" android:ellipsize="end"
+            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+        <ImageView android:id="@+id/widget_config" android:layout_width="40dp" android:layout_height="40dp" android:padding="10dp"
+            android:src="@drawable/ms_more_vert" android:tint="@color/widget_on_primary" android:contentDescription="@string/widget_customize"/>
     </LinearLayout>
-    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="42dp">
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="44dp"
+        android:paddingEnd="8dp">
         <Chronometer android:id="@+id/widget_clock" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical"
-            android:textSize="34sp" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_text" android:visibility="gone" />
+            android:textSize="40sp" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" android:visibility="gone" />
         <TextView android:id="@+id/widget_value" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical"
-            android:text="@string/widget_ready" android:textSize="30sp" android:maxLines="1" android:ellipsize="end"
-            android:autoSizeTextType="uniform" android:autoSizeMinTextSize="18sp" android:autoSizeMaxTextSize="30sp"
-            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_text" />
+            android:text="@string/widget_ready" android:maxLines="1" android:ellipsize="end"
+            android:autoSizeTextType="uniform" android:autoSizeMinTextSize="20sp" android:autoSizeMaxTextSize="40sp"
+            android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
     </FrameLayout>
-    <TextView android:id="@+id/widget_detail" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="@string/widget_session_hint" android:textSize="12sp" android:maxLines="1" android:ellipsize="end"
-        android:fontFamily="@font/roboto_flex_400" android:textColor="@color/widget_muted" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="8dp">
+    <TextView android:id="@+id/widget_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginEnd="8dp"
+        android:text="@string/widget_session_hint" android:textSize="13sp" android:maxLines="2" android:ellipsize="end" android:alpha="0.8"
+        android:fontFamily="@font/roboto_flex_400" android:textColor="@color/widget_on_primary" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="10dp" android:layout_marginEnd="8dp">
         <TextView android:id="@+id/widget_primary" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
-            android:background="@drawable/widget_pill" android:gravity="center" android:paddingHorizontal="12dp" android:text="@string/widget_open"
-            android:textSize="14sp" android:maxLines="1" android:ellipsize="end" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+            android:background="@drawable/widget_action_background" android:gravity="center" android:paddingHorizontal="12dp" android:text="@string/widget_open"
+            android:textSize="14sp" android:maxLines="1" android:ellipsize="end" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_primary_container" />
         <TextView android:id="@+id/widget_secondary" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
             android:layout_marginStart="8dp" android:background="@drawable/widget_pill" android:gravity="center" android:paddingHorizontal="12dp"
             android:text="@string/timer_finish" android:textSize="14sp" android:maxLines="1" android:ellipsize="end"

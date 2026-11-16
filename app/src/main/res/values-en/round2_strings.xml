@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sleep_duration_compact">%1$d h %2$d min</string>
+    <string name="sleep_awake_short">Awake</string>
+    <string name="profile_basics">About you</string>
+    <string name="profile_body">Body details</string>
+    <string name="setup_intro">Make it yours</string>
+    <string name="setup_intro_hint">Your profile shapes your personal targets.</string>
+    <string name="setup_body_hint">Three details for your daily targets.</string>
+    <string name="setup_measure_hint">Add measurements now or later in your profile.</string>
+    <string name="widget_customize">Widget appearance</string>
+    <string name="widget_tone">Color</string>
+    <string name="widget_green">Green</string>
+    <string name="widget_lavender">Lavender</string>
+    <string name="widget_neutral">Neutral</string>
+    <string name="widget_details">Details</string>
+    <string name="widget_water_amount">Quick add amount</string>
+    <string name="widget_config_hint">Resize on your home screen. Content adapts automatically.</string>
+</resources>

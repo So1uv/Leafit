@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import com.example.fitnesstracker.ui.theme.LeafSurface as Surface
 import com.example.fitnesstracker.ui.components.LeafTonalButton
 import androidx.compose.animation.animateColorAsState
@@ -39,7 +42,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 
-/** Scrollable calendar content with persistent actions, including on short landscape screens. */
 @Composable
 fun LeafDatePicker(selectedDay: Long, onSelect: (Long) -> Unit, onDismiss: () -> Unit) {
     val colors = MaterialTheme.colorScheme

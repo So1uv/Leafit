@@ -53,7 +53,6 @@ object SleepCycleModel {
             val cycleLen = if (isLast && remainder > 0) remainder else CYCLE_MINUTES
             val prog = if (cycleCount > 1) c.toFloat() / (cycleCount - 1) else 0f
 
-            // Deep fraction: ~0.55 early → ~0.05 late. REM: ~0.05 early → ~0.35 late.
             val deepFrac = (0.55f - 0.50f * prog).coerceIn(0.05f, 0.55f)
             val remFrac = (0.05f + 0.30f * prog).coerceIn(0.05f, 0.40f)
             val lightFrac = (1f - deepFrac - remFrac).coerceAtLeast(0.15f)
@@ -68,12 +67,10 @@ object SleepCycleModel {
             addStage(SleepStage.DEEP, deepLen)
             addStage(SleepStage.LIGHT, secondLight)
             addStage(SleepStage.REM, remLen)
-            // pad any rounding gap with light sleep so cycles align
             val consumed = firstLight + deepLen + secondLight + remLen
             if (consumed < cycleLen) addStage(SleepStage.LIGHT, cycleLen - consumed)
         }
 
-        // Trim/extend last segment so timeline ends exactly at totalMinutes
         if (segs.isNotEmpty()) {
             val last = segs.last()
             if (last.endMin != totalMinutes) {

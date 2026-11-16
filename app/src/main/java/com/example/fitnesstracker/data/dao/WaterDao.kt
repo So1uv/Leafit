@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WaterDao {
+    @Query("SELECT * FROM water_records WHERE timestamp >= :since ORDER BY timestamp ASC")
+    fun getSince(since: Long): Flow<List<WaterRecord>>
+
     @Query("SELECT * FROM water_records WHERE timestamp >= :dayStart AND timestamp < :dayEnd ORDER BY timestamp ASC")
     fun getForDay(dayStart: Long, dayEnd: Long): Flow<List<WaterRecord>>
 

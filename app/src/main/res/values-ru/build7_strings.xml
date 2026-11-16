@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b7_settings_activity">Активность</string>
+    <string name="b7_settings_interaction">Взаимодействие</string>
+    <string name="b7_settings_about">О приложении</string>
+    <string name="b7_haptic_soft">Мягкая</string>
+    <string name="b7_haptic_medium">Средняя</string>
+    <string name="b7_haptic_strong">Сильная</string>
+    <string name="b7_workout_kind">Тип тренировки</string>
+    <string name="b7_save_template">Сохранить как шаблон</string>
+    <string name="b7_info_caption">Как это считается</string>
+    <string name="b7_info_ok">Понятно</string>
+    <string name="b7_notif_water_channel_desc">Напоминания пить воду с прогрессом за день</string>
+    <string name="b7_notif_water_progress">Выпито %1$s из %2$s мл</string>
+    <string name="b7_notif_water_left">Осталось %1$s мл · %2$d%% цели</string>
+    <string name="b7_notif_water_since">Последний стакан %1$d ч %2$d мин назад</string>
+    <string name="b7_notif_water_add">+%1$d мл</string>
+    <string name="b7_notif_snooze_hour">Через час</string>
+    <string name="b7_notif_bed_text">Ляжете сейчас — проснётесь около %1$s (цель %2$d ч %3$d мин)</string>
+    <string name="b7_notif_bed_details">Это примерно %1$.1f цикла сна. Отложите экран и приглушите свет.</string>
+    <string name="b7_notif_bed_log">Записать сон</string>
+    <string name="b7_notif_steps_title">%1$s шагов сегодня</string>
+    <string name="b7_notif_steps_left">Ещё %1$s до цели %2$s</string>
+    <string name="b7_notif_steps_done">Цель %1$s выполнена</string>
+    <string name="b7_notif_steps_details">Примерно %1$.1f км</string>
+    <string name="b7_notif_sets">Подходы %1$d/%2$d</string>
+    <string name="b7_notif_exercise">Упражнение: %1$s</string>
+    <string name="b7_notif_pace">%1$d:%2$02d /км</string>
+    <string name="b7_notif_gps_wait">Поиск GPS</string>
+    <string name="b7_notif_gps_weak">Слабый GPS</string>
+    <string name="b7_notif_gps_ok">GPS активен</string>
+</resources>

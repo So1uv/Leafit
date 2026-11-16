@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b7_settings_activity">Активність</string>
+    <string name="b7_settings_interaction">Взаємодія</string>
+    <string name="b7_settings_about">Про застосунок</string>
+    <string name="b7_haptic_soft">М’яка</string>
+    <string name="b7_haptic_medium">Середня</string>
+    <string name="b7_haptic_strong">Сильна</string>
+    <string name="b7_workout_kind">Тип тренування</string>
+    <string name="b7_save_template">Зберегти як шаблон</string>
+    <string name="b7_info_caption">Як це рахується</string>
+    <string name="b7_info_ok">Зрозуміло</string>
+    <string name="b7_notif_water_channel_desc">Нагадування пити воду з прогресом за день</string>
+    <string name="b7_notif_water_progress">Випито %1$s з %2$s мл</string>
+    <string name="b7_notif_water_left">Залишилось %1$s мл · %2$d%% цілі</string>
+    <string name="b7_notif_water_since">Остання склянка %1$d год %2$d хв тому</string>
+    <string name="b7_notif_water_add">+%1$d мл</string>
+    <string name="b7_notif_snooze_hour">За годину</string>
+    <string name="b7_notif_bed_text">Ляжете зараз — прокинетеся близько %1$s (ціль %2$d год %3$d хв)</string>
+    <string name="b7_notif_bed_details">Це приблизно %1$.1f циклів сну. Відкладіть екран і приглушіть світло.</string>
+    <string name="b7_notif_bed_log">Записати сон</string>
+    <string name="b7_notif_steps_title">%1$s кроків сьогодні</string>
+    <string name="b7_notif_steps_left">Ще %1$s до цілі %2$s</string>
+    <string name="b7_notif_steps_done">Ціль %1$s виконано</string>
+    <string name="b7_notif_steps_details">Приблизно %1$.1f км</string>
+    <string name="b7_notif_sets">Підходи %1$d/%2$d</string>
+    <string name="b7_notif_exercise">Вправа: %1$s</string>
+    <string name="b7_notif_pace">%1$d:%2$02d /км</string>
+    <string name="b7_notif_gps_wait">Пошук GPS</string>
+    <string name="b7_notif_gps_weak">Слабкий GPS</string>
+    <string name="b7_notif_gps_ok">GPS активний</string>
+</resources>

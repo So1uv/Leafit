@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="b6_duration">Duration</string>
+  <string name="b6_cycles">Cycles</string>
+  <string name="b6_cycles_hint">Illustration of typical stage changes. These are not measured stages of your sleep.</string>
+  <string name="b6_deep">Deep</string>
+  <string name="b6_light">Light</string>
+  <string name="b6_rem">REM</string>
+  <string name="b6_awake">Awake</string>
+  <string name="b6_body">My body</string>
+  <string name="b6_weight">Weight</string>
+  <string name="b6_measures">Measures &amp; photos</string>
+  <string name="b6_consumed">Consumed</string>
+  <string name="b6_daily_goal">Daily guide · %1$d kcal</string>
+  <string name="b6_release">Refined colors, switchable sleep chart, and a unified weight and measurements section.</string>
+</resources>

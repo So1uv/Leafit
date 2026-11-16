@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MealDao {
+    @Query("SELECT * FROM meals WHERE date >= :since ORDER BY date ASC")
+    fun getSince(since: Long): Flow<List<Meal>>
+
     @Query("SELECT * FROM meals WHERE date >= :dayStart AND date < :dayEnd ORDER BY date ASC")
     fun getMealsForDay(dayStart: Long, dayEnd: Long): Flow<List<Meal>>
 

@@ -42,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.CompositionLocalProvider
 import com.example.fitnesstracker.ui.components.LocalLeafPageActive
+import com.example.fitnesstracker.ui.components.LocalLeafMotionActive
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.BackHandler
@@ -170,6 +171,11 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = navBackStack?.destination?.route
                     val tabRoutes = remember { bottomNavItems.map { it.screen.route } }
                     val pager = rememberPagerState(pageCount = { tabRoutes.size })
+                    var warmPages by remember { androidx.compose.runtime.mutableIntStateOf(1) }
+                    androidx.compose.runtime.LaunchedEffect(Unit) {
+                        kotlinx.coroutines.delay(1200)
+                        warmPages = tabRoutes.size - 1
+                    }
                     val tabScope = rememberCoroutineScope()
                     val tabs = remember(pager, tabScope) { LeafTabController(pager, tabScope) }
                     val showBottomBar = profileReady && currentRoute == Screen.Home.route
@@ -258,22 +264,21 @@ class MainActivity : ComponentActivity() {
                                         state = pager,
                                         modifier = Modifier.fillMaxSize(),
                                         key = { tabRoutes[it] },
-                                        beyondViewportPageCount = 1,
-                                        userScrollEnabled = false,
-                                        // The bar owns horizontal paging. Never intercept a child list's fling.
+                                        beyondViewportPageCount = warmPages,
+                                        userScrollEnabled = true,
                                         pageNestedScrollConnection = remember {
                                             object : androidx.compose.ui.input.nestedscroll.NestedScrollConnection {}
                                         }
                                     ) { index ->
-                                        val pageActive by remember(index, pager) { derivedStateOf { pager.currentPage == index } }
-                                        CompositionLocalProvider(LocalLeafPageActive provides pageActive) {
-                                        Box(Modifier.fillMaxSize().graphicsLayer {
-                                            val distance = kotlin.math.abs(tabs.position - index).coerceIn(0f, 1f)
-                                            scaleX = 1f - .018f * distance
-                                            scaleY = scaleX
-                                            shape = RoundedCornerShape(24.dp)
-                                            clip = distance > .001f
-                                        }) {
+                                        val pageActive by remember(index, pager) {
+                                            derivedStateOf { kotlin.math.abs(index - pager.settledPage) <= 1 || index == pager.targetPage }
+                                        }
+                                        val allowMotion by remember(index, pager) {
+                                            derivedStateOf { pager.settledPage == index && !pager.isScrollInProgress }
+                                        }
+                                        CompositionLocalProvider(LocalLeafPageActive provides pageActive,
+                                            LocalLeafMotionActive provides allowMotion) {
+                                        Box(Modifier.fillMaxSize()) {
                                             when (tabRoutes[index]) {
                                                 Screen.Home.route -> HomeScreen(homeVm,
                                                     onSettingsClick = { navigateOnce(Screen.AppSettings.route) },
@@ -299,6 +304,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onBack = { backOrHome() },
                                     onResetData = {
+                                        com.example.fitnesstracker.utils.LifeStore.get(this@MainActivity).clear()
                                         settingsVm.resetAllData()
                                         navController.safeNavigateToOnboarding()
                                     }

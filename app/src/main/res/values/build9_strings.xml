@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b9_note_tasks_done">%1$d з %2$d виконано</string>
+    <string name="b9_note_add_task">Додати задачу</string>
+    <string name="b9_wrap_tab_style">Стиль</string>
+    <string name="b9_wrap_tab_data">Дані</string>
+    <string name="b9_wrap_tab_words">Текст</string>
+    <string name="b9_wrap_tab_format">Формат</string>
+    <string name="b9_wrap_format_auto">Картка</string>
+    <string name="b9_wrap_format_story">9:16</string>
+    <string name="b9_wrap_format_post">4:5</string>
+    <string name="b9_wrap_format_square">1:1</string>
+    <string name="b9_wrap_sticker">Стікер без фону</string>
+    <string name="b9_wrap_sticker_hint">PNG із прозорим фоном — накладіть картку на своє фото в історії.</string>
+    <string name="b9_wrap_insights">Порівняння й рекорди</string>
+    <string name="b9_wrap_insights_empty">Ще замало тренувань для порівняння.</string>
+    <string name="b9_wrap_context">У КОНТЕКСТІ</string>
+    <string name="b9_wrap_vs_last">%1$s до минулого разу</string>
+    <string name="b9_wrap_record_duration">Рекорд тривалості</string>
+    <string name="b9_wrap_record_distance">Рекорд дистанції</string>
+    <string name="b9_wrap_week_count">Тренування №%1$d цього тижня</string>
+    <string name="b9_wrap_streak">Серія %1$d дн.</string>
+    <string name="b9_wrap_save">Зберегти</string>
+    <string name="b9_wrap_saved">Збережено в Pictures/Leafit</string>
+    <string name="b9_wrap_share">Поділитися</string>
+    <string name="b9_wrap_caption_ideas">Ідеї для підпису</string>
+    <string name="b9_wrap_idea_1">Ще один крок до мети</string>
+    <string name="b9_wrap_idea_2">Зроблено. Без відмовок</string>
+    <string name="b9_wrap_idea_3">Новий особистий рекорд!</string>
+    <string name="b9_wrap_idea_4">Рух — це настрій</string>
+</resources>

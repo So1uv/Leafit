@@ -1,119 +1,209 @@
 <a name="top"></a>
 
 <p align="center">
-  <img src="docs/screenshots/Banner.svg" width="100%" alt="Leafit — a soft green Android journal, shown across Home, Workouts, Meals and Sleep." />
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/hero-mobile.webp" />
+    <img src="docs/leafit/hero.webp" width="100%" alt="Leafit 2.5 — your day, your rhythm. Home, live GPS workout and sleep tracker screens." />
+  </picture>
 </p>
 
 <div align="center">
 
-# Your day. Your rhythm.
+# Leafit
 
 **A personal Android journal for movement, meals, water, rest and everyday notes.**
 
-Leafit brings the details of your day into one place, with an interface inspired by<br />
-**Material 3 Expressive**: soft tonal surfaces, tactile controls and thoughtful motion.
+Workouts with live GPS routes, a sleep tracker with alarms, meal plans, challenges and shareable cards —<br />
+all in one calm interface inspired by **Material 3 Expressive**. Local-first. No account.
+
+<p align="center">
+  <a href="https://github.com/So1uv/Leafit/releases/latest"><img src="https://img.shields.io/github/v/release/So1uv/Leafit?style=for-the-badge&label=release&color=2E6B4C&labelColor=17402D" alt="Latest release" /></a>&nbsp;
+  <img src="https://img.shields.io/badge/Android-8.0%2B-2E6B4C?style=for-the-badge&labelColor=17402D&logo=android&logoColor=white" alt="Android 8.0+" />&nbsp;
+  <a href="https://github.com/So1uv/Leafit/releases"><img src="https://img.shields.io/github/downloads/So1uv/Leafit/total?style=for-the-badge&color=2E6B4C&labelColor=17402D" alt="Downloads" /></a>
+</p>
 
 <p align="center">
   <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Android/android2.svg">&nbsp;&nbsp;
-  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Figma/figma2.svg">&nbsp;&nbsp;
-  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/AndroidStudio/androidstudio2.svg">&nbsp;&nbsp;
   <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Kotlin/kotlin2.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/AndroidStudio/androidstudio2.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Figma/figma2.svg">&nbsp;&nbsp;
   <a href="https://ko-fi.com/soluv"><img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Ko-fi/ko-fi2.svg"></a>&nbsp;&nbsp;
-  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv33.svg">&nbsp;&nbsp;
+  <img src="https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv33.svg">
 </p>
 
-[Explore the screens](#screens) &nbsp; · &nbsp; [Discover the features](#features) &nbsp; · &nbsp; [Design & personalization](#design) &nbsp; · &nbsp; [Data & privacy](#data) &nbsp; · &nbsp; [For developers](#developers)
+[What's new](#whats-new) &nbsp;·&nbsp; [Screens](#screens) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Data & privacy](#data) &nbsp;·&nbsp; [For developers](#developers) &nbsp;·&nbsp; [Download](#download)
 
 </div>
 
 <br />
 
+<a name="whats-new"></a>
+
+## What's new in 2.5
+
+Leafit 2.5 is the biggest update so far. The four journals stay at the center, and everything around them has grown.
+
+- **Sleep tracker & alarms** — a background tracker that records short sound clips, flags what sounds like snoring or talking and builds a night report. A separate alarm list with repeat days, a smart wake-up window and a full-screen alarm that works without the tracker.
+- **Leafit Wrapped** — turn a workout or a finished challenge into a card for stories and chats: card, 9:16, 4:5, 1:1 or a transparent sticker PNG.
+- **Challenges** — 32 ideas in five categories plus your own goals for 7, 14 or 30 days, counted from your existing records.
+- **Kitchen & plan** — recipes with macros per 100 g, a dated meal plan and a shopping list.
+- **Workouts** — interval mode, equipment profiles, personal bests per exercise and a redesigned result screen.
+- **New first run** — a three-step setup with BMI, a calorie goal and optional body measurements.
+- **Widgets & notifications** — six widgets that scale from 1×1 to 4×3, and one consistent layout for every live notification.
+- **Design** — connected button groups, wavy progress, filled Material Symbols, spring motion and a refined palette across the whole app.
+
+<br />
+
 <a name="screens"></a>
 
-## Four spaces. One personal journal.
+## Eight spaces. One personal journal.
 
-Open Leafit for a quick overview, a planned session, a meal entry or a note about your sleep. The same calendars, rounded controls and floating navigation connect all four screens, so moving between them feels familiar.
-
-The panels below combine real screenshots from the English light theme with an overview of each screen. Select a panel to open the original screenshot.
+Each panel below combines real screenshots of Leafit 2.5 with an overview of the screen. Select a panel to open the full-size screenshot.
 
 <a name="home"></a>
 
-<a href="docs/screenshots/DashboardScreen.png">
+<a href="docs/screenshots/home.webp">
   <picture>
     <source media="(max-width: 600px)" srcset="docs/leafit/home-mobile.webp" />
-    <img src="docs/leafit/home.webp" width="100%" alt="Home: activity rings, steps, weekly history, profile, achievements and daily notes in one personal overview." />
+    <img src="docs/leafit/home.webp" width="100%" alt="Home: daily activity rings, weekly activity, My body weight trend, challenges and the day note." />
   </picture>
 </a>
 
 ### Home — the day, brought together
 
-The home screen combines a personal greeting with an activity overview, a step summary and quick access to your profile, achievements and settings. Rounded rings and compact summaries give the day a clear visual structure; weekly charts make it easier to return to earlier activity and sleep entries.
+A personal greeting, activity rings for calories, steps and sleep, and a weekly chart you can page through or jump to with a calendar. **My body** keeps your weight trend with minimum, maximum and change for the period, next to measurements and progress photos.
 
-The journal also leaves room for context. Add a daily note, look through previous notes or pin an entry you want to find again. A recorded session and a few words about how it went can sit alongside each other, making history more useful when you revisit it later.
+The **day note** leaves room for context: free thoughts, a timeline of the day, lists and tasks with real checkboxes. Search earlier notes and pin the ones you want to keep close.
 
-**At a glance:** daily activity · steps · weekly charts · personal notes · achievements · profile
+**At a glance:** activity rings · weekly activity · My body · challenges · day notes · achievements
 
 <br />
 
 <a name="workouts"></a>
 
-<a href="docs/screenshots/WorkoutsScreen.png">
+<a href="docs/screenshots/gps-live.webp">
   <picture>
     <source media="(max-width: 600px)" srcset="docs/leafit/workouts-mobile.webp" />
-    <img src="docs/leafit/workouts.webp" width="100%" alt="Workouts: activity subtypes, a circular session timer, optional GPS, custom exercises, rest periods and reusable templates." />
+    <img src="docs/leafit/workouts.webp" width="100%" alt="Workouts: session timer, activity and subtype picker, live GPS map with distance, speed and pace." />
   </picture>
 </a>
 
 ### Workouts — a session with room for detail
 
-Start with an activity and subtype, then choose how much detail to record. The journal supports running, walking, cycling, strength sessions, yoga, Pilates, swimming and sports, with activity variants and custom setups. Add exercises, change their order and choose between repetition, time, distance or score entries according to the session.
+Pick an activity and a subtype — running, walking, cycling, gym, yoga, Pilates, swimming or sport — then decide how much detail to record. Add exercises and sets with repetitions, weight, time, distance or score, use rest countdowns or switch on **interval mode** to alternate work and rest automatically. Save a setup as a template and keep **equipment profiles** for the gear you use.
 
-The circular timer gives the session a clear starting point. Pause and resume when needed, record sets and use rest countdowns between them. Save a setup as a template so you can return to the same structure later without entering everything again.
+For outdoor sessions, turn on **Record route on the map**. A full-screen OpenStreetMap view shows your position and route, with distance, time, GPS accuracy, speed, average pace and fastest/slowest pace. Pace is smoothed over a short window, so a single GPS jump does not spoil the numbers. **Hold to finish** prevents an accidental tap from ending the session.
 
-Completed sessions remain available in history with their recorded details and notes. Edit an entry when something needs correcting, and reopen a saved route when GPS was enabled. Outdoor route recording is a choice made before starting a supported activity.
+**Session tools:** subtypes · sets & reps · rest timers · intervals · templates · equipment · live map · personal bests
 
-**Session tools:** activity variants · exercises · sets & repetitions · timers · templates · editable history
+<br />
+
+<a name="wrapped"></a>
+
+<a href="docs/screenshots/wrapped.webp">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/wrapped-mobile.webp" />
+    <img src="docs/leafit/wrapped.webp" width="100%" alt="Leafit Wrapped: a shareable workout card editor with style, data, text and format tabs." />
+  </picture>
+</a>
+
+### Leafit Wrapped — a card worth sharing
+
+Open a saved workout or a completed challenge and create a card around its main number. Leafit adds context such as **“+1600% vs last time”** or **“Farthest yet”**, the route outline and the date. Tabs for style, data, text and format keep the editor tidy, and the live preview shows exactly what will be exported.
+
+Choose a **card, 9:16, 4:5 or 1:1** layout, or export a **transparent sticker PNG** to place over your own photo. Save the image or send it through Android's share sheet. Nothing is posted automatically.
+
+**Sharing tools:** live preview · comparisons · route outline · four formats · sticker PNG
 
 <br />
 
 <a name="meals"></a>
 
-<a href="docs/screenshots/MealsScreen.png">
+<a href="docs/screenshots/water.webp">
   <picture>
     <source media="(max-width: 600px)" srcset="docs/leafit/meals-mobile.webp" />
-    <img src="docs/leafit/meals.webp" width="100%" alt="Meals and water: a dated meal journal, reusable food entries, grouped meals, water controls and optional reminders." />
+    <img src="docs/leafit/meals.webp" width="100%" alt="Meals and water: daily energy against the goal, macros, water glasses and meal groups." />
   </picture>
 </a>
 
 ### Meals & water — everyday entries, kept in order
 
-Breakfast, lunch, dinner and snacks each have a place in the daily journal. Keep entries grouped by occasion, reuse saved meals and manage your own food records. The calendar opens previous days, making it easy to review or correct an earlier entry without losing your place in the rest of the app.
+The energy card compares what you ate with your daily goal and shows the protein, fat and carbs split. Breakfast, lunch, snack and dinner each have their own group; add a dish from your products or enter it manually, and reuse saved meals.
 
-The water card keeps its controls close to the summary. Add a portion with a quick action, undo the most recent entry when needed and configure optional reminders. Meals and water share the same dated structure as the rest of Leafit, so they remain part of one journal rather than a separate collection of records.
+The water card counts glasses, adds 150, 250 or 500 ml with one tap, undoes the last portion and marks the moment the daily guide is reached. Reminders respect quiet hours. **Kitchen & plan** brings recipes, a dated meal plan and a shopping list together — the list also works on its own.
 
-**Everyday tools:** meal groups · saved entries · personal food records · water journal · reminders · calendar
+**Everyday tools:** daily energy · macros · meal groups · own products · water journal · recipes · meal plan · shopping list
 
 <br />
 
 <a name="sleep"></a>
 
-<a href="docs/screenshots/Sleepscreen.png">
+<a href="docs/screenshots/sleep-tracker.webp">
   <picture>
     <source media="(max-width: 600px)" srcset="docs/leafit/sleep-mobile.webp" />
-    <img src="docs/leafit/sleep.webp" width="100%" alt="Sleep: moon-and-sun time controls, duration across midnight, manual entries, quality ratings, tags, notes and weekly summaries." />
+    <img src="docs/leafit/sleep.webp" width="100%" alt="Sleep: your sleep summary, live sleep tracker, alarms, sleep timeline, quality rating and tags." />
   </picture>
 </a>
 
 ### Sleep — time, rest and how the night felt
 
-Use the moon-and-sun dial to set bedtime and wake time, or enter both values manually. Separate lavender and warm controls distinguish the two ends of the night. The duration accounts for midnight, and the dial labels describe hours since bedtime rather than assuming every entry begins at midnight.
+**Your sleep** shows last night, a 7-night average, weekly sleep debt, your usual bedtime and how regular your schedule is. Enter a night manually or with the moon-and-sun dial, rate its quality and add tags and a note.
 
-A quality rating, tags and a personal note add context beyond the duration. Browse saved entries, edit a previous night and use weekly summaries to revisit the journal over time. The cycle illustration gives the entered interval a visual shape alongside the other sleep details.
+The **sleep tracker** runs in the background while the phone lies near your pillow. It adapts to the room's background noise, saves short clips of louder moments (including two seconds before each one) and marks what sounds like snoring or talking. The night report brings a volume chart, events and a clip player together. **Alarms** live in their own list with repeat days, a smart wake-up window, gradual volume and an optional math task to dismiss — and they ring even when the tracker is off.
 
 > [!NOTE]
-> Sleep is entered manually. The cycle chart is an illustration based on the entered duration; Leafit does not measure sleep stages or detect REM, deep sleep or awakenings.
+> Sleep stages are not measured. The cycle chart is an illustration based on the recorded duration, and sound labels are estimates, not a medical assessment.
 
-**Rest journal:** interactive dial · manual input · duration · quality ratings · tags & notes · weekly history
+**Rest journal:** sleep tracker · night report · alarms · manual or dial input · quality & tags · weekly summary
+
+<br />
+
+<a name="goals"></a>
+
+<a href="docs/screenshots/achievements.webp">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/goals-mobile.webp" />
+    <img src="docs/leafit/goals.webp" width="100%" alt="Goals: achievements with progress and filters, challenges and the day note." />
+  </picture>
+</a>
+
+### Goals — badges and challenges that count what you already do
+
+**18 achievements** unlock locally from your journal. A progress ring shows how far you are, the closest goal is always on top, and filters separate earned badges from the ones still ahead.
+
+**Challenges** offer 32 ideas in five categories — or your own goal with a name, metric, daily threshold and color. Run up to three at once for 7, 14 or 30 days; steps, workouts, sleep, water, meals and notes are counted automatically. The block can be compact or hidden entirely.
+
+<br />
+
+<a name="profile"></a>
+
+<a href="docs/screenshots/profile.webp">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/profile-mobile.webp" />
+    <img src="docs/leafit/profile.webp" width="100%" alt="Profile: BMI, workouts and sleep records, personal goals and the edit profile sheet." />
+  </picture>
+</a>
+
+### Profile & first run — start in a minute
+
+A three-step setup asks for a name, photo and language, then age, height and weight with large − / + controls. BMI and a daily calorie goal appear right away; body measurements are optional. You can also restore a backup from the very first screen.
+
+The profile keeps your goals for steps, water and sleep, the activity map with your current streak and an edit sheet with a neutral gender option.
+
+<br />
+
+<a name="settings"></a>
+
+<a href="docs/screenshots/settings.webp">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/settings-mobile.webp" />
+    <img src="docs/leafit/settings.webp" width="100%" alt="Settings: appearance, language, background step counting, timers, widgets and data backup." />
+  </picture>
+</a>
+
+### Settings — searchable and clear about the background
+
+Search any setting. Choose a light, dark or system theme, wallpaper colors on Android 12+ and **English, Ukrainian or Russian**. The activity group explains background step counting, foreground sessions, background timers and exact alarms. The widget list adds any widget in one tap, and the data group holds export, import and a full reset.
 
 <br />
 
@@ -121,116 +211,42 @@ A quality rating, tags and a personal note add context beyond the duration. Brow
 
 ## More ways to make the journal yours
 
-Leafit's tools extend beyond the four main screens. Configure a workout once, follow its timer outside the app, bring a summary onto your home screen or share a finished session as a card.
-
-<a name="routes"></a>
-
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/gps-journal-mobile.svg" />
-  <img src="docs/leafit/gps-journal.svg" width="100%" alt="Optional GPS routes with distance, speed and pace; customizable exercise journals with sets, time, distance and scores." />
+  <source media="(max-width: 600px)" srcset="docs/leafit/notify-widgets-mobile.webp" />
+  <img src="docs/leafit/notify-widgets.webp" width="100%" alt="Live notifications for workouts, GPS and sleep; home screen widgets from 1×1 to 4×3." />
 </picture>
 
-### A route you can return to
+### Follow the session outside the app
 
-Enable **Record route on the map** before a supported outdoor run, walk or cycling session. A full-screen map shows the recorded path, with a position marker, a recenter action and floating controls for the session. Static activities use the workout journal without needing a map.
+Every live notification shares one layout: an icon, a title, a large value or running timer, a progress bar and up to three metric tiles. Pause, resume or skip rest from a workout notification; follow distance, pace and GPS state on a route; see the sleep timer, sound count and next alarm at night. On Android 16 live sessions can appear as a status-bar chip.
 
-Track **distance, elapsed time, speed, average pace and fastest/slowest recorded pace**. Pause or resume during the activity; hold the finish control to open completion, helping prevent an accidental tap from ending the session. The route and its recorded metrics can be reopened from history. Saved drafts support recovery after a process interruption and return on pause.
-
-Maps use **MapLibre and OpenStreetMap**, with no map API key required. Map tiles need an internet connection and use caching. The current GPS implementation uses Google Play services.
-
-### A journal that adapts to the activity
-
-Choose an activity variant or create a custom setup with your own title, exercises and rest periods. Repetition entries support sets and optional equipment weight; timed entries capture duration, distance entries suit laps or segments, and score entries support games and practice sessions.
-
-Reorder the exercises to match the session and save the arrangement as a **reusable template**. Keep a note with the result, review completed sets and edit a saved session when necessary. The same history can hold both simple timed activities and more detailed exercise journals.
-
-<br />
-
-<a name="timers"></a>
-
-<picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/timers-widgets-mobile.svg" />
-  <img src="docs/leafit/timers-widgets.svg" width="100%" alt="Live workout, set and rest timers in notifications, plus My day, Sleep and Workout home screen widgets." />
-</picture>
-
-### Follow the timer outside the app
-
-An ongoing notification reflects the current session state: **workout time, set timer or rest countdown**. Pause, resume or skip a rest period from the notification, then return to the app when you need the full journal or completion controls. Android's native chronometer keeps the displayed timer moving.
-
-A user-started session runs through a foreground service with a visible notification. Pausing also pauses the remaining rest time. If Android stops the process, the saved draft returns on pause rather than silently continuing a session you may no longer be recording. Notification permission enables timer alerts; exact-alarm access helps with rest alerts when the screen is locked, although device power-saving policies can still affect delivery.
-
-### Bring Leafit onto your home screen
-
-Choose the widget that suits what you want nearby:
-
-- **My day** — today's steps and a summary of saved workouts.
-- **Sleep** — the date and duration of the latest sleep entry.
-- **Workout** — the active session, set or rest timer, with pause/resume controls and GPS session information when applicable.
-
-Add them through **Settings → Touch and quick access**, or use your launcher's widget picker. Rounded tonal surfaces and Material Symbols connect the widgets to the app, while their light and dark colors follow the system theme.
-
-<br />
-
-<a name="sharing"></a>
-
-<picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/share-notes-mobile.svg" />
-  <img src="docs/leafit/share-notes.svg" width="100%" alt="Vertical workout cards with a preview before sharing, alongside daily notes with search and pinned entries." />
-</picture>
-
-### Turn a saved session into a story
-
-Select **Share workout** from a saved entry or route view to create a **1080 × 1920 PNG card**. Choose a light or dark appearance and decide whether to include a map, a route outline or no route. Distance sessions can show distance, duration, average pace and speed; exercise journals show details such as duration, completed sets and exercises.
-
-Preview the complete image before opening Android's share sheet, then send it to Telegram, another messaging app or any compatible destination. Map cards retain OpenStreetMap attribution, and a route outline remains an option when the map cannot load. Nothing is posted automatically.
-
-### Keep the context behind the entries
-
-Daily notes give you a place for the details a timer or chart cannot capture. Write about a session, a change of routine or something you want to remember, then return to it through the notes history.
-
-Search previous notes and pin an entry for easier access. Dated records keep those observations connected to the rest of the journal. Profile customization and local achievement badges add a personal layer without requiring a Leafit account or a public profile.
+**Six home screen widgets** — My day, Sleep, Workout, Water, Food and This week — adapt from a single 1×1 ring to a full 4×3 card. Add them from **Settings → Widgets** or your launcher's widget picker. Long-press the app icon for shortcuts to water, workouts and sleep.
 
 <br />
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/haptics-access-mobile.svg" />
-  <img src="docs/leafit/haptics-access.svg" width="100%" alt="Adjustable haptic feedback, launcher shortcuts for water, workouts and sleep, and calendars for dated history." />
+  <source media="(max-width: 600px)" srcset="docs/leafit/haptics-notes-mobile.webp" />
+  <img src="docs/leafit/haptics-notes.webp" width="100%" alt="Adjustable haptic feedback and day notes with blocks, tasks and pinned entries." />
 </picture>
 
-### Feedback you can feel
+### Feedback you can feel, notes you can find
 
-Leafit's haptic engine uses distinct short patterns for **selection, pressing, starting, pausing and confirmation**. Adjust the feedback strength, try a sample in settings or switch it off. Supported devices use vibration primitives; other devices use short fallback patterns, with system touch-vibration settings respected.
+Leafit's haptic engine uses distinct short patterns for **selection, pressing, starting, pausing and confirmation**. Adjust the strength, try a sample or switch it off; system touch-vibration settings are respected.
 
-These small responses accompany the visible state of a control, so an interaction can feel different when a session starts, pauses or finishes. The settings keep the choice with you, including the option to use the app without touch vibration.
-
-### Fewer steps to the screen you need
-
-Long-press the launcher icon to open **water, workouts or sleep** directly. Within Leafit, calendars make it possible to move between dated entries, while the floating navigation keeps the four main screens within reach.
-
-History cards summarize previous entries and expand when you want more detail. Edit supported records from their history rather than recreating them. These shared patterns keep daily entry, review and correction consistent across the journal.
+Day notes are built from blocks — thoughts, a timeline, lists and tasks — and stay connected to the date they belong to.
 
 <br />
 
-<a name="design"></a>
+<a name="gallery"></a>
 
-## Expressive, down to the details
+### A closer look
 
-<picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/design-themes-mobile.svg" />
-  <img src="docs/leafit/design-themes.svg" width="100%" alt="Material 3 Expressive-inspired color, shape and motion; light, dark and system themes; optional wallpaper colors." />
-</picture>
-
-### One visual language, throughout the app
-
-Mint and sage establish the main palette, with lavender and warm accents separating different kinds of information. Tonal containers create depth, while rounded timers, rosette shapes and the moon-and-sun dial give the interface its character. **Bundled Roboto Flex** and **Material Symbols Rounded** carry that language across headings, controls and summaries.
-
-Spring transitions connect screens, the active navigation pill expands to reveal its label, and floating headers give content room as you scroll. Collapsible records, calendars and selection controls use related shapes and motion so the interaction patterns stay recognizable.
-
-### Set the atmosphere
-
-Choose **light, dark or system appearance**. On Android 12 and later, optional dynamic colors can draw from your wallpaper. Select **English, Ukrainian or Russian** for the interface, and adjust tactile feedback to suit your preference.
-
-The same attention extends to settings, achievement badges, launcher shortcuts and the version card. Core actions remain identifiable by their icons and labels, while color and shape add emphasis to the current state.
+<a href="docs/screenshots">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/gallery-mobile.webp" />
+    <img src="docs/leafit/gallery.webp" width="100%" alt="More Leafit screens: first-run setup, achievements, workout type, meal groups, sleep alarms, activity map and data settings." />
+  </picture>
+</a>
 
 <br />
 
@@ -239,32 +255,30 @@ The same attention extends to settings, achievement badges, launcher shortcuts a
 ## Your journal, on your device
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/leafit/data-backup-mobile.svg" />
-  <img src="docs/leafit/data-backup.svg" width="100%" alt="Local journal storage with no account, offline access to saved entries, and JSON import and export." />
+  <source media="(max-width: 600px)" srcset="docs/leafit/data-design-mobile.webp" />
+  <img src="docs/leafit/data-design.webp" width="100%" alt="Local journal storage with no account and JSON backup; Material 3 Expressive color, shape and motion." />
 </picture>
 
 ### Local records, available offline
 
-Leafit stores journal entries in a **local Room database**. Saved workouts, meals, water, sleep and notes remain accessible on the device. The core journals do not require a Leafit account or an application backend, so there is no sign-up step before you begin.
+Leafit stores your journal in a **local Room database**. Workouts, meals, water, sleep, notes and tracked nights stay on the device. There is no Leafit account and no application backend, so there is nothing to sign up for. Network access is used for map tiles; Android system backup may apply according to your device settings.
 
-Network access is used for map tiles; the map is not a fully offline feature. Android system backup may also apply according to your device settings. Local storage describes where Leafit keeps its journal, rather than promising that the operating system or map provider never participates in a data flow.
-
-### Take a copy with you
-
-**JSON export and import** are available in settings, giving your records a portable format. Workout-card sharing is a separate, deliberate action: you choose the appearance and route visibility, preview the result and select the receiving app through Android's share sheet.
+**JSON export and import** are available in settings. Sharing a card is always a separate, deliberate action.
 
 <details>
 <summary><strong>Which permissions support these features?</strong></summary>
 
-- **Precise location** supports optional GPS route recording.
-- **Physical activity** supports step counting on devices with the required hardware.
-- **Notifications** show active sessions, timers and configured reminders.
-- **Exact alarms**, where granted, help with the timing of rest alerts.
-- **Vibration** supports enabled tactile feedback and alerts.
-- **Internet** loads map tiles.
-- **Foreground services** keep user-started tracking and timers active in the background.
+- **Precise location** — optional GPS route recording.
+- **Physical activity** — step counting on devices with a step sensor.
+- **Microphone** — the optional sleep tracker; audio is analyzed on the device and only the clips you allow are kept.
+- **Notifications** — live sessions, timers and reminders.
+- **Exact alarms & full-screen intent** — rest alerts and alarms on time, even on a locked screen.
+- **Vibration** — haptic feedback and alerts.
+- **Run at startup** — restoring alarms and step counting after a reboot.
+- **Foreground services** — user-started workouts, routes, the sleep tracker and step counting.
+- **Internet** — map tiles.
 
-Step counting depends on device hardware and permissions. The current GPS implementation requires Google Play services. Sleep is entered manually, and its cycle chart is illustrative.
+Step counting depends on device hardware and permissions. GPS uses Google Play services. Manufacturer power-saving policies can affect background work; Leafit explains the relevant settings where it matters.
 
 </details>
 
@@ -274,22 +288,20 @@ Step counting depends on device hardware and permissions. The current GPS implem
 
 ## Built with Android in mind
 
-**Kotlin · Jetpack Compose · Material 3 · Room · Coroutines & Flow · MapLibre**
+**Kotlin 2.3 · Jetpack Compose · Material 3 · Room · DataStore · Coroutines & Flow · MapLibre · Coil**
 
-The UI uses Compose with shared expressive components. ViewModels and repositories connect screen state to local records, with StateFlow carrying updates. Dedicated session and tracking components handle exercise journals, timers, GPS points and recoverable drafts.
-
-Foreground services and notifications keep active sessions visible outside the UI. Home screen widgets use Android's widget APIs and native chronometers. Share cards are rendered through Android Canvas and exported through FileProvider and the system share sheet.
+The UI is written in Compose with a shared set of expressive components. ViewModels expose `StateFlow` built from Room repositories. Foreground services handle workouts, GPS routes, the sleep tracker and step counting; widgets use Android's widget APIs with native chronometers, and cards are rendered with Android Canvas and shared through `FileProvider`.
 
 ### Build your own copy
 
-Use **JDK 17**, **Android SDK 36** and Android Studio compatible with the project's Gradle configuration. Leafit runs on **Android 8.0 / API 26** and later.
+Use **JDK 17**, **Android SDK 36** and a recent Android Studio. Leafit runs on **Android 8.0 / API 26** and later.
 
 ```bash
 git clone https://github.com/So1uv/Leafit.git
 cd Leafit
 ```
 
-Open the repository root in Android Studio, sync Gradle, install the requested SDK components and run the `app` configuration on your device or emulator. No map API key or Google Cloud project is needed; the current GPS implementation requires Google Play services and location permission.
+Open the project in Android Studio, sync Gradle and run the `app` configuration. No map API key or cloud project is needed.
 
 <details>
 <summary><strong>Command-line builds & source layout</strong></summary>
@@ -307,47 +319,48 @@ chmod +x gradlew
 .\gradlew.bat assembleDebug
 ```
 
-The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
+The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`. Unit tests run with `./gradlew test`.
 
 Within `app/src/main/java/com/example/fitnesstracker/`:
 
-- `ui/components/` — shared controls, dials and charts.
-- `ui/screens/` — the main screens, onboarding and settings.
+- `ui/components/` — shared controls, dials, charts and icons.
+- `ui/screens/` — home, workouts, nutrition, sleep, onboarding and settings.
 - `ui/theme/` — color, typography and theme preferences.
 - `viewmodel/` — screen state and presentation logic.
 - `data/` — Room entities, DAOs and repositories.
-- `workout/` — activity catalog, exercise journal and session timers.
-- `tracking/` — GPS recording, routes, telemetry and maps.
-- `widgets/` — Android home screen widgets.
-- `sharing/` — workout card rendering and sharing.
+- `workout/` — activity catalog, exercise journal, intervals and session timers.
+- `tracking/` — GPS recording, telemetry and maps.
+- `sleep/` — sleep tracker service, night storage and alarms.
+- `sharing/` — Leafit Wrapped and workout cards.
+- `widgets/` — home screen widgets.
 - `utils/` — haptics, steps, reminders, language and backup helpers.
 
 </details>
 
 ### Help shape what comes next
 
-Bug reports, translations, focused pull requests and feature suggestions are welcome. For a bug, include the device model, Android version, Leafit version and steps to reproduce it. A screenshot or short screen recording is useful when the issue is visual.
-
-For an idea, describe the task you want to make easier. For a code change, explain what changed and how you checked it; include light and dark screenshots when a UI change needs them.
+Bug reports, translations, focused pull requests and feature ideas are welcome. For a bug, include the device model, Android version, Leafit version and steps to reproduce; a screenshot or short recording helps with visual issues. For a code change, describe what changed and how you checked it, with light and dark screenshots for UI changes.
 
 ## Tested in the real world
 
 Beyond emulators, Leafit is tested on physical devices across different Android ecosystems:
 
 - **Samsung Galaxy S10** · `One UI` · `Android 12`
-
 - **Xiaomi 15** · `HyperOS` · `Android 15/16`
-
 - **Google Pixel 7** · `Pixel` · `Android 16/17`
 
 > [!NOTE]
-> Tested devices confirm real-world functionality on the configurations above. Behavior may still vary depending on Android version, firmware, and manufacturer-specific settings.
-> This helps catch manufacturer-specific differences in permissions, background execution, notifications, haptics, layouts and system behavior.
+> Behavior may still vary with Android version, firmware and manufacturer settings — especially background work, notifications and alarms.
 
 <br />
 
-<br />
+<a name="download"></a>
 
-<a href="https://github.com/So1uv/Leafit/releases/latest"><img src="docs/leafit/get-leafit.svg" width="100%" alt="Make space for your day. Download Leafit 2.0.0 from GitHub Releases." /></a>
+<a href="https://github.com/So1uv/Leafit/releases/latest">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/leafit/get-leafit-mobile.webp" />
+    <img src="docs/leafit/get-leafit.webp" width="100%" alt="Make space for your day. Download Leafit 2.5.0 from GitHub Releases." />
+  </picture>
+</a>
 
-<p align="center"><a href="https://github.com/So1uv/Leafit/releases">Release notes</a> &nbsp; · &nbsp; <a href="https://github.com/So1uv/Leafit/issues">Feedback & ideas</a> &nbsp; · &nbsp; <a href="#top">Back to top ↑</a></p>
+<p align="center"><a href="https://github.com/So1uv/Leafit/releases">Release notes</a> &nbsp;·&nbsp; <a href="https://github.com/So1uv/Leafit/issues">Feedback & ideas</a> &nbsp;·&nbsp; <a href="#top">Back to top ↑</a></p>

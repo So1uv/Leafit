@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b7_settings_activity">Activity</string>
+    <string name="b7_settings_interaction">Interaction</string>
+    <string name="b7_settings_about">About</string>
+    <string name="b7_haptic_soft">Soft</string>
+    <string name="b7_haptic_medium">Medium</string>
+    <string name="b7_haptic_strong">Strong</string>
+    <string name="b7_workout_kind">Workout type</string>
+    <string name="b7_save_template">Save as template</string>
+    <string name="b7_info_caption">How this is calculated</string>
+    <string name="b7_info_ok">Got it</string>
+    <string name="b7_notif_water_channel_desc">Water reminders with today’s progress</string>
+    <string name="b7_notif_water_progress">%1$s of %2$s ml so far</string>
+    <string name="b7_notif_water_left">%1$s ml to go · %2$d%% of goal</string>
+    <string name="b7_notif_water_since">Last glass %1$d h %2$d min ago</string>
+    <string name="b7_notif_water_add">+%1$d ml</string>
+    <string name="b7_notif_snooze_hour">In 1 hour</string>
+    <string name="b7_notif_bed_text">Sleep now to wake around %1$s (goal %2$d h %3$d min)</string>
+    <string name="b7_notif_bed_details">That is about %1$.1f sleep cycles. Put the screen away and dim the lights.</string>
+    <string name="b7_notif_bed_log">Log sleep</string>
+    <string name="b7_notif_steps_title">%1$s steps today</string>
+    <string name="b7_notif_steps_left">%1$s to go · goal %2$s</string>
+    <string name="b7_notif_steps_done">Goal of %1$s reached</string>
+    <string name="b7_notif_steps_details">About %1$.1f km</string>
+    <string name="b7_notif_sets">Sets %1$d/%2$d</string>
+    <string name="b7_notif_exercise">Exercise: %1$s</string>
+    <string name="b7_notif_pace">%1$d:%2$02d /km</string>
+    <string name="b7_notif_gps_wait">Finding GPS</string>
+    <string name="b7_notif_gps_weak">Weak GPS</string>
+    <string name="b7_notif_gps_ok">GPS active</string>
+</resources>

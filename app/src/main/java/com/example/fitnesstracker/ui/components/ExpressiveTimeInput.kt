@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.R
 import java.util.Locale
 
-/** A grouped HH:mm keyboard control, with editable drafts and valid values delivered to the model. */
 @Composable
 fun ExpressiveTimeInput(label: String, icon: ImageVector, minutes: Int, onChange: (Int) -> Unit,
                         modifier: Modifier = Modifier) {

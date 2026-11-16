@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b16_step">Step %1$d of %2$d</string>
+    <string name="b16_optional">Optional — you can fill this in later in your profile</string>
+    <string name="b16_bmi">Body mass index</string>
+    <string name="b16_photo">Profile photo</string>
+    <string name="b16_photo_hint">Tap to choose</string>
+    <string name="b16_about_you">About you</string>
+</resources>

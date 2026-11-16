@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.screens.workout
 
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+import com.example.fitnesstracker.ui.components.LeafConfirmDialog as AlertDialog
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -23,8 +26,8 @@ internal fun WorkoutHistoryCard(workout: Workout, expanded: Boolean, onToggle: (
     onUpdate: (Workout, (Boolean) -> Unit) -> Unit) {
     val isJournal = remember(workout.metrics) { workout.metrics.contains(WorkoutJournal.KIND) }
     val gps = remember(workout.metrics) { workout.metrics.contains("\"leaf_route_v1\"") }
-    val journal by produceState<WorkoutPlan?>(null, workout.metrics) {
-        value = if (isJournal) withContext(Dispatchers.Default) { WorkoutJournal.decode(workout.metrics) } else null
+    val journal by produceState<WorkoutPlan?>(null, workout.metrics, expanded) {
+        if (expanded) value = if (isJournal) withContext(Dispatchers.Default) { WorkoutJournal.decode(workout.metrics) } else null
     }
     var edit by remember { mutableStateOf(false) }
     var remove by remember { mutableStateOf(false) }
@@ -35,10 +38,10 @@ internal fun WorkoutHistoryCard(workout: Workout, expanded: Boolean, onToggle: (
     val type = WorkoutType.fromKey(workout.type)
     val title = journal?.let { plan -> plan.title.ifBlank { stringResource(WorkoutCatalog.variant(plan).labelRes) } } ?: workoutTypeLabel(type)
     HistoryRecordCard(title = title, date = DateUtils.formatDate(workout.startTime) + " · " + DateUtils.formatTime(workout.startTime),
-        icon = type.icon, badgeColor = MaterialTheme.colorScheme.secondaryContainer,
-        badgeInk = MaterialTheme.colorScheme.onSecondaryContainer, expanded = expanded, onToggle = onToggle,
+        icon = type.icon, badgeColor = MaterialTheme.colorScheme.primaryContainer,
+        badgeInk = MaterialTheme.colorScheme.onPrimaryContainer, expanded = expanded, onToggle = onToggle,
         groupIndex = groupIndex, groupCount = groupCount, onEdit = { edit = true }, onDelete = { remove = true }) {
-        Text(DateUtils.formatDuration(workout.durationSeconds), style = MaterialTheme.typography.headlineSmall)
+        MetricText(DateUtils.formatDuration(workout.durationSeconds), style = MaterialTheme.typography.headlineSmall)
         if (gps) {
             Text("${"%.2f".format(workout.distanceMeters / 1000)} ${stringResource(R.string.live_km)}", style = MaterialTheme.typography.titleMedium)
             com.example.fitnesstracker.tracking.SavedWorkoutTelemetry(workout.metrics, workout.durationSeconds, workout.distanceMeters)

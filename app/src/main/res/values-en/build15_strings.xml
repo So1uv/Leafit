@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b15_summary_no_day">No sleep record for %1$s</string>
+    <string name="b15_meal_count">Dishes: %1$d</string>
+    <string name="b15_meal_manual">Manually</string>
+    <string name="b15_per_100">Per 100 g</string>
+</resources>

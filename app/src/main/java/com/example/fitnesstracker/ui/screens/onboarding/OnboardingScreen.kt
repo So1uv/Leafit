@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.screens.onboarding
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import com.example.fitnesstracker.ui.theme.LeafCard as Card
 import com.example.fitnesstracker.ui.components.LeafButton
 import com.example.fitnesstracker.ui.components.LeafIcons
@@ -22,6 +25,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -103,7 +107,7 @@ fun OnboardingScreen(
         Column(Modifier.fillMaxSize().verticalScroll(scrollState)
             .padding(horizontal = 20.dp).padding(top = 16.dp, bottom = footerHeight + 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            com.example.fitnesstracker.ui.components.OnboardingProgress(step, steps) { previous ->
+            SetupProgress(step, steps) { previous ->
                 if (!importing && previous < step) {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     step = previous
@@ -132,17 +136,17 @@ fun OnboardingScreen(
                         )
                         1 -> Step2Content(
                             age = age, onAgeChange = { age = it.filter { c -> c.isDigit() }.take(3) },
-                            height = height, onHeightChange = { height = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                            weight = weight, onWeightChange = { weight = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
+                            height = height, onHeightChange = { height = it.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5) },
+                            weight = weight, onWeightChange = { weight = it.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5) },
                             bmi = if (heightF in 100f..220f && weightF in 20f..645f) HealthCalc.bmi(weightF, heightF) else 0f,
                             calories = if (ageI in 5..100 && heightF in 100f..220f && weightF in 20f..645f)
                                 HealthCalc.dailyCalories(weightF, heightF, ageI, gender).roundToInt() else 0
                         )
                         2 -> Step3Content(
-                            chest = chest, onChestChange = { chest = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                            waist = waist, onWaistChange = { waist = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                            hips  = hips,  onHipsChange  = { hips  = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                            bicep = bicep, onBicepChange = { bicep = it.filter { c -> c.isDigit() || c == '.' }.take(5) }
+                            chest = chest, onChestChange = { chest = it.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5) },
+                            waist = waist, onWaistChange = { waist = it.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5) },
+                            hips  = hips,  onHipsChange  = { hips  = it.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5) },
+                            bicep = bicep, onBicepChange = { bicep = it.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5) }
                         )
                     }
                 }
@@ -151,13 +155,13 @@ fun OnboardingScreen(
         Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth()
             .onSizeChanged { footerHeightPx = it.height }
             .navigationBarsPadding().padding(horizontal = 16.dp).padding(top = 12.dp, bottom = 12.dp)
-            .background(palette.surfaceContainerLow, RoundedCornerShape(32.dp)).padding(12.dp),
+            .background(palette.surfaceContainerHigh, RoundedCornerShape(36.dp)).padding(10.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (importError) Text(stringResource(R.string.onboarding_import_error),
                 style = MaterialTheme.typography.bodySmall, color = palette.error)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (step > 0) FilledTonalIconButton(enabled = !importing, onClick = { step-- },
-                    modifier = Modifier.size(56.dp)) {
+                    modifier = Modifier.size(64.dp)) {
                     Icon(com.example.fitnesstracker.ui.components.LeafIcons.ArrowBack, stringResource(R.string.common_back))
                 }
                 LeafButton(
@@ -171,10 +175,10 @@ fun OnboardingScreen(
                             waistCm = waist.toFloatOrNull()?.takeIf { it in 1f..250f },
                             hipsCm = hips.toFloatOrNull()?.takeIf { it in 1f..250f },
                             bicepCm = bicep.toFloatOrNull()?.takeIf { it in 1f..250f }))
-                    }, modifier = Modifier.weight(1f).heightIn(min = 56.dp), shape = RoundedCornerShape(50)
+                    }, modifier = Modifier.weight(1f).heightIn(min = 64.dp)
                 ) {
                     Text(stringResource(if (step < 2) R.string.common_continue_next else R.string.common_start),
-                        style = MaterialTheme.typography.labelLarge)
+                        style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.width(10.dp))
                     Icon(if (step < 2) com.example.fitnesstracker.ui.components.LeafIcons.ArrowForward
                         else com.example.fitnesstracker.ui.components.LeafIcons.Check, null, Modifier.size(20.dp))
@@ -182,7 +186,7 @@ fun OnboardingScreen(
             }
             if (step == 0) TextButton(enabled = !importing,
                 onClick = { snapshotPicker.launch("application/json") }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                if (importing) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                if (importing) com.example.fitnesstracker.ui.components.LeafLoadingIndicator(Modifier.size(22.dp))
                 else {
                     Icon(LeafIcons.Restore, null, Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
@@ -221,51 +225,54 @@ private fun Step1Content(
         )
     }
 
-    Text(stringResource(R.string.onboarding_step1),
-        style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+    SetupHero(LeafIcons.Eco, stringResource(R.string.setup_intro), stringResource(R.string.setup_intro_hint))
 
-    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Box(
-            Modifier.size(96.dp).clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .optionalClick(true) { picker.launch("image/*") },
-            contentAlignment = Alignment.Center
-        ) {
-            if (avatarPath != null) {
-                coil.compose.AsyncImage(
-                    model = java.io.File(avatarPath),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize().clip(CircleShape),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                )
-            } else {
-                Icon(LeafIcons.AddAPhoto, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(34.dp))
+    val colors = MaterialTheme.colorScheme
+    Surface(onClick = { picker.launch("image/*") }, shape = RoundedCornerShape(32.dp), color = colors.surfaceContainer,
+        modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Box(Modifier.size(96.dp), contentAlignment = Alignment.BottomEnd) {
+                Box(Modifier.fillMaxSize().clip(com.example.fitnesstracker.ui.components.LeafRosette(8)).background(colors.primaryContainer),
+                    contentAlignment = Alignment.Center) {
+                    if (avatarPath != null) coil.compose.AsyncImage(model = java.io.File(avatarPath), contentDescription = null,
+                        modifier = Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+                    else Text(name.trim().take(1).uppercase().ifEmpty { "?" }, style = MaterialTheme.typography.displaySmall,
+                        color = colors.onPrimaryContainer)
+                }
+                Box(Modifier.size(36.dp).background(colors.primary, CircleShape), contentAlignment = Alignment.Center) {
+                    Icon(LeafIcons.AddAPhoto, null, tint = colors.onPrimary, modifier = Modifier.size(18.dp))
+                }
             }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(stringResource(R.string.b16_photo), style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.b16_photo_hint), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+            }
+            Icon(LeafIcons.ChevronRight, null, tint = colors.onSurfaceVariant)
         }
     }
 
-    Card(shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(0.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
-            com.example.fitnesstracker.ui.components.LanguageOptions(currentLang, onLangChange)
-
+    Surface(shape = RoundedCornerShape(32.dp), color = colors.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Person, stringResource(R.string.b16_about_you))
             AppTextField(value = name, onValueChange = { onNameChange(it) },
                 label = stringResource(R.string.profile_name), modifier = Modifier.fillMaxWidth())
-
-            Column {
-                Text(stringResource(R.string.profile_gender), style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(8.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.profile_gender), style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant)
                 val genders = listOf(
                     "male" to stringResource(R.string.profile_gender_male),
                     "female" to stringResource(R.string.profile_gender_female),
                     "other" to stringResource(R.string.profile_gender_other)
                 )
                 com.example.fitnesstracker.ui.components.LeafGenderChoices(gender, onGenderChange, genders)
-
             }
+        }
+    }
+
+    Surface(shape = RoundedCornerShape(32.dp), color = colors.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Language, stringResource(R.string.settings_language),
+                tone = com.example.fitnesstracker.ui.components.LeafTone.Secondary)
+            com.example.fitnesstracker.ui.components.LanguageOptions(currentLang, onLangChange)
         }
     }
 }
@@ -277,53 +284,104 @@ private fun Step2Content(
     weight: String, onWeightChange: (String) -> Unit,
     bmi: Float, calories: Int
 ) {
-    Text(stringResource(R.string.onboarding_step2),
-        style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+    SetupHero(LeafIcons.MonitorWeight, stringResource(R.string.onboarding_step2), stringResource(R.string.setup_body_hint))
 
-    Card(shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(0.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            StepperDecimalField(value = age, onChange = onAgeChange,
-                label = stringResource(R.string.profile_age),
-                step = 1f, max = 100f,
-                isError = age.isNotBlank() && (age.toIntOrNull() ?: 0) !in 5..100,
-                supportingText = stringResource(R.string.profile_age_hint),
-                modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StepperDecimalField(value = height, onChange = onHeightChange,
-                    label = stringResource(R.string.profile_height),
-                    step = 1f, max = 220f,
-                    isError = height.isNotBlank() && (height.toFloatOrNull() ?: 0f) !in 100f..220f,
-                    supportingText = stringResource(R.string.hint_height),
-                    modifier = Modifier.weight(1f))
-                StepperDecimalField(value = weight, onChange = onWeightChange,
-                    label = stringResource(R.string.profile_weight),
-                    step = 0.5f, max = 645f,
-                    isError = weight.isNotBlank() && (weight.toFloatOrNull() ?: 0f) !in 20f..645f,
-                    supportingText = stringResource(R.string.hint_weight),
-                    modifier = Modifier.weight(1f))
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        SetupStepper(LeafIcons.Cake, stringResource(R.string.profile_age), age, onAgeChange, 1f, 5f..100f, false, 25f, 0,
+            stringResource(R.string.profile_age_hint))
+        SetupStepper(LeafIcons.Height, stringResource(R.string.profile_height), height, onHeightChange, 1f, 100f..220f, false, 170f, 1,
+            stringResource(R.string.hint_height))
+        SetupStepper(LeafIcons.MonitorWeight, stringResource(R.string.profile_weight), weight, onWeightChange, .5f, 20f..645f, true, 70f, 2,
+            stringResource(R.string.hint_weight))
+    }
+
+    androidx.compose.animation.AnimatedVisibility(bmi > 0) {
+        val colors = MaterialTheme.colorScheme
+        Surface(shape = RoundedCornerShape(32.dp), color = colors.primaryContainer, contentColor = colors.onPrimaryContainer,
+            modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(Modifier.weight(1f)) {
+                        Text(stringResource(R.string.b16_bmi), style = MaterialTheme.typography.labelLarge)
+                        Text("%.1f".format(bmi), style = MaterialTheme.typography.displaySmall)
+                    }
+                    Surface(shape = CircleShape, color = colors.primary, contentColor = colors.onPrimary) {
+                        Text(bmiCategoryString(HealthCalc.bmiCategory(bmi)), Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                            style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+                val marker by animateFloatAsState(((bmi - 15f) / 25f).coerceIn(0f, 1f), spring(.7f, 200f), label = "bmiMarker")
+                val zones = listOf(3.5f to colors.tertiary, 6.5f to colors.primary, 5f to colors.secondary, 10f to colors.error)
+                val ink = colors.onPrimaryContainer
+                androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(28.dp)) {
+                    val gap = 3.dp.toPx()
+                    val bar = 12.dp.toPx()
+                    val top = size.height - bar
+                    var x = 0f
+                    zones.forEach { (span, tone) ->
+                        val width = size.width * span / 25f
+                        drawRoundRect(tone, androidx.compose.ui.geometry.Offset(x, top),
+                            androidx.compose.ui.geometry.Size((width - gap).coerceAtLeast(1f), bar),
+                            androidx.compose.ui.geometry.CornerRadius(bar / 2f))
+                        x += width
+                    }
+                    drawCircle(ink, 7.dp.toPx(), androidx.compose.ui.geometry.Offset(size.width * marker, 7.dp.toPx()))
+                }
+                if (calories > 0) Surface(shape = RoundedCornerShape(20.dp), color = colors.surface.copy(alpha = .6f),
+                    contentColor = colors.onSurface, modifier = Modifier.fillMaxWidth()) {
+                    Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Icon(LeafIcons.LocalFireDepartment, null, Modifier.size(22.dp), tint = colors.primary)
+                        Text(stringResource(R.string.onboarding_calories, calories), style = MaterialTheme.typography.titleSmall)
+                    }
+                }
             }
         }
     }
+}
 
-    if (bmi > 0) {
-        Card(shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            elevation = CardDefaults.cardElevation(0.dp), modifier = Modifier.fillMaxWidth()) {
-            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.primary) {
-                    Box(Modifier.size(44.dp), Alignment.Center) {
-                        Icon(LeafIcons.MonitorWeight, null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(22.dp))
-                    }
+@Composable
+private fun SetupStepper(icon: ImageVector, label: String, value: String, onChange: (String) -> Unit, step: Float,
+    range: ClosedFloatingPointRange<Float>, decimal: Boolean, fallback: Float, index: Int, hint: String) {
+    val colors = MaterialTheme.colorScheme
+    val number = value.toFloatOrNull()
+    val error = value.isNotBlank() && (number == null || number !in range)
+    fun shift(by: Float) {
+        val next = ((number ?: fallback) + by).coerceIn(range.start, range.endInclusive)
+        onChange(if (decimal) "%.1f".format(java.util.Locale.US, next) else next.roundToInt().toString())
+    }
+    Surface(shape = RoundedCornerShape(topStart = if (index == 0) 32.dp else 8.dp, topEnd = if (index == 0) 32.dp else 8.dp,
+        bottomStart = if (index == 2) 32.dp else 8.dp, bottomEnd = if (index == 2) 32.dp else 8.dp),
+        color = if (error) colors.errorContainer else colors.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(start = 16.dp, end = 12.dp, top = 14.dp, bottom = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                com.example.fitnesstracker.ui.components.LeafIconBadge(icon,
+                    size = com.example.fitnesstracker.ui.components.LeafIconSize.Small)
+                Column(Modifier.weight(1f)) {
+                    Text(label, style = MaterialTheme.typography.titleSmall)
+                    Text(hint, style = MaterialTheme.typography.bodySmall, color = if (error) colors.error else colors.onSurfaceVariant,
+                        maxLines = 2)
                 }
-                Column {
-                    Text("${"%.1f".format(bmi)} · ${bmiCategoryString(HealthCalc.bmiCategory(bmi))}",
-                        style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    if (calories > 0) Text(stringResource(R.string.onboarding_calories, calories),
-                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilledTonalIconButton(onClick = { shift(-step) }, modifier = Modifier.size(56.dp)) {
+                    Icon(LeafIcons.Remove, null)
+                }
+                androidx.compose.foundation.text.BasicTextField(value = value, onValueChange = onChange, singleLine = true,
+                    modifier = Modifier.weight(1f),
+                    textStyle = MaterialTheme.typography.displaySmall.copy(color = if (error) colors.error else colors.onSurface,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center),
+                    cursorBrush = androidx.compose.ui.graphics.SolidColor(colors.primary),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = if (decimal) KeyboardType.Decimal else KeyboardType.Number),
+                    decorationBox = { inner ->
+                        Box(contentAlignment = Alignment.Center) {
+                            if (value.isEmpty()) Text("—", style = MaterialTheme.typography.displaySmall, color = colors.outline)
+                            inner()
+                        }
+                    })
+                FilledTonalIconButton(onClick = { shift(step) }, modifier = Modifier.size(56.dp)) {
+                    Icon(LeafIcons.Add, null)
                 }
             }
         }
@@ -337,38 +395,28 @@ private fun Step3Content(
     hips:  String, onHipsChange:  (String) -> Unit,
     bicep: String, onBicepChange: (String) -> Unit
 ) {
-    Text(stringResource(R.string.onboarding_step3),
-        style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-    Text(stringResource(R.string.profile_measurements_optional),
-        style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    SetupHero(LeafIcons.Straighten, stringResource(R.string.onboarding_step3), stringResource(R.string.setup_measure_hint))
 
-    Card(shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(0.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ) {
-                    Box(Modifier.size(36.dp), Alignment.Center) {
-                        Icon(LeafIcons.Straighten, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(18.dp))
+    val colors = MaterialTheme.colorScheme
+    Surface(shape = RoundedCornerShape(24.dp), color = colors.tertiaryContainer, contentColor = colors.onTertiaryContainer,
+        modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Icon(LeafIcons.Lightbulb, null, Modifier.size(22.dp))
+            Text(stringResource(R.string.b16_optional), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+    Surface(shape = RoundedCornerShape(32.dp), color = colors.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Straighten, stringResource(R.string.profile_measurements),
+                tone = com.example.fitnesstracker.ui.components.LeafTone.Secondary)
+            listOf(listOf(Triple(R.string.profile_chest, chest, onChestChange), Triple(R.string.profile_waist, waist, onWaistChange)),
+                listOf(Triple(R.string.profile_hips, hips, onHipsChange), Triple(R.string.profile_bicep, bicep, onBicepChange))).forEach { pair ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    pair.forEach { (label, value, update) ->
+                        AppTextField(value, update, stringResource(label), Modifier.weight(1f), keyboardType = KeyboardType.Decimal)
                     }
                 }
-                Text(stringResource(R.string.profile_measurements),
-                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AppTextField(value = chest, onValueChange = onChestChange,
-                    label = stringResource(R.string.profile_chest), modifier = Modifier.weight(1f), keyboardType = KeyboardType.Decimal)
-                AppTextField(value = waist, onValueChange = onWaistChange,
-                    label = stringResource(R.string.profile_waist), modifier = Modifier.weight(1f), keyboardType = KeyboardType.Decimal)
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AppTextField(value = hips, onValueChange = onHipsChange,
-                    label = stringResource(R.string.profile_hips), modifier = Modifier.weight(1f), keyboardType = KeyboardType.Decimal)
-                AppTextField(value = bicep, onValueChange = onBicepChange,
-                    label = stringResource(R.string.profile_bicep), modifier = Modifier.weight(1f), keyboardType = KeyboardType.Decimal)
             }
         }
     }
@@ -390,5 +438,50 @@ private fun saveOnboardingAvatar(context: android.content.Context, bitmap: andro
         file.absolutePath
     } catch (e: Exception) {
         null
+    }
+}
+
+@Composable
+private fun SetupHero(icon: ImageVector, title: String, subtitle: String) {
+    val colors = MaterialTheme.colorScheme
+    val spin by rememberInfiniteTransition(label = "setupHero").animateFloat(0f, 360f,
+        infiniteRepeatable(tween(18000, easing = LinearEasing)), label = "setupSpin")
+    val pop = remember { Animatable(.6f) }
+    LaunchedEffect(icon) { pop.snapTo(.6f); pop.animateTo(1f, spring(.5f, 300f)) }
+    Column(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Box(Modifier.size(120.dp).graphicsLayer { scaleX = pop.value; scaleY = pop.value }, contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize().graphicsLayer { rotationZ = spin }
+                .clip(com.example.fitnesstracker.ui.components.LeafRosette(8)).background(colors.primary))
+            Icon(icon, null, Modifier.size(52.dp), tint = colors.onPrimary)
+        }
+        Spacer(Modifier.height(4.dp))
+        Text(title, style = MaterialTheme.typography.headlineLarge, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Text(subtitle, style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+    }
+}
+
+@Composable
+private fun SetupProgress(step: Int, steps: List<String>, onBack: (Int) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.b16_step, step + 1, steps.size), Modifier.weight(1f), style = MaterialTheme.typography.labelLarge,
+                color = colors.primary)
+            Text(steps.getOrElse(step) { "" }, style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            steps.forEachIndexed { index, _ ->
+                val weight by animateFloatAsState(if (index == step) 2.4f else 1f, spring(.7f, 300f), label = "setupStep")
+                val tone by androidx.compose.animation.animateColorAsState(when {
+                    index < step -> colors.primary
+                    index == step -> colors.primary
+                    else -> colors.surfaceContainerHighest
+                }, label = "setupTone")
+                Box(Modifier.weight(weight).height(if (index == step) 14.dp else 10.dp).clip(CircleShape).background(tone)
+                    .optionalClick(index < step) { onBack(index) })
+            }
+        }
     }
 }

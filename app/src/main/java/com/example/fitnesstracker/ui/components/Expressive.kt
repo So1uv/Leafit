@@ -107,7 +107,7 @@ fun ExpressiveDialog(
             Column(Modifier.padding(24.dp)) {
                 if (title != null) {
                     ProvideTextStyle(
-                        MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+                        MaterialTheme.typography.headlineSmall
                     ) { title() }
                     Spacer(Modifier.height(16.dp))
                 }
@@ -144,7 +144,7 @@ fun GlowProgressBar(
         animationSpec = tween(900, easing = EaseOutCubic),
         label = "wavyBar"
     )
-    val phase by if (LocalLeafPageActive.current && progress > .01f) {
+    val phase by if (LocalLeafMotionActive.current && progress > .01f) {
         rememberInfiniteTransition(label = "wavyPhase").animateFloat(0f, 1f,
             infiniteRepeatable(tween(1800, easing = LinearEasing)), label = "phase")
     } else androidx.compose.runtime.rememberUpdatedState(0f)
@@ -198,23 +198,7 @@ fun LargeScreenTitle(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(11.dp)
     ) {
-        if (icon != null) {
-            Box(
-                Modifier
-                    .size(42.dp)
-                    .background(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        RoundedCornerShape(15.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    icon, null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-        }
+        if (icon != null) LeafIconBadge(icon, size = LeafIconSize.Medium, tone = LeafTone.Primary)
         LeafTitle(
             text,
             style = MaterialTheme.typography.headlineMedium,

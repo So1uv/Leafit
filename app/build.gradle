@@ -13,8 +13,8 @@ android {
         applicationId "com.example.fitnesstracker"
         minSdk 26
         targetSdk 34
-        versionCode 22
-        versionName "2.0.0"
+        versionCode 2518
+        versionName "2.5.0"
     }
 
     buildTypes {

@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StepDao {
+    @Query("SELECT * FROM step_records WHERE dayStart >= :start AND dayStart < :end ORDER BY dayStart ASC")
+    fun getBetween(start: Long, end: Long): Flow<List<StepRecord>>
+
     @Query("SELECT * FROM step_records ORDER BY dayStart DESC")
     fun getAll(): Flow<List<StepRecord>>
 

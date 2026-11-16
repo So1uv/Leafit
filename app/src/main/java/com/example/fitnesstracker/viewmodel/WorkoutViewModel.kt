@@ -23,6 +23,13 @@ class WorkoutViewModel(app: Application) : AndroidViewModel(app) {
     val saving = session.saving
     val message = session.message
     val finishRequested = session.finishRequested
+    val lastResult = session.lastResult
+    val interval = session.interval
+    fun dismissLastResult() = session.dismissLastResult()
+    fun startInterval(work: Int, rest: Int, rounds: Int) = session.startInterval(work, rest, rounds)
+    fun stopInterval() = session.stopInterval()
+    fun skipIntervalPhase() = session.skipIntervalPhase()
+    fun importTemplate(template: WorkoutTemplate) = session.importTemplate(template)
     fun clearMessage() = session.clearMessage()
     fun setWorkoutType(type: String) = session.setWorkoutType(type)
     fun updatePlan(value: WorkoutPlan) = session.updatePlan(value)

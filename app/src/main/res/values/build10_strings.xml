@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b10_note_thoughts">Думки</string>
+    <string name="b10_note_moments">Хроніка дня</string>
+    <string name="b10_note_tasks">Завдання</string>
+    <string name="b10_note_add_item">Додати пункт</string>
+    <string name="b10_note_add_moment">Що сталося зараз?</string>
+    <string name="b10_note_add_block">Додати до нотатки</string>
+    <string name="b10_note_tag_hint">Кілька слів…</string>
+    <string name="b10_result_hero">Чудова робота!</string>
+    <string name="b10_result_summary">Підсумок</string>
+    <string name="b10_result_note">Нотатка</string>
+    <string name="b10_result_sets">Підходів: %1$d</string>
+    <string name="b10_matrix_streak">Серія: %1$d дн.</string>
+    <string name="b10_matrix_weeks">7 тижнів</string>
+</resources>

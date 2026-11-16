@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafIconButton as IconButton
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -8,6 +10,10 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -31,6 +37,7 @@ fun AppTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     placeholder: String? = null
 ) {
+    val focusManager = LocalFocusManager.current
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
     val palette = MaterialTheme.colorScheme
@@ -38,7 +45,7 @@ fun AppTextField(
         when {
             isError -> palette.errorContainer
             focused -> palette.primaryContainer
-            else -> palette.surfaceContainerHighest
+            else -> palette.surfaceContainerHigh
         }, spring(dampingRatio = 1f, stiffness = 500f), label = "fieldFocusTone"
     )
     val corner by animateDpAsState(if (focused) 18.dp else 24.dp,
@@ -56,7 +63,11 @@ fun AppTextField(
         textStyle = MaterialTheme.typography.bodyLarge,
         isError = isError,
         supportingText = if (supportingText != null) { { Text(supportingText) } } else null,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType,
+            imeAction = if (singleLine) ImeAction.Next else ImeAction.Default),
+        keyboardActions = KeyboardActions(onNext = {
+            if (!focusManager.moveFocus(FocusDirection.Next)) focusManager.clearFocus()
+        }),
         shape = RoundedCornerShape(corner),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = container,
@@ -78,10 +89,11 @@ fun AppTextField(
 
 @Composable
 fun AppSearchBar(query: String, onQueryChange: (String) -> Unit, hint: String, modifier: Modifier = Modifier) {
+    val focusManager = LocalFocusManager.current
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
     val palette = MaterialTheme.colorScheme
-    val fill by animateColorAsState(if (focused) palette.primaryContainer else palette.surfaceContainerHighest,
+    val fill by animateColorAsState(if (focused) palette.primaryContainer else palette.surfaceContainerHigh,
         spring(dampingRatio = 1f, stiffness = 500f), label = "searchFocusTone")
     TextField(value = query, onValueChange = onQueryChange, singleLine = true,
         interactionSource = interactions,

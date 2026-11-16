@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.ui.screens.home
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.example.fitnesstracker.ui.components.*
 import com.example.fitnesstracker.ui.theme.animatedLeafBackground
@@ -40,6 +42,7 @@ import com.example.fitnesstracker.ui.components.NoteHistoryDialog
 import com.example.fitnesstracker.ui.components.WeightTrackingCard
 import com.example.fitnesstracker.ui.components.GlowProgressBar
 import com.example.fitnesstracker.ui.components.RollingNumber
+import com.example.fitnesstracker.ui.components.filled
 import com.example.fitnesstracker.ui.components.bouncyClick
 import com.example.fitnesstracker.utils.HealthCalc
 import com.example.fitnesstracker.viewmodel.HomeViewModel
@@ -55,27 +58,28 @@ fun HomeScreen(
     onSleepClick: () -> Unit = {},
     onWorkoutClick: () -> Unit = {}
 ) {
-    val profile         by vm.profile.collectAsState()
-    val weights by vm.weightHistory.collectAsState()
-    val caloriesBurned  by vm.todayCaloriesBurned.collectAsState()
-    val lastSleep       by vm.lastSleep.collectAsState()
-    val achievements    by vm.unlockedAchievements.collectAsState()
-    val allAchievements by vm.allAchievements.collectAsState()
-    val workoutCount by vm.workoutCount.collectAsState()
-    val sleepCount by vm.sleepCount.collectAsState()
-    val weekMinutes     by vm.weekActivityMinutes.collectAsState()
-    val weekStepsByDay  by vm.weekStepsByDay.collectAsState()
-    val steps           by vm.steps.collectAsState()
-    val stepsAvailable  by vm.stepsSensorAvailable.collectAsState()
+    val profile         by vm.profile.collectAsLeafState()
+    val weights by vm.weightHistory.collectAsLeafState()
+    val todayWorkouts by vm.todayWorkouts.collectAsLeafState()
+    val weekStepRecords by vm.weekSteps.collectAsLeafState()
+    val caloriesBurned  by vm.todayCaloriesBurned.collectAsLeafState()
+    val lastSleep       by vm.lastSleep.collectAsLeafState()
+    val achievements    by vm.unlockedAchievements.collectAsLeafState()
+    val weekMinutes     by vm.weekActivityMinutes.collectAsLeafState()
+    val weekStepsByDay  by vm.weekStepsByDay.collectAsLeafState()
+    val steps           by vm.steps.collectAsLeafState()
+    val stepsAvailable  by vm.stepsSensorAvailable.collectAsLeafState()
 
     var showAchievements by remember { mutableStateOf(false) }
     var showNoteHistory by remember { mutableStateOf(false) }
-    val note by vm.todayNote.collectAsState()
-    val noteHistory by vm.noteHistory.collectAsState()
+    val note by vm.todayNote.collectAsLeafState()
 
     val headerState = rememberLeafHeaderState()
     val headerHeight = leafHeaderInset()
     val context = LocalContext.current
+    val lifeStore = remember(context) { com.example.fitnesstracker.utils.LifeStore.get(context) }
+    val life by lifeStore.state.collectAsLeafState()
+    val storageError by lifeStore.storageError.collectAsLeafState()
     val dailyCal      = profile?.let { HealthCalc.dailyCalories(it.weightKg, it.heightCm, it.age, it.gender) } ?: 2000f
     val stepsGoal     = remember { com.example.fitnesstracker.utils.GoalPreferences.getStepsGoal(context) }
     val sleepGoalH    = remember { com.example.fitnesstracker.utils.GoalPreferences.getSleepGoalMinutes(context) / 60f }
@@ -88,21 +92,26 @@ fun HomeScreen(
     val haptic = LocalHapticFeedback.current
 
     if (showAchievements) {
+        val sleepCount by vm.sleepCount.collectAsLeafState()
+        val workoutCount by vm.workoutCount.collectAsLeafState()
+        val allAchievements by vm.allAchievements.collectAsLeafState()
         com.example.fitnesstracker.ui.components.AchievementsSheet(allAchievements, workoutCount, sleepCount,
             onDismiss = { showAchievements = false })
     }
     if (showNoteHistory) {
+        val noteHistory by vm.noteHistory.collectAsLeafState()
         NoteHistoryDialog(notes = noteHistory, onDismiss = { showNoteHistory = false },
             onDelete = vm::deleteNote, onTogglePin = vm::toggleNotePin, onSave = vm::updateNote)
     }
-
     Box(Modifier.fillMaxSize().animatedLeafBackground(MaterialTheme.colorScheme.surface).nestedScroll(headerState.connection)) {
         androidx.compose.foundation.lazy.LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(top = headerHeight + 12.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item(key = "activity") { DailySummaryCard(
+            if (storageError) item(key = "storage_error") { Text(stringResource(R.string.storage_failed),
+                Modifier.padding(horizontal = 20.dp), color = MaterialTheme.colorScheme.error) }
+            item(key = "activity") { LeafEnter(0) { DailySummaryCard(
                 calories = caloriesBurned.roundToInt(),
                 steps = steps,
                 stepsGoal = stepsGoal,
@@ -110,26 +119,27 @@ fun HomeScreen(
                 stepsProgress = (steps.toFloat() / stepsGoal.coerceAtLeast(1)).coerceIn(0f, 1f),
                 calProgress = calProgress,
                 sleepProgress = sleepProgress,
+                workoutCount = todayWorkouts.size,
+                profileAvailable = profile != null,
                 onWorkoutClick = onWorkoutClick
-            )
+            ) }
             }
-            item(key = "weight") { WeightTrackingCard(history = weights, onAdd = vm::addWeight,
-                onUpdate = vm::updateWeight, onDelete = vm::deleteWeight,
-                modifier = Modifier.padding(horizontal = 16.dp)) }
-
-            item(key = "week") { WeekActivityCard(
-                weekMinutes = weekMinutes,
-                weekSteps = weekStepsByDay
-            )
-
+            item(key = "week") { LeafEnter(1) { WeekActivityCard(weekMinutes = weekMinutes, weekSteps = weekStepsByDay) } }
+            item(key = "body_progress") {
+                LeafEnter(2) { BodyProgressSection(lifeStore, weights, vm::addWeight, vm::updateWeight, vm::deleteWeight) }
             }
-            item(key = "note") { DayNoteCard(
+            if (!life.challengesHidden) item(key = "challenges") {
+                Box(Modifier.padding(horizontal = 16.dp)) {
+                    ChallengeStoryCard(lifeStore)
+                }
+            }
+            item(key = "note") { LeafEnter(3) { DayNoteCard(
                 note = note,
                 onSave = { vm.saveNote(it) },
                 onHistory = { showNoteHistory = true },
                 onDelete = vm::deleteNote,
                 onTogglePin = vm::toggleNotePin
-            ) }
+            ) } }
         }
 
         HomeFloatingHeader(
@@ -169,7 +179,7 @@ private fun HomeFloatingHeader(
                 color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
             LeafTitle(profileName, style = MaterialTheme.typography.titleLarge, maxLines = 1)
         }
-        HeaderIconButton(LeafIcons.EmojiEvents, achievementsCount, onAchievementsClick)
+        HeaderIconButton(LeafIcons.Trophy, achievementsCount, onAchievementsClick)
         HeaderIconButton(LeafIcons.Settings, null, onSettingsClick)
     }
 }
@@ -216,7 +226,7 @@ private fun AvatarBubble(name: String, avatarUri: String?, size: androidx.compos
                 contentScale = ContentScale.Crop
             )
         } else {
-            Text(name.take(1).uppercase(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(name.take(1).uppercase(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }
     }
 }
@@ -230,57 +240,39 @@ private fun DailySummaryCard(
     stepsProgress: Float,
     calProgress: Float,
     sleepProgress: Float,
+    workoutCount: Int,
+    profileAvailable: Boolean,
     onWorkoutClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = colors.secondaryContainer)
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = colors.surfaceContainerLow)
     ) {
         Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(16.dp), color = colors.primaryContainer) {
-                    Box(Modifier.size(42.dp), Alignment.Center) {
-                        Icon(LeafIcons.DonutLarge, null, tint = colors.onPrimaryContainer, modifier = Modifier.size(22.dp))
-                    }
-                }
-                Text(stringResource(R.string.home_daily_activity), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                com.example.fitnesstracker.ui.components.LeafIconBadge(LeafIcons.VitalSigns)
+                Text(stringResource(R.string.home_daily_activity), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                MetricExplanation(stringResource(R.string.home_daily_activity),
+                    listOf(stringResource(R.string.metric_steps_source, steps, stepsGoal),
+                        stringResource(R.string.metric_workout_count, workoutCount),
+                        stringResource(R.string.metric_activity_formula)),
+                    if (!stepsAvailable || !profileAvailable) stringResource(R.string.metric_activity_missing) else null)
             }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 BoxWithConstraints(Modifier.weight(1.08f)) {
                     ActivityRings(
-                        outer = stepsProgress, outerColor = if (colors.surface.luminance() < .5f) Color(0xFFC5E8D3) else Color(0xFF355E48),
-                        middle = calProgress, middleColor = if (colors.surface.luminance() < .5f) Color(0xFFF1D5B8) else Color(0xFF795536),
-                        inner = sleepProgress, innerColor = if (colors.surface.luminance() < .5f) Color(0xFFDCD3F0) else Color(0xFF63517C),
+                        outer = stepsProgress, outerColor = colors.primary,
+                        middle = calProgress, middleColor = colors.secondary,
+                        inner = sleepProgress, innerColor = colors.tertiary,
                         diameter = maxWidth.coerceAtMost(208.dp))
                 }
                 Box(Modifier.weight(1f)) {
-                    RingProgressDock(caloriesProgress = calProgress, stepsProgress = stepsProgress, sleepProgress = sleepProgress)
-                }
-            }
-            Surface(shape = RoundedCornerShape(24.dp), color = colors.surfaceContainerLow) {
-                Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(stringResource(R.string.home_steps_label), style = MaterialTheme.typography.labelLarge,
-                                color = colors.onSurfaceVariant)
-                            if (stepsAvailable) RollingNumber(steps, style = MaterialTheme.typography.headlineMedium,
-                                weight = FontWeight.Medium, color = colors.onSurface)
-                            else Text("—", style = MaterialTheme.typography.headlineMedium)
-                        }
-                        FilledTonalIconButton(onClick = onWorkoutClick) {
-                            Icon(com.example.fitnesstracker.ui.components.LeafIcons.DirectionsRun, stringResource(R.string.nav_workout))
-                        }
-                    }
-                    LinearProgressIndicator(progress = { if (stepsAvailable) stepsProgress else 0f },
-                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
-                        color = colors.primary, trackColor = colors.secondaryContainer)
-                    Text(if (stepsAvailable) stringResource(R.string.home_steps_goal, stepsGoal, (stepsProgress * 100).roundToInt())
-                        else stringResource(R.string.home_no_sensor), style = MaterialTheme.typography.labelMedium,
-                        color = colors.onSurfaceVariant)
+                    RingProgressDock(caloriesProgress = calProgress, stepsProgress = stepsProgress, sleepProgress = sleepProgress,
+                        stepsValue = if (stepsAvailable) java.text.NumberFormat.getIntegerInstance().format(steps) else null)
                 }
             }
         }
@@ -291,17 +283,13 @@ private fun DailySummaryCard(
 private fun WeekActivityCard(weekMinutes: List<Float>, weekSteps: List<Int>) {
     var selectedMetric by androidx.compose.runtime.saveable.rememberSaveable { mutableIntStateOf(0) }
     Card(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.primaryContainer) {
-                    Box(Modifier.size(48.dp), Alignment.Center) {
-                        Icon(LeafIcons.CalendarViewWeek, null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                    }
-                }
+                com.example.fitnesstracker.ui.components.LeafIconBadge(LeafIcons.CalendarViewWeek)
                 Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.home_week_activity), style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.home_week_activity), style = MaterialTheme.typography.titleMedium)
                 }
             }
             WeekMetricSwitch(selectedMetric) { selectedMetric = it }
@@ -319,7 +307,7 @@ private fun WeekActivityCard(weekMinutes: List<Float>, weekSteps: List<Int>) {
 private fun WeekMetricSwitch(selectedMetric: Int, onSelect: (Int) -> Unit) {
     com.example.fitnesstracker.ui.components.ExpressiveChoiceRow(
         labels = listOf(stringResource(R.string.home_week_metric_steps), stringResource(R.string.home_week_metric_minutes)),
-        icons = listOf(LeafIcons.DirectionsWalk, LeafIcons.Timer),
+        icons = listOf(LeafIcons.Steps, LeafIcons.Timer),
         selected = selectedMetric, onSelect = onSelect)
 }
 
@@ -378,7 +366,7 @@ private fun ActivityRings(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        com.example.fitnesstracker.ui.components.LeafIcons.DirectionsWalk,
+                        com.example.fitnesstracker.ui.components.LeafIcons.Steps,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
@@ -393,7 +381,8 @@ private fun ActivityRings(
 private fun RingProgressDock(
     caloriesProgress: Float,
     stepsProgress: Float,
-    sleepProgress: Float
+    sleepProgress: Float,
+    stepsValue: String? = null
 ) {
     val mint = com.example.fitnesstracker.ui.theme.LeafTones.mint
     val mintInk = com.example.fitnesstracker.ui.theme.LeafTones.onMint
@@ -414,10 +403,11 @@ private fun RingProgressDock(
         )
         RingProgressItem(
             modifier = Modifier.fillMaxWidth(),
-            icon = com.example.fitnesstracker.ui.components.LeafIcons.DirectionsWalk,
+            icon = com.example.fitnesstracker.ui.components.LeafIcons.Steps,
             label = stringResource(R.string.home_steps_label),
             progress = stepsProgress,
-            color = mintInk, container = mint
+            color = mintInk, container = mint,
+            value = stepsValue
         )
         RingProgressItem(
             modifier = Modifier.fillMaxWidth(),
@@ -436,7 +426,8 @@ private fun RingProgressItem(
     label: String,
     progress: Float,
     color: Color,
-    container: Color
+    container: Color,
+    value: String? = null
 ) {
     val pct = (progress.coerceIn(0f, 1f) * 100).roundToInt()
     Surface(
@@ -448,29 +439,28 @@ private fun RingProgressItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val reached = progress >= 1f
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .clip(CircleShape)
-                    .background(color.copy(alpha = 0.18f)),
+                    .clip(if (reached) com.example.fitnesstracker.ui.components.LeafRosette() else CircleShape)
+                    .background(if (reached) color else color.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+                Icon(if (reached) LeafIcons.Check else LeafIcons.filled(icon), contentDescription = null,
+                    tint = if (reached) container else color, modifier = Modifier.size(18.dp))
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     label,
                     style = MaterialTheme.typography.labelMedium,
                     color = color,
-                    fontWeight = FontWeight.Medium,
                     maxLines = 2
                 )
-                Text(
-                    "$pct%",
-                    style = MaterialTheme.typography.titleSmall.copy(fontFeatureSettings = "tnum"),
-                    fontWeight = FontWeight.SemiBold,
-                    color = color,
-                    maxLines = 1
+                com.example.fitnesstracker.ui.components.LeafFitText(
+                    if (value != null) "$value · $pct%" else "$pct%",
+                    style = MaterialTheme.typography.titleSmall.copy(fontFeatureSettings = "tnum", fontWeight = FontWeight.SemiBold),
+                    color = color
                 )
             }
         }

@@ -1,42 +1,65 @@
 package com.example.fitnesstracker.ui.components
 
-import com.example.fitnesstracker.ui.theme.LeafCard as Card
-import com.example.fitnesstracker.ui.theme.LeafSurface as Surface
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.entities.Achievement
-import com.example.fitnesstracker.data.entities.localizedTitle
 import com.example.fitnesstracker.data.entities.localizedDesc
+import com.example.fitnesstracker.data.entities.localizedTitle
+import com.example.fitnesstracker.ui.theme.LeafSurface
+import com.example.fitnesstracker.ui.theme.LeafTones
 import com.example.fitnesstracker.utils.DateUtils
-import kotlin.math.floor
+
+private fun achievementIcon(id: String): ImageVector = when {
+    id == "first_workout" || id == "ten_workouts" -> LeafIcons.Exercise
+    id == "water_week" -> LeafIcons.WaterFull
+    id.contains("sleep") -> LeafIcons.Bedtime
+    id.startsWith("note_") -> LeafIcons.EditNote
+    id == "first_meal" || id == "calorie_goal" -> LeafIcons.Restaurant
+    id == "profile_complete" -> LeafIcons.Person
+    else -> LeafIcons.Trophy
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AchievementsSheet(achievements: List<Achievement>, workoutCount: Int, sleepCount: Int, onDismiss: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
-    val density = LocalDensity.current
-    val measurer = rememberTextMeasurer()
     var filter by rememberSaveable { mutableIntStateOf(0) }
+    var openedId by rememberSaveable { mutableStateOf<String?>(null) }
     val earnedCount = achievements.count { it.unlockedAt != null }
     val ordered = remember(achievements, filter) {
         achievements.filter { filter == 0 || (it.unlockedAt != null) == (filter == 1) }
@@ -58,130 +81,165 @@ fun AchievementsSheet(achievements: List<Achievement>, workoutCount: Int, sleepC
     } ?: progress(a)?.let {
         context.getString(R.string.achievements_progress_count, it.first, it.second)
     } ?: context.getString(R.string.achievements_locked)
+    val nearest = remember(achievements, workoutCount, sleepCount) {
+        achievements.filter { it.unlockedAt == null }
+            .mapNotNull { a -> progress(a)?.let { a to it.first.toFloat() / it.second.coerceAtLeast(1) } }
+            .maxByOrNull { it.second }?.first
+    }
+    achievements.firstOrNull { it.id == openedId }?.let { opened ->
+        LeafInfoSheet(title = opened.localizedTitle(context), details = listOf(opened.localizedDesc(context), status(opened)),
+            onDismiss = { openedId = null }, icon = achievementIcon(opened.id),
+            tone = if (opened.unlockedAt == null) LeafTone.Neutral else if (opened.id.contains("sleep")) LeafTone.Tertiary else LeafTone.Primary)
+    }
     ModalBottomSheet(onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = colors.surface, shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)) {
+        containerColor = colors.surfaceContainerLow, tonalElevation = 0.dp,
+        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(.94f)) {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 LeafTitle(stringResource(R.string.achievements_title), style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.weight(1f))
-                IconButton(onClick = onDismiss) { Icon(LeafIcons.Close, stringResource(R.string.common_close)) }
+                LeafIconButton(onClick = onDismiss) { Icon(LeafIcons.Close, stringResource(R.string.common_close)) }
             }
-            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                val minCell = if (density.fontScale > 1.3f) 400.dp else 300.dp
-                val available = (maxWidth - 40.dp).coerceAtLeast(1.dp)
-                val columnCount = floor((available + 12.dp) / (minCell + 12.dp)).toInt().coerceAtLeast(1)
-                val width = (available - 12.dp * (columnCount - 1)) / columnCount
-                val bodyWidth = with(density) { ((width - 40.dp).roundToPx() - 2).coerceAtLeast(1) }
-                val titleWidth = with(density) { ((width - 40.dp - 68.dp).roundToPx() - 2).coerceAtLeast(1) }
-                val titleStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                val bodyStyle = MaterialTheme.typography.bodyMedium
-                val statusStyle = MaterialTheme.typography.labelLarge
-                fun height(text: String, style: TextStyle, widthPx: Int): Int =
-                    measurer.measure(text, style = style, constraints = Constraints(maxWidth = widthPx)).size.height
-                // Shared measured slots keep cards equal without truncating long localized text.
-                val titleHeight = with(density) {
-                    (achievements.maxOfOrNull { height(it.localizedTitle(context), titleStyle, titleWidth) } ?: 0).toDp()
-                }.coerceAtLeast(56.dp)
-                val bodyHeight = with(density) {
-                    (achievements.maxOfOrNull { height(it.localizedDesc(context), bodyStyle, bodyWidth) } ?: 0).toDp()
+            LazyVerticalGrid(columns = GridCells.Adaptive(150.dp), modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 32.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    AchievementHero(earnedCount, achievements.size, nearest?.localizedTitle(context), nearest?.let { status(it) })
                 }
-                val statusHeight = with(density) {
-                    (achievements.maxOfOrNull { height(status(it), statusStyle, (bodyWidth - 36.dp.roundToPx()).coerceAtLeast(1)) } ?: 0).toDp()
-                }.coerceAtLeast(24.dp)
-                LazyVerticalGrid(columns = GridCells.Adaptive(minCell),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Surface(shape = RoundedCornerShape(28.dp), color = colors.secondaryContainer,
-                            contentColor = colors.onSecondaryContainer) {
-                            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    Icon(LeafIcons.EmojiEvents, null, Modifier.size(40.dp))
-                                    Column(Modifier.weight(1f)) {
-                                        LeafTitle("$earnedCount / ${achievements.size}", style = MaterialTheme.typography.headlineLarge)
-                                        Text(stringResource(R.string.achievements_unlocked), style = MaterialTheme.typography.bodyMedium)
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    ExpressiveChoiceRow(
+                        labels = listOf(stringResource(R.string.achievements_filter_all),
+                            stringResource(R.string.achievements_filter_earned), stringResource(R.string.achievements_locked)),
+                        icons = listOf(LeafIcons.Trophy, LeafIcons.CheckCircle, LeafIcons.Lock),
+                        selected = filter, onSelect = { filter = it }, modifier = Modifier.padding(vertical = 4.dp))
+                }
+                if (ordered.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
+                    LeafSurface(color = colors.surfaceContainer, shape = RoundedCornerShape(24.dp)) {
+                        LeafEmptyState(stringResource(R.string.achievements_filter_empty), LeafIcons.Trophy)
+                    }
+                }
+                itemsIndexed(ordered, key = { _, a -> a.id }) { index, a ->
+                    val earned = a.unlockedAt != null
+                    val count = progress(a)
+                    val sleepBadge = a.id.contains("sleep")
+                    val noteBadge = a.id.startsWith("note_")
+                    val container = if (!earned) colors.surfaceContainerHighest else when {
+                        sleepBadge -> colors.tertiary
+                        noteBadge -> LeafTones.onWarm
+                        else -> colors.primary
+                    }
+                    val ink = if (!earned) colors.onSurfaceVariant else when {
+                        sleepBadge -> colors.onTertiary
+                        noteBadge -> LeafTones.warm
+                        else -> colors.onPrimary
+                    }
+                    val tile = if (!earned) colors.surfaceContainer else when {
+                        sleepBadge -> colors.tertiaryContainer
+                        noteBadge -> LeafTones.warm
+                        else -> colors.primaryContainer
+                    }
+                    val tileInk = if (!earned) colors.onSurface else when {
+                        sleepBadge -> colors.onTertiaryContainer
+                        noteBadge -> LeafTones.onWarm
+                        else -> colors.onPrimaryContainer
+                    }
+                    val reveal = remember(a.id) { Animatable(0f) }
+                    LaunchedEffect(a.id) {
+                        kotlinx.coroutines.delay((index.coerceAtMost(10)) * 35L)
+                        reveal.animateTo(1f, spring(.62f, 380f))
+                    }
+                    LeafSurface(onClick = { openedId = a.id }, modifier = Modifier.animateItem().fillMaxWidth(),
+                        shape = RoundedCornerShape(28.dp), color = tile, contentColor = tileInk) {
+                        Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Box(Modifier.size(84.dp).graphicsLayer {
+                                val scale = .6f + .4f * reveal.value
+                                scaleX = scale; scaleY = scale; alpha = reveal.value.coerceIn(0f, 1f)
+                            }, contentAlignment = Alignment.Center) {
+                                if (!earned && count != null) {
+                                    val track = colors.outlineVariant
+                                    val bar = colors.primary
+                                    val share = count.first.toFloat() / count.second.coerceAtLeast(1)
+                                    Canvas(Modifier.fillMaxSize()) {
+                                        val stroke = 5.dp.toPx()
+                                        val inset = stroke / 2f
+                                        val arc = Size(size.width - stroke, size.height - stroke)
+                                        drawArc(track, -90f, 360f, false, Offset(inset, inset), arc, style = Stroke(stroke))
+                                        drawArc(bar, -90f, 360f * share * reveal.value.coerceIn(0f, 1f), false, Offset(inset, inset), arc,
+                                            style = Stroke(stroke, cap = StrokeCap.Round))
                                     }
                                 }
-                                LinearProgressIndicator(progress = { earnedCount.toFloat() / achievements.size.coerceAtLeast(1) },
-                                    modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(50)),
-                                    color = colors.onSecondaryContainer,
-                                    trackColor = colors.onSecondaryContainer.copy(alpha = .14f))
+                                LeafSurface(shape = if (earned) LeafRosette(8) else CircleShape, color = container, contentColor = ink) {
+                                    Box(Modifier.size(if (earned) 76.dp else 64.dp), Alignment.Center) {
+                                        Icon(if (earned) LeafIcons.filled(achievementIcon(a.id)) else achievementIcon(a.id), null,
+                                            Modifier.size(if (earned) 36.dp else 28.dp))
+                                    }
+                                }
                             }
-                        }
-                    }
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        ExpressiveChoiceRow(
-                            labels = listOf(stringResource(R.string.achievements_filter_all),
-                                stringResource(R.string.achievements_filter_earned), stringResource(R.string.achievements_locked)),
-                            icons = listOf(LeafIcons.EmojiEvents, LeafIcons.CheckCircle, LeafIcons.Lock),
-                            selected = filter, onSelect = { filter = it })
-                    }
-                    if (ordered.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-                        Surface(color = colors.surfaceContainerLow, shape = RoundedCornerShape(24.dp)) {
-                            LeafEmptyState(stringResource(R.string.achievements_filter_empty), LeafIcons.EmojiEvents)
-                        }
-                    }
-                    items(ordered, key = { it.id }) { a ->
-                        val earned = a.unlockedAt != null
-                        val count = progress(a)
-                        val sleepBadge = a.id.contains("sleep")
-                        val noteBadge = a.id.startsWith("note_")
-                        val badgeColor = if (!earned) colors.surfaceContainerLow else when {
-                            sleepBadge -> colors.tertiaryContainer
-                            noteBadge -> com.example.fitnesstracker.ui.theme.LeafTones.warm
-                            else -> colors.primaryContainer
-                        }
-                        val badgeInk = if (!earned) colors.onSurfaceVariant else when {
-                            sleepBadge -> colors.onTertiaryContainer
-                            noteBadge -> com.example.fitnesstracker.ui.theme.LeafTones.onWarm
-                            else -> colors.onPrimaryContainer
-                        }
-                        var revealed by remember(a.id) { mutableStateOf(false) }
-                        LaunchedEffect(a.id) { revealed = true }
-                        val badgeScale by animateFloatAsState(if (revealed) 1f else .88f, spring(.82f, 400f), label = "badgeReveal")
-                        Card(modifier = Modifier.animateItem(), shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp,
-                            bottomEnd = 28.dp, bottomStart = if (earned) 12.dp else 28.dp),
-                            colors = CardDefaults.cardColors(containerColor = colors.surfaceContainer)) {
-                            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                                Row(Modifier.fillMaxWidth().height(titleHeight),
-                                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    Surface(modifier = Modifier.graphicsLayer { scaleX = badgeScale; scaleY = badgeScale },
-                                        shape = if (earned) LeafRosette() else RoundedCornerShape(28.dp), color = badgeColor) {
-                                        Box(Modifier.size(56.dp), Alignment.Center) {
-                                            Icon(when (a.id) {
-                                                "first_workout", "ten_workouts" -> LeafIcons.Exercise
-                                                "water_week" -> LeafIcons.WaterDrop
-                                                "first_sleep", "sleep_week", "sleep_three", "sleep_fourteen", "sleep_thirty", "sleep_sixty", "sleep_context" -> LeafIcons.Bedtime
-                                                "note_first", "note_seven", "note_fourteen", "note_thirty", "note_pinned" -> LeafIcons.Edit
-                                                "first_meal", "calorie_goal" -> LeafIcons.Dining
-                                                "profile_complete" -> LeafIcons.Person
-                                                else -> LeafIcons.EmojiEvents
-                                            }, null, Modifier.size(28.dp), tint = badgeInk)
-                                        }
-                                    }
-                                    Text(a.localizedTitle(context), style = titleStyle, modifier = Modifier.weight(1f))
-                                }
-                                Text(a.localizedDesc(context), style = bodyStyle,
-                                    color = colors.onSurfaceVariant, modifier = Modifier.fillMaxWidth().height(bodyHeight))
-                                Spacer(Modifier.height(2.dp))
-                                Row(Modifier.fillMaxWidth().height(statusHeight), verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    Icon(if (earned) LeafIcons.CheckCircle else LeafIcons.Lock, null,
-                                        Modifier.size(24.dp), tint = colors.onSurfaceVariant)
-                                    Text(status(a), style = statusStyle, modifier = Modifier.weight(1f), color = colors.onSurface)
-                                }
-                                Box(Modifier.fillMaxWidth().height(6.dp)) {
-                                    if (!earned && count != null) LinearProgressIndicator(
-                                        progress = { count.first.toFloat() / count.second },
-                                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(50)),
-                                        color = colors.primary, trackColor = colors.outlineVariant)
+                            Text(a.localizedTitle(context), style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center,
+                                minLines = 2, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            LeafSurface(shape = CircleShape, color = if (earned) colors.surface.copy(alpha = .55f) else colors.surfaceContainerHighest,
+                                contentColor = if (earned) tileInk else colors.onSurfaceVariant) {
+                                Row(Modifier.padding(start = 8.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
+                                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Icon(if (earned) LeafIcons.filled(LeafIcons.CheckCircle) else LeafIcons.Lock, null, Modifier.size(14.dp))
+                                    Text(if (earned) DateUtils.formatDate(a.unlockedAt ?: 0L)
+                                        else count?.let { "${it.first}/${it.second}" } ?: stringResource(R.string.achievements_locked),
+                                        style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AchievementHero(earned: Int, total: Int, nearestTitle: String?, nearestStatus: String?) {
+    val colors = MaterialTheme.colorScheme
+    val share = if (total > 0) earned.toFloat() / total else 0f
+    val sweep = remember { Animatable(0f) }
+    LaunchedEffect(share) { sweep.animateTo(share, tween(900, easing = FastOutSlowInEasing)) }
+    LeafSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(32.dp), color = colors.secondaryContainer,
+        contentColor = colors.onSecondaryContainer) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                Box(Modifier.size(112.dp), contentAlignment = Alignment.Center) {
+                    val track = colors.onSecondaryContainer.copy(alpha = .14f)
+                    val bar = colors.primary
+                    Canvas(Modifier.fillMaxSize()) {
+                        val stroke = 12.dp.toPx()
+                        val inset = stroke / 2f
+                        val arc = Size(size.width - stroke, size.height - stroke)
+                        drawArc(track, -90f, 360f, false, Offset(inset, inset), arc, style = Stroke(stroke))
+                        drawArc(bar, -90f, 360f * sweep.value, false, Offset(inset, inset), arc, style = Stroke(stroke, cap = StrokeCap.Round))
+                    }
+                    LeafIconBadge(LeafIcons.Trophy, size = LeafIconSize.Large, tone = LeafTone.Solid, shape = LeafRosette(8))
+                }
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    LeafFitText("$earned / $total", style = MaterialTheme.typography.displaySmall)
+                    Text(stringResource(R.string.achievements_unlocked), style = MaterialTheme.typography.bodyLarge)
+                    LeafSurface(shape = CircleShape, color = colors.surface.copy(alpha = .6f), contentColor = colors.onSurface) {
+                        Text("${(share * 100).toInt()}%", Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+                            style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+            if (nearestTitle != null) LeafSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp),
+                color = colors.surface.copy(alpha = .6f), contentColor = colors.onSurface) {
+                Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Icon(LeafIcons.filled(LeafIcons.Flag), null, Modifier.size(22.dp), tint = colors.primary)
+                    Column(Modifier.weight(1f)) {
+                        Text(stringResource(R.string.b11_achievement_next), style = MaterialTheme.typography.labelMedium,
+                            color = colors.onSurfaceVariant)
+                        Text(nearestTitle, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                    if (nearestStatus != null) Text(nearestStatus, style = MaterialTheme.typography.labelLarge, color = colors.primary,
+                        maxLines = 1)
                 }
             }
         }

@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.tracking
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import com.example.fitnesstracker.ui.theme.LeafSurface as Surface
 import android.Manifest
 import android.content.Context
@@ -66,6 +69,7 @@ class LiveWorkoutActivity : ComponentActivity() {
 private fun LiveWorkoutPage(historyId: Long, onBack: () -> Unit) {
     val context = LocalContext.current
     val live by LiveWorkoutStore.state.collectAsState()
+    val completed by LiveWorkoutStore.completed.collectAsState()
     var saved by remember { mutableStateOf<LiveSession?>(null) }
     var initialized by remember { mutableStateOf(false) }
     var seenLive by rememberSaveable { mutableStateOf(false) }
@@ -89,9 +93,15 @@ private fun LiveWorkoutPage(historyId: Long, onBack: () -> Unit) {
     }
     LaunchedEffect(live.active) {
         if (historyId == 0L) {
-            if (live.active) seenLive = true
-            else if (seenLive) onBack()
+            if (live.active) { seenLive = true; LiveWorkoutStore.setCompleted(null) }
+            else if (seenLive && completed == null) onBack()
         }
+    }
+    if (historyId == 0L && !live.active && completed != null) {
+        com.example.fitnesstracker.ui.screens.workout.WorkoutResultScreen(completed!!, onClose = {
+            LiveWorkoutStore.setCompleted(null); onBack()
+        }, showRecords = false)
+        return
     }
     val session = if (historyId > 0) saved ?: LiveSession() else live
     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
@@ -161,8 +171,8 @@ private fun LiveWorkoutPage(historyId: Long, onBack: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(if (session.points.isEmpty()) "—" else String.format(locale, "%.2f", session.distanceMeters / 1000),
-                                style = MaterialTheme.typography.displayMedium.copy(fontFeatureSettings = "tnum"), fontWeight = FontWeight.SemiBold)
-                            Text(stringResource(R.string.live_km), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.displayMedium.copy(fontFeatureSettings = "tnum"))
+                            Text(stringResource(R.string.live_km), style = MaterialTheme.typography.titleMedium,
                                 color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 6.dp))
                         }
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -239,8 +249,8 @@ private fun LiveMetric(value: String, label: String, modifier: Modifier) {
         color = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(value, style = MaterialTheme.typography.titleLarge.copy(fontFeatureSettings = "tnum"), fontWeight = FontWeight.SemiBold)
-            Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(value, style = MaterialTheme.typography.titleLarge.copy(fontFeatureSettings = "tnum"))
+            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

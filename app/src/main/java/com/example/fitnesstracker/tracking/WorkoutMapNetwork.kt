@@ -24,7 +24,6 @@ internal object WorkoutMapNetwork {
                 chain.proceed(request)
             }
             .build()
-        // Native and HTTP caches retain server expiry/ETag semantics. No forced refresh or preloading.
         HttpRequestUtil.setOkHttpClient(client)
         HttpRequestUtil.setPrintRequestUrlOnFailure(false)
         initialized = true

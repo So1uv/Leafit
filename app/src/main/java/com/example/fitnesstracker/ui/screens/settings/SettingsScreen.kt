@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.screens.settings
 
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import com.example.fitnesstracker.ui.components.LeafScreenScaffold
 import com.example.fitnesstracker.ui.components.rememberLeafHeaderState
 import com.example.fitnesstracker.ui.theme.LeafCard as Card
@@ -54,12 +57,10 @@ import com.example.fitnesstracker.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit = {}) {
     val profile      by vm.profile.collectAsState()
-    val achievements by vm.achievements.collectAsState()
     val workoutCount by vm.workoutCount.collectAsState()
     val sleepCount   by vm.sleepCount.collectAsState()
 
     var showEditDialog    by remember { mutableStateOf(false) }
-    var showAchievements  by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
     val context = LocalContext.current
@@ -87,11 +88,6 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit = {}) {
             vm.saveProfile(updated); showEditDialog = false
         }, onDismiss = { showEditDialog = false })
     }
-    if (showAchievements) {
-        com.example.fitnesstracker.ui.components.AchievementsSheet(achievements, workoutCount, sleepCount,
-            onDismiss = { showAchievements = false })
-    }
-
     val headerState = rememberLeafHeaderState()
     LeafScreenScaffold(
         headerState = headerState,
@@ -108,102 +104,10 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit = {}) {
             contentPadding = PaddingValues(top = padding.calculateTopPadding() + 12.dp, bottom = 120.dp)
         ) {
 
-            item {
-                Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(32.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    elevation = CardDefaults.cardElevation(0.dp)) {
-                    Column(Modifier.padding(24.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(stringResource(R.string.profile_header_hint),
-                            style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-                        Spacer(Modifier.height(16.dp))
-
-                        val matrix by vm.activityMatrix.collectAsState()
-                        val dayProgress = matrix.lastOrNull() ?: 0f
-                        val animProgress by animateFloatAsState(
-                            dayProgress.coerceIn(0f, 1f),
-                            tween(1000, easing = EaseOutCubic),
-                            label = "dayProgress"
-                        )
-                        val ringColor = MaterialTheme.colorScheme.primary
-                        val ringTrack = MaterialTheme.colorScheme.surfaceVariant
-                        Box(
-                            modifier = Modifier.size(102.dp).drawBehind {
-                                val stroke = 4.dp.toPx()
-                                val inset = stroke / 2f
-                                drawArc(
-                                    color = ringTrack.copy(alpha = 0.4f),
-                                    startAngle = -90f, sweepAngle = 360f, useCenter = false,
-                                    topLeft = Offset(inset, inset),
-                                    size = Size(size.width - stroke, size.height - stroke),
-                                    style = Stroke(stroke)
-                                )
-                                drawArc(
-                                    color = ringColor,
-                                    startAngle = -90f,
-                                    sweepAngle = 360f * animProgress,
-                                    useCenter = false,
-                                    topLeft = Offset(inset, inset),
-                                    size = Size(size.width - stroke, size.height - stroke),
-                                    style = Stroke(stroke, cap = StrokeCap.Round)
-                                )
-                            },
-                            contentAlignment = Alignment.Center
-                        ) {
-                        Box(
-                            modifier = Modifier.size(93.dp).clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                            contentAlignment = Alignment.Center
-                        ) {
-                        Box(
-                            modifier = Modifier.size(86.dp).clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                .clickable { imagePickerLauncher.launch("image/*") },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (profile?.avatarUri != null) {
-                                val uri = profile!!.avatarUri!!
-                                AsyncImage(model = if (uri.startsWith("/")) File(uri) else uri, contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-                            } else {
-                                Text(profile?.name?.take(1)?.uppercase() ?: "?",
-                                    style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.primary)
-                            }
-                        }
-                        }
-                        }
-                        Spacer(Modifier.height(6.dp))
-                        Text(stringResource(R.string.profile_photo_tap), style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Spacer(Modifier.height(12.dp))
-                        Text(profile?.name ?: "—", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-                        profile?.let { p ->
-                            Text(stringResource(R.string.profile_summary, p.age, p.weightKg, p.heightCm),
-                                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            val bmi = HealthCalc.bmi(p.weightKg, p.heightCm)
-                            Spacer(Modifier.height(4.dp))
-                            Box(Modifier.clip(RoundedCornerShape(50.dp))
-                                .background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 12.dp, vertical = 4.dp)) {
-                                Text(stringResource(R.string.profile_bmi, "%.1f".format(bmi), bmiCategoryString(HealthCalc.bmiCategory(bmi))),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer)
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                val unlockedCount = achievements.count { it.unlockedAt != null }
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    ProfileStatTile(Modifier.weight(1f), "$workoutCount", stringResource(R.string.profile_workouts), MaterialTheme.colorScheme.primary)
-                    ProfileStatTile(Modifier.weight(1f), "$sleepCount", stringResource(R.string.profile_sleep_records), MaterialTheme.colorScheme.tertiary)
-                    ProfileStatTile(Modifier.weight(1f), "$unlockedCount", stringResource(R.string.profile_achievements), MaterialTheme.colorScheme.secondary)
-                }
-            }
-
-            item {
-                MeasurementsCard(profile)
+            item(key = "identity") {
+                ProfileHero(profile, workoutCount, sleepCount,
+                    onPickPhoto = { imagePickerLauncher.launch("image/*") },
+                    onEdit = { showEditDialog = true })
             }
 
             item {
@@ -211,12 +115,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit = {}) {
             }
 
             item {
-                LeafTonalButton(onClick = { showEditDialog = true },
-                    modifier = Modifier.fillMaxWidth().height(54.dp), shape = RoundedCornerShape(50)) {
-                    Icon(com.example.fitnesstracker.ui.components.LeafIcons.Edit, null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.settings_edit_profile))
-                }
+                MeasurementsCard(profile)
             }
 
             item {
@@ -230,18 +129,90 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit = {}) {
     }
 }
 
+@Composable
+private fun ProfileHero(profile: UserProfile?, workoutCount: Int, sleepCount: Int, onPickPhoto: () -> Unit, onEdit: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(com.example.fitnesstracker.ui.components.LeafCorners.card),
+        color = colors.surfaceContainer) {
+        Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Box(contentAlignment = Alignment.BottomEnd) {
+                Surface(onClick = onPickPhoto, shape = CircleShape, color = colors.primaryContainer, modifier = Modifier.size(104.dp)) {
+                    Box(contentAlignment = Alignment.Center) {
+                        val avatar = profile?.avatarUri
+                        if (avatar != null) AsyncImage(model = if (avatar.startsWith("/")) File(avatar) else avatar,
+                            contentDescription = stringResource(R.string.profile_photo_tap),
+                            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                        else Text(profile?.name?.take(1)?.uppercase() ?: "?", style = MaterialTheme.typography.displaySmall,
+                            color = colors.onPrimaryContainer)
+                    }
+                }
+                Surface(onClick = onPickPhoto, shape = CircleShape, color = colors.primary, contentColor = colors.onPrimary,
+                    border = androidx.compose.foundation.BorderStroke(3.dp, colors.surfaceContainer), modifier = Modifier.size(36.dp)) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(LeafIcons.AddAPhoto, stringResource(R.string.profile_photo_tap), Modifier.size(18.dp))
+                    }
+                }
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(profile?.name ?: "—", style = MaterialTheme.typography.headlineSmall, maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                profile?.let { p ->
+                    Text(stringResource(R.string.profile_summary, p.age, p.weightKg, p.heightCm),
+                        style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
+            }
+            profile?.let { p ->
+                val bmi = HealthCalc.bmi(p.weightKg, p.heightCm)
+                Surface(shape = CircleShape, color = colors.secondaryContainer, contentColor = colors.onSecondaryContainer) {
+                    Row(Modifier.padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(LeafIcons.MonitorWeight, null, Modifier.size(18.dp))
+                        Text(stringResource(R.string.profile_bmi, "%.1f".format(bmi), bmiCategoryString(HealthCalc.bmiCategory(bmi))),
+                            style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                ProfileStatTile(Modifier.weight(1f).fillMaxHeight(), "$workoutCount", stringResource(R.string.profile_workouts),
+                    LeafIcons.Exercise, colors.primary, RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, topEnd = 6.dp, bottomEnd = 6.dp))
+                ProfileStatTile(Modifier.weight(1f).fillMaxHeight(), "$sleepCount", stringResource(R.string.profile_sleep_records),
+                    LeafIcons.Bedtime, colors.tertiary, RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp, topEnd = 20.dp, bottomEnd = 20.dp))
+            }
+            LeafButton(onClick = onEdit, enabled = profile != null, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                shape = RoundedCornerShape(50)) {
+                Icon(LeafIcons.PersonEdit, null, Modifier.size(20.dp)); Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_edit_profile))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileEditGroup(icon: ImageVector, title: String, tone: com.example.fitnesstracker.ui.components.LeafTone,
+    content: @Composable ColumnScope.() -> Unit) {
+    Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(icon, title, tone = tone,
+                iconSize = com.example.fitnesstracker.ui.components.LeafIconSize.Small)
+            content()
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditProfileDialog(profile: UserProfile, onSave: (UserProfile) -> Unit, onDismiss: () -> Unit) {
-    var name   by remember { mutableStateOf(profile.name) }
-    var age    by remember { mutableStateOf(profile.age.toString()) }
-    var gender by remember { mutableStateOf(profile.gender) }
-    var height by remember { mutableStateOf(profile.heightCm.toString()) }
-    var weight by remember { mutableStateOf(profile.weightKg.toString()) }
-    var chest  by remember { mutableStateOf(profile.chestCm?.let { "%.0f".format(it) } ?: "") }
-    var waist  by remember { mutableStateOf(profile.waistCm?.let { "%.0f".format(it) } ?: "") }
-    var hips   by remember { mutableStateOf(profile.hipsCm?.let { "%.0f".format(it) } ?: "") }
-    var bicep  by remember { mutableStateOf(profile.bicepCm?.let { "%.0f".format(it) } ?: "") }
+    var name   by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.name) }
+    var age    by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.age.toString()) }
+    var gender by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.gender) }
+    var height by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(trimNumber(profile.heightCm)) }
+    var weight by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(trimNumber(profile.weightKg)) }
+    var chest  by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.chestCm?.let(::trimNumber) ?: "") }
+    var waist  by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.waistCm?.let(::trimNumber) ?: "") }
+    var hips   by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.hipsCm?.let(::trimNumber) ?: "") }
+    var bicep  by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(profile.bicepCm?.let(::trimNumber) ?: "") }
 
     val ageInt   = age.toIntOrNull()
     val heightF  = height.toFloatOrNull()
@@ -257,74 +228,55 @@ private fun EditProfileDialog(profile: UserProfile, onSave: (UserProfile) -> Uni
         val v = s.toFloatOrNull() ?: return null
         return if (v in 1f..250f) v else null
     }
+    fun decimal(s: String) = s.replace(',', '.').filter { c -> c.isDigit() || c == '.' }.take(5)
 
     LeafEditSheet(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.settings_edit_profile)) },
         content = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                AppTextField(value = name, onValueChange = { name = it.take(40) },
-                    label = stringResource(R.string.profile_name),
-                    modifier = Modifier.fillMaxWidth())
+            ProfileEditGroup(LeafIcons.Person, stringResource(R.string.profile_basics), com.example.fitnesstracker.ui.components.LeafTone.Primary) {
+                AppTextField(name, { name = it.take(40) }, stringResource(R.string.profile_name), Modifier.fillMaxWidth(),
+                    isError = !nameOk)
+                Text(stringResource(R.string.profile_gender), style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                 com.example.fitnesstracker.ui.components.LeafGenderChoices(gender, { gender = it }, listOf(
                     "male" to stringResource(R.string.profile_gender_male),
                     "female" to stringResource(R.string.profile_gender_female),
                     "other" to stringResource(R.string.profile_gender_other)))
-                StepperDecimalField(
-                    value = age,
-                    onChange = { age = it.filter { c -> c.isDigit() }.take(3) },
-                    label = stringResource(R.string.profile_age), step = 1f, max = 100f,
-                    isError = age.isNotEmpty() && !ageOk,
-                    supportingText = stringResource(R.string.profile_age_hint),
-                    modifier = Modifier.fillMaxWidth())
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    StepperDecimalField(
-                        value = height,
-                        onChange = { height = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                        label = stringResource(R.string.profile_height), step = 1f, max = 220f,
-                        isError = height.isNotEmpty() && !heightOk,
-                        supportingText = stringResource(R.string.profile_height_hint),
-                        modifier = Modifier.weight(1f))
-                    StepperDecimalField(
-                        value = weight,
-                        onChange = { weight = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                        label = stringResource(R.string.profile_weight), step = 0.5f, max = 645f,
-                        isError = weight.isNotEmpty() && !weightOk,
-                        supportingText = stringResource(R.string.profile_weight_hint),
-                        modifier = Modifier.weight(1f))
+            }
+            ProfileEditGroup(LeafIcons.MonitorWeight, stringResource(R.string.profile_body), com.example.fitnesstracker.ui.components.LeafTone.Secondary) {
+                AppTextField(age, { age = it.filter(Char::isDigit).take(3) }, stringResource(R.string.profile_age),
+                    Modifier.fillMaxWidth(), keyboardType = KeyboardType.Number,
+                    isError = !ageOk, supportingText = if (!ageOk) stringResource(R.string.profile_age_hint) else null)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    AppTextField(height, { height = decimal(it) }, stringResource(R.string.profile_height), Modifier.weight(1f),
+                        keyboardType = KeyboardType.Decimal, isError = !heightOk,
+                        supportingText = if (!heightOk) stringResource(R.string.profile_height_hint) else null)
+                    AppTextField(weight, { weight = decimal(it) }, stringResource(R.string.profile_weight), Modifier.weight(1f),
+                        keyboardType = KeyboardType.Decimal, isError = !weightOk,
+                        supportingText = if (!weightOk) stringResource(R.string.profile_weight_hint) else null)
                 }
-
-                Spacer(Modifier.height(6.dp))
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh
-                ) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(LeafIcons.Straighten, null,
-                                tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(18.dp))
-                            Text(stringResource(R.string.profile_measurements),
-                                style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
-                            Spacer(Modifier.weight(1f))
-                            Text(stringResource(R.string.profile_measurements_optional),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            AppTextField(value = chest, onValueChange = { chest = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                                label = stringResource(R.string.profile_chest), modifier = Modifier.weight(1f),
-                                keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal)
-                            AppTextField(value = waist, onValueChange = { waist = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                                label = stringResource(R.string.profile_waist), modifier = Modifier.weight(1f),
-                                keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal)
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            AppTextField(value = hips, onValueChange = { hips = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                                label = stringResource(R.string.profile_hips), modifier = Modifier.weight(1f),
-                                keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal)
-                            AppTextField(value = bicep, onValueChange = { bicep = it.filter { c -> c.isDigit() || c == '.' }.take(5) },
-                                label = stringResource(R.string.profile_bicep), modifier = Modifier.weight(1f),
-                                keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal)
+                if (heightOk && weightOk) {
+                    val bmi = HealthCalc.bmi(weightF!!, heightF!!)
+                    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer) {
+                        Text(stringResource(R.string.profile_bmi, "%.1f".format(bmi), bmiCategoryString(HealthCalc.bmiCategory(bmi))),
+                            Modifier.padding(horizontal = 14.dp, vertical = 8.dp), style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+            ProfileEditGroup(LeafIcons.Straighten, stringResource(R.string.profile_measurements), com.example.fitnesstracker.ui.components.LeafTone.Tertiary) {
+                Text(stringResource(R.string.profile_measurements_optional), style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                val fields = listOf(Triple(R.string.profile_chest, chest, { v: String -> chest = v }),
+                    Triple(R.string.profile_waist, waist, { v: String -> waist = v }),
+                    Triple(R.string.profile_hips, hips, { v: String -> hips = v }),
+                    Triple(R.string.profile_bicep, bicep, { v: String -> bicep = v }))
+                fields.chunked(2).forEach { pair ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        pair.forEach { (label, value, update) ->
+                            AppTextField(value, { update(decimal(it)) }, stringResource(label), Modifier.weight(1f),
+                                keyboardType = KeyboardType.Decimal)
                         }
                     }
                 }
@@ -344,11 +296,17 @@ private fun EditProfileDialog(profile: UserProfile, onSave: (UserProfile) -> Uni
                     bicepCm  = optionalCm(bicep)
                 )) },
                 shape = RoundedCornerShape(50)
-            ) { Text(stringResource(R.string.common_save)) }
+            ) {
+                Icon(LeafIcons.Check, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.common_save))
+            }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } }
     )
 }
+
+private fun trimNumber(value: Float): String =
+    if (value % 1f == 0f) value.toInt().toString() else "%.1f".format(java.util.Locale.US, value)
 
 private fun copyAvatarToInternalStorage(context: Context, uri: Uri): String? {
     return try {
@@ -377,18 +335,17 @@ private fun saveBitmapToInternalStorage(context: Context, bitmap: android.graphi
 }
 
 @Composable
-private fun ProfileStatTile(modifier: Modifier, value: String, label: String, color: Color) {
-    Card(
-        modifier = modifier, shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f)),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Column(
-            Modifier.fillMaxWidth().padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            com.example.fitnesstracker.ui.components.MetricText(value, style = MaterialTheme.typography.titleLarge, weight = FontWeight.SemiBold, color = color)
-            Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun ProfileStatTile(modifier: Modifier, value: String, label: String, icon: ImageVector, color: Color,
+    shape: androidx.compose.ui.graphics.Shape) {
+    Surface(modifier = modifier, shape = shape, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Icon(icon, null, Modifier.size(22.dp), tint = color)
+            Column(Modifier.weight(1f)) {
+                com.example.fitnesstracker.ui.components.MetricText(value, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+                Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            }
         }
     }
 }
@@ -414,22 +371,12 @@ private fun MeasurementsCard(profile: UserProfile?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ) {
-                    Box(Modifier.size(40.dp), Alignment.Center) {
-                        Icon(LeafIcons.Straighten, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(20.dp))
-                    }
-                }
-                Text(stringResource(R.string.profile_measurements),
-                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            }
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.Straighten, stringResource(R.string.profile_measurements),
+                tone = com.example.fitnesstracker.ui.components.LeafTone.Tertiary)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 items.take(2).forEach { (key, label, value) ->
                     MeasurementTile(Modifier.weight(1f), label, value, key)
@@ -452,23 +399,22 @@ private fun MeasurementTile(modifier: Modifier = Modifier, label: String, valueC
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer
+        color = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        Column(Modifier.padding(12.dp)) {
-            Text(label, style = MaterialTheme.typography.labelSmall,
+        Column(Modifier.padding(14.dp)) {
+            Text(label, style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 valueCm?.let { "${it.toInt()} ${androidx.compose.ui.res.stringResource(com.example.fitnesstracker.R.string.unit_cm)}" } ?: "—",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                fontFamily = com.example.fitnesstracker.ui.theme.NumericFontFamily,
                 color = if (valueCm != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
             )
             if (delta != null) {
                 val down = delta < 0f
                 Text(
                     (if (down) "−" else "+") + "%.0f".format(kotlin.math.abs(delta)) + " " + stringResource(R.string.unit_cm),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.labelMedium,
                     color = if (down) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -485,28 +431,17 @@ private fun GoalsCard() {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
-                ) {
-                    Box(Modifier.size(40.dp), Alignment.Center) {
-                        Icon(LeafIcons.Flag, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(20.dp))
-                    }
-                }
-                Text(stringResource(R.string.profile_goals), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-            }
-
-            Text(stringResource(R.string.goals_personal_hint), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            com.example.fitnesstracker.ui.components.LeafCardHeader(LeafIcons.SportsScore, stringResource(R.string.profile_goals),
+                subtitle = stringResource(R.string.goals_personal_hint))
+            Spacer(Modifier.height(10.dp))
 
             GoalStepperRow(
-                icon = com.example.fitnesstracker.ui.components.LeafIcons.DirectionsWalk,
+                icon = LeafIcons.Steps, index = 0,
                 label = stringResource(R.string.profile_goal_steps),
                 value = "$stepsGoal",
                 color = MaterialTheme.colorScheme.secondary,
@@ -514,7 +449,7 @@ private fun GoalsCard() {
                 onPlus = { if (stepsGoal < 50000) { stepsGoal += 1000; com.example.fitnesstracker.utils.GoalPreferences.setStepsGoal(context, stepsGoal); com.example.fitnesstracker.utils.Haptics.perform(context, com.example.fitnesstracker.utils.HapticLevel.LIGHT) } }
             )
             GoalStepperRow(
-                icon = com.example.fitnesstracker.ui.components.LeafIcons.WaterDrop,
+                icon = LeafIcons.WaterFull, index = 1,
                 label = stringResource(R.string.profile_goal_water),
                 value = "$waterGoal ${stringResource(R.string.unit_ml)}",
                 color = MaterialTheme.colorScheme.primary,
@@ -522,7 +457,7 @@ private fun GoalsCard() {
                 onPlus = { if (waterGoal < 6000) { waterGoal += 250; com.example.fitnesstracker.utils.GoalPreferences.setWaterGoal(context, waterGoal); com.example.fitnesstracker.utils.Haptics.perform(context, com.example.fitnesstracker.utils.HapticLevel.LIGHT) } }
             )
             GoalStepperRow(
-                icon = com.example.fitnesstracker.ui.components.LeafIcons.Bedtime,
+                icon = LeafIcons.Bedtime, index = 2,
                 label = stringResource(R.string.profile_goal_sleep),
                 value = "${sleepGoal / 60}${stringResource(R.string.unit_h)} ${sleepGoal % 60}${stringResource(R.string.unit_min_short)}",
                 color = MaterialTheme.colorScheme.tertiary,
@@ -539,28 +474,27 @@ private fun GoalStepperRow(
     label: String,
     value: String,
     color: androidx.compose.ui.graphics.Color,
+    index: Int = 0,
     onMinus: () -> Unit,
     onPlus: () -> Unit
 ) {
-    Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerLowest) {
-                    Box(Modifier.size(38.dp), Alignment.Center) { Icon(icon, null, tint = color, modifier = Modifier.size(22.dp)) }
-                }
-                Text(label, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-            }
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Surface(shape = com.example.fitnesstracker.ui.components.groupedLeafShape(index, 3),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Icon(icon, null, tint = color, modifier = Modifier.size(24.dp))
+            Column(Modifier.weight(1f)) {
+                Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 com.example.fitnesstracker.ui.components.MetricText(value,
-                    style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface,
-                    weight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                FilledTonalIconButton(onClick = onMinus, modifier = Modifier.size(48.dp),
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)) {
-                    Icon(LeafIcons.Remove, stringResource(R.string.goal_decrease, label), tint = MaterialTheme.colorScheme.onSurface)
-                }
-                FilledTonalIconButton(onClick = onPlus, modifier = Modifier.size(48.dp)) {
-                    Icon(LeafIcons.Add, stringResource(R.string.goal_increase, label), tint = MaterialTheme.colorScheme.onSecondaryContainer)
-                }
+                    style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            }
+            FilledTonalIconButton(onClick = onMinus, modifier = Modifier.size(44.dp),
+                colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)) {
+                Icon(LeafIcons.Remove, stringResource(R.string.goal_decrease, label), tint = MaterialTheme.colorScheme.onSurface)
+            }
+            FilledTonalIconButton(onClick = onPlus, modifier = Modifier.size(44.dp)) {
+                Icon(LeafIcons.Add, stringResource(R.string.goal_increase, label), tint = MaterialTheme.colorScheme.onSecondaryContainer)
             }
         }
     }

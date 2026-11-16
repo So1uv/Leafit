@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sleep_duration_compact">%1$d год %2$d хв</string>
+    <string name="sleep_awake_short">Неспання</string>
+    <string name="profile_basics">Про вас</string>
+    <string name="profile_body">Параметри тіла</string>
+    <string name="setup_intro">Почнемо з вас</string>
+    <string name="setup_intro_hint">Ваш профіль — основа особистих орієнтирів.</string>
+    <string name="setup_body_hint">Три значення для ваших щоденних орієнтирів.</string>
+    <string name="setup_measure_hint">Додайте заміри зараз або пізніше у профілі.</string>
+    <string name="widget_customize">Вигляд віджета</string>
+    <string name="widget_tone">Колір</string>
+    <string name="widget_green">Зелений</string>
+    <string name="widget_lavender">Лаванда</string>
+    <string name="widget_neutral">Нейтральний</string>
+    <string name="widget_details">Подробиці</string>
+    <string name="widget_water_amount">Обʼєм швидкого додавання</string>
+    <string name="widget_config_hint">Розмір змінюється на головному екрані. Вміст адаптується автоматично.</string>
+</resources>

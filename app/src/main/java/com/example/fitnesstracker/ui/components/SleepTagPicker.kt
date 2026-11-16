@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafIconButton as IconButton
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,10 +34,8 @@ fun SleepTagPicker(selectedTags: Set<String>, onChange: (Set<String>) -> Unit) {
     val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            LeafSurface(shape = RoundedCornerShape(14.dp), color = colors.tertiaryContainer) {
-                Box(Modifier.size(38.dp), Alignment.Center) { Icon(LeafIcons.Label, null, tint = colors.onTertiaryContainer, modifier = Modifier.size(20.dp)) }
-            }
-            Spacer(Modifier.width(10.dp))
+            LeafIconBadge(LeafIcons.Sell, size = LeafIconSize.Small, tone = LeafTone.Tertiary)
+            Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.sleep_tags), style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(R.string.sleep_tag_selected_count, selectedTags.size),

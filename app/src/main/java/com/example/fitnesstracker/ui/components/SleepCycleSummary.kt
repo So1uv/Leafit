@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafIconButton as IconButton
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,7 +41,7 @@ fun SleepCycleSummary(durationMinutes: Int) {
                     Text(stringResource(R.string.sleep_cycle_estimate, cycles),
                         style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
                 }
-                IconButton(onClick = { info = true }) { Icon(LeafIcons.Info, stringResource(R.string.sleep_cycle_info_title)) }
+                IconButton(onClick = { info = true }) { Icon(LeafIcons.Info, stringResource(R.string.sleep_cycle_info_title), Modifier.size(22.dp), tint = colors.onSurfaceVariant) }
             }
             Canvas(Modifier.fillMaxWidth().height(8.dp)) {
                 val count = kotlin.math.ceil(target / CYCLE_MINUTES.toFloat()).toInt().coerceIn(1, 16)
@@ -56,8 +58,7 @@ fun SleepCycleSummary(durationMinutes: Int) {
             }
         }
     }
-    if (info) LeafEditSheet(onDismissRequest = { info = false },
-        title = { Text(stringResource(R.string.sleep_cycle_info_title)) },
-        content = { Text(stringResource(R.string.sleep_cycle_info), style = MaterialTheme.typography.bodyLarge) },
-        confirmButton = { LeafButton(onClick = { info = false }) { Text(stringResource(R.string.common_close)) } })
+    if (info) LeafInfoSheet(title = stringResource(R.string.sleep_cycle_info_title),
+        details = stringResource(R.string.sleep_cycle_info).split("\n").map { it.trim() },
+        onDismiss = { info = false }, icon = LeafIcons.Bedtime, tone = LeafTone.Tertiary)
 }

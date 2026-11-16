@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b12_sleep_finish_short">Finish</string>
+    <string name="b12_sleep_math_task">%1$d + %2$d = ?</string>
+    <string name="b12_sleep_tab_tracking">Tracking</string>
+    <string name="b12_sleep_start_delay">Recording delay, min</string>
+    <string name="b12_sleep_record_filter">What to keep</string>
+    <string name="b12_sleep_filter_all">All</string>
+    <string name="b12_sleep_filter_voice">Snoring and voice</string>
+    <string name="b12_sleep_filter_snore">Snoring</string>
+    <string name="b12_sleep_filter_talk">Voice</string>
+    <string name="b12_sleep_clip_length">Clip length, s</string>
+    <string name="b12_sleep_ringtone">Ringtone</string>
+    <string name="b12_sleep_volume">Volume, %</string>
+    <string name="b12_sleep_ramp">Ramp-up, s</string>
+    <string name="b12_sleep_strong_vibration">Strong vibration</string>
+    <string name="b12_sleep_math">Maths to dismiss</string>
+    <string name="b12_sleep_math_hint">The alarm stops only in the app after a correct answer</string>
+    <string name="b12_sleep_snooze_limit">Snooze limit</string>
+    <string name="b12_sleep_keep_nights">Nights to keep</string>
+    <string name="b12_sleep_nights">Nights and recordings</string>
+    <string name="b12_sleep_nights_hint">Tap a night to listen to its sounds</string>
+    <string name="b12_sleep_nights_empty">Appear after your first tracked night</string>
+    <string name="b12_sleep_night_row">%1$s · %2$d sounds · %3$d clips</string>
+    <string name="b12_sleep_recordings_title">Recordings: %1$d</string>
+    <string name="b12_sleep_no_events">No sounds were captured</string>
+    <string name="b12_sleep_manual">Add a record manually</string>
+    <string name="b12_sleep_manual_hint">Time, quality and tags without the tracker</string>
+    <string name="b12_energy_left">Left</string>
+    <string name="b12_energy_over">Over goal</string>
+    <string name="b12_energy_goal">Goal</string>
+    <string name="b12_energy_meals">Meals</string>
+    <string name="b12_water_left">%1$d ml left</string>
+    <string name="b12_water_done">Goal reached</string>
+    <string name="b12_water_glasses">Glasses: %1$d</string>
+    <string name="b12_water_custom">Custom amount</string>
+    <string name="b12_water_default">Default amount</string>
+    <string name="b12_water_undo">Undo last</string>
+</resources>

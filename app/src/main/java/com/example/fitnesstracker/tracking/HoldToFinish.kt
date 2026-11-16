@@ -41,14 +41,12 @@ internal fun HoldToFinish(enabled: Boolean, onHeld: () -> Unit) {
             .semantics(mergeDescendants = true) {
                 role = Role.Button; contentDescription = label
                 if (!enabled) disabled()
-                // Accessibility activation opens a confirmation; it never saves/discards directly.
                 onClick(label = accessible) { if (enabled) currentAction(); enabled }
             }.pointerInput(enabled) {
                 detectTapGestures(onPress = {
                     if (enabled) coroutineScope {
                         val hold = launch {
                             progress.snapTo(0f)
-                            // Safety holds use real time even when system animations are disabled.
                             val start = android.os.SystemClock.elapsedRealtime()
                             do {
                                 val fraction = ((android.os.SystemClock.elapsedRealtime() - start) / 1400f).coerceIn(0f, 1f)

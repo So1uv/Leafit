@@ -12,36 +12,30 @@ import kotlin.math.sin
 
 @Composable
 fun WaterWave(progress: Float, color: Color, modifier: Modifier = Modifier) {
-    val phase by if (LocalLeafPageActive.current && progress > .01f) {
-        rememberInfiniteTransition(label = "waterWave").animateFloat(0f, 2f * PI.toFloat(),
-            infiniteRepeatable(tween(3200, easing = LinearEasing)), label = "phase")
-    } else rememberUpdatedState(0f)
-    val level by animateFloatAsState(
-        progress.coerceIn(0f, 1f),
-        tween(900, easing = EaseOutCubic),
-        label = "level"
-    )
-
+    val target = progress.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0f
+    val phase = remember { Animatable(0f) }
+    val animated = LocalLeafMotionActive.current && target > .01f
+    LaunchedEffect(animated) {
+        if (animated) phase.animateTo(phase.value + 2f * PI.toFloat(),
+            infiniteRepeatable(tween(3400, easing = LinearEasing)))
+    }
+    val fill = animateFloatAsState(target, tween(750, easing = EaseOutCubic), label = "waterFill")
+    val path = remember { Path() }
     Canvas(modifier) {
-        if (level <= 0.01f) return@Canvas
-
-        val surfaceY = size.height * (1f - level * 0.9f)
-
-        fun drawWave(p: Float, amplitude: Float, alpha: Float) {
-            val path = Path().apply {
-                moveTo(0f, size.height)
-                lineTo(0f, surfaceY)
-                var x = 0f
-                while (x <= size.width + 4f) {
-                    lineTo(x, surfaceY + amplitude * sin(2f * PI.toFloat() * (x / size.width) * 1.6f + p))
-                    x += 4f
-                }
-                lineTo(size.width, size.height)
-                close()
+        if (size.width <= 0f || fill.value <= .01f) return@Canvas
+        val baseline = size.height * (1f - .9f * fill.value)
+        val samples = (size.width / 4.dp.toPx()).toInt().coerceIn(20, 100)
+        repeat(2) { layer ->
+            path.reset()
+            path.moveTo(0f, size.height)
+            for (i in 0..samples) {
+                val fraction = i.toFloat() / samples
+                val displacement = sin(fraction * 3.2f * PI.toFloat() + phase.value + layer * 2.1f)
+                path.lineTo(size.width * fraction, baseline + displacement * (5f + 2f * layer).dp.toPx())
             }
-            drawPath(path, color.copy(alpha = alpha))
+            path.lineTo(size.width, size.height)
+            path.close()
+            drawPath(path, color.copy(alpha = if (layer == 0) .10f else .07f))
         }
-        drawWave(phase, 5.dp.toPx(), 0.10f)
-        drawWave(phase + 2.1f, 7.dp.toPx(), 0.07f)
     }
 }

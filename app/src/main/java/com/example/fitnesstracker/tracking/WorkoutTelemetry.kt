@@ -4,7 +4,6 @@ import java.util.ArrayDeque
 import java.util.Locale
 import kotlin.math.*
 
-/** Accepted route legs only; bounded storage and time-weighted smoothing. */
 internal class SpeedWindow {
     private data class Leg(var meters: Double, var millis: Long)
     private val legs = ArrayDeque<Leg>()
@@ -60,7 +59,6 @@ internal fun formatPace(secondsPerKm: Double?, locale: Locale): String {
 
 internal fun maximumRouteSpeed(type: String): Float = when (type) { "walk" -> 5f; "cycle" -> 25f; else -> 12f }
 
-/** Compatibility for routes saved before pace statistics existed. Called off the UI thread. */
 internal fun historicalPaceRange(points: List<TrackPoint>, type: String): PaceRange {
     val window = SpeedWindow()
     var range = PaceRange()

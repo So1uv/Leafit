@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b10_note_thoughts">Thoughts</string>
+    <string name="b10_note_moments">Day timeline</string>
+    <string name="b10_note_tasks">Tasks</string>
+    <string name="b10_note_add_item">Add item</string>
+    <string name="b10_note_add_moment">What just happened?</string>
+    <string name="b10_note_add_block">Add to note</string>
+    <string name="b10_note_tag_hint">A few words…</string>
+    <string name="b10_result_hero">Great work!</string>
+    <string name="b10_result_summary">Summary</string>
+    <string name="b10_result_note">Note</string>
+    <string name="b10_result_sets">Sets: %1$d</string>
+    <string name="b10_matrix_streak">Streak: %1$d d</string>
+    <string name="b10_matrix_weeks">7 weeks</string>
+</resources>

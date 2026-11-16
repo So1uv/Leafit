@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b12_sleep_finish_short">Завершити</string>
+    <string name="b12_sleep_math_task">%1$d + %2$d = ?</string>
+    <string name="b12_sleep_tab_tracking">Трекінг</string>
+    <string name="b12_sleep_start_delay">Затримка запису, хв</string>
+    <string name="b12_sleep_record_filter">Що зберігати</string>
+    <string name="b12_sleep_filter_all">Усе</string>
+    <string name="b12_sleep_filter_voice">Хропіння й голос</string>
+    <string name="b12_sleep_filter_snore">Хропіння</string>
+    <string name="b12_sleep_filter_talk">Голос</string>
+    <string name="b12_sleep_clip_length">Довжина запису, с</string>
+    <string name="b12_sleep_ringtone">Мелодія</string>
+    <string name="b12_sleep_volume">Гучність, %</string>
+    <string name="b12_sleep_ramp">Наростання, с</string>
+    <string name="b12_sleep_strong_vibration">Сильна вібрація</string>
+    <string name="b12_sleep_math">Приклад для вимкнення</string>
+    <string name="b12_sleep_math_hint">Будильник вимикається лише в застосунку після правильної відповіді</string>
+    <string name="b12_sleep_snooze_limit">Скільки разів відкладати</string>
+    <string name="b12_sleep_keep_nights">Зберігати ночей</string>
+    <string name="b12_sleep_nights">Ночі та записи</string>
+    <string name="b12_sleep_nights_hint">Натисніть ніч, щоб прослухати звуки</string>
+    <string name="b12_sleep_nights_empty">Зʼявляться після першої ночі з трекером</string>
+    <string name="b12_sleep_night_row">%1$s · звуків %2$d · записів %3$d</string>
+    <string name="b12_sleep_recordings_title">Записи: %1$d</string>
+    <string name="b12_sleep_no_events">Звуків не зафіксовано</string>
+    <string name="b12_sleep_manual">Додати запис вручну</string>
+    <string name="b12_sleep_manual_hint">Час, якість і теги без трекера</string>
+    <string name="b12_energy_left">Залишилось</string>
+    <string name="b12_energy_over">Понад ціль</string>
+    <string name="b12_energy_goal">Ціль</string>
+    <string name="b12_energy_meals">Прийомів</string>
+    <string name="b12_water_left">Залишилось %1$d мл</string>
+    <string name="b12_water_done">Ціль виконано</string>
+    <string name="b12_water_glasses">Склянок: %1$d</string>
+    <string name="b12_water_custom">Свій обʼєм</string>
+    <string name="b12_water_default">Обʼєм за замовчуванням</string>
+    <string name="b12_water_undo">Скасувати останнє</string>
+</resources>

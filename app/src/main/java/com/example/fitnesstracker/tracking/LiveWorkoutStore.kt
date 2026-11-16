@@ -32,6 +32,9 @@ internal data class LiveSession(
 }
 
 internal object LiveWorkoutStore {
+    private val mutableCompleted = MutableStateFlow<com.example.fitnesstracker.data.entities.Workout?>(null)
+    val completed = mutableCompleted.asStateFlow()
+    fun setCompleted(workout: com.example.fitnesstracker.data.entities.Workout?) { mutableCompleted.value = workout }
     private val mutable = MutableStateFlow(LiveSession())
     val state: StateFlow<LiveSession> = mutable.asStateFlow()
     private val mutableRoute = MutableStateFlow<List<LatLng>>(emptyList())

@@ -18,25 +18,25 @@ class SleepViewModel(
     val selectedDay: StateFlow<Long> = _selectedDay
 
     val history: StateFlow<List<SleepRecord>> = sleepRepo.getAll()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     val weekSleepHours: StateFlow<List<Float>> = sleepRepo.getAll()
         .map { list ->
             val weekStart = DateUtils.weekStart()
             val byDay = FloatArray(7)
-            list.filter { it.bedTime >= weekStart }.forEach { r ->
-                byDay[DateUtils.getDayOfWeek(r.bedTime)] += (r.wakeTime - r.bedTime) / 3600000f
+            list.filter { it.wakeTime >= weekStart && it.wakeTime <= System.currentTimeMillis() }.forEach { r ->
+                byDay[DateUtils.getDayOfWeek(r.wakeTime)] += (r.wakeTime - r.bedTime) / 3600000f
             }
             byDay.toList()
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, List(7) { 0f })
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), List(7) { 0f })
 
     val latestSleep: StateFlow<SleepRecord?> = sleepRepo.getLatest()
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), null)
 
     val selectedRecord: StateFlow<SleepRecord?> = _selectedDay
         .flatMapLatest { day -> sleepRepo.getForDay(day) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), null)
 
     fun selectDay(ts: Long) { _selectedDay.value = DateUtils.dayStart(ts) }
 

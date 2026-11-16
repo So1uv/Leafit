@@ -14,8 +14,8 @@ object Motion {
 }
 
 object Radii {
-    val card = 28.dp        // primary surfaces
-    val inner = 18.dp       // nested containers, icon plates
-    val small = 12.dp       // compact chips, checkboxes
-    val pill = 50.dp        // fully rounded pills/buttons
+    val card = 28.dp
+    val inner = 18.dp
+    val small = 12.dp
+    val pill = 50.dp
 }

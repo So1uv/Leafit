@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="notif_bar">#3B674D</color>
+    <color name="notif_track">#D7E7D9</color>
+    <color name="notif_chip">#E7F1E9</color>
+    <color name="notif_chip_text">#0F2117</color>
+    <color name="notif_on_bar">#FFFFFF</color>
+    <color name="notif_plate">#CDE9D5</color>
+    <color name="notif_sleep">#635A76</color>
+    <color name="notif_sleep_container">#E9DDFF</color>
+</resources>

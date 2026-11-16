@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b13_alarm_dismiss">Dismiss</string>
+    <string name="b13_alarms">Alarms</string>
+    <string name="b13_alarms_empty">Add an alarm — it rings even without the tracker</string>
+    <string name="b13_alarm_next">Next in %1$d h %2$d min</string>
+    <string name="b13_alarm_add">Add alarm</string>
+    <string name="b13_alarm_edit">Alarm</string>
+    <string name="b13_alarm_once">Once</string>
+    <string name="b13_alarm_daily">Every day</string>
+    <string name="b13_alarm_label">Label</string>
+    <string name="b13_alarm_repeat">Repeat</string>
+    <string name="b13_alarm_smart">Smart wake</string>
+    <string name="b13_alarm_smart_hint">With the tracker it may ring earlier during light sleep</string>
+    <string name="b13_alarm_exact">Allow exact alarms, otherwise the system may delay the ring</string>
+    <string name="b13_alarm_exact_action">Allow</string>
+    <string name="b13_alarm_test">Test the alarm</string>
+    <string name="b13_alarm_ring">Ringing</string>
+    <string name="b13_sleep_moves">Moves: %1$d</string>
+    <string name="b13_sleep_lullaby">Sleep sound</string>
+    <string name="b13_sleep_lullaby_on">Sleep sound is playing</string>
+    <string name="b13_lullaby_off">Off</string>
+    <string name="b13_lullaby_white">White</string>
+    <string name="b13_lullaby_pink">Pink</string>
+    <string name="b13_lullaby_brown">Brown</string>
+    <string name="b13_lullaby_minutes">Sound length, min</string>
+    <string name="b13_lullaby_volume">Sound volume, %</string>
+    <string name="b13_history_all">All</string>
+    <string name="b13_history_tracked">Tracker</string>
+    <string name="b13_history_manual">Manual</string>
+    <string name="b13_history_filter_empty">No records in this category</string>
+    <string name="b13_tracked_badge">Recorded by tracker</string>
+    <string name="b13_stat_moves">moves</string>
+    <string name="b13_stat_loudest">peak, dB</string>
+    <string name="b13_stat_average">avg noise, dB</string>
+    <string name="b13_stat_efficiency">calm sleep, %</string>
+    <string name="b13_chart_noise">Sounds overnight</string>
+    <string name="b13_chart_phases">Phases from movement</string>
+    <string name="b13_phase_deep">Deep %1$d min</string>
+    <string name="b13_phase_light">Light %1$d min</string>
+    <string name="b13_phase_restless">Restless %1$d min</string>
+    <string name="b13_chart_empty">The microphone captured no data that night</string>
+    <string name="b13_alarm_rings">Rings %1$s at %2$s — in %3$d h %4$d min</string>
+    <string name="b13_alarm_when">Ring at</string>
+</resources>

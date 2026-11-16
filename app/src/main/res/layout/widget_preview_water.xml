@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:background="@drawable/widget_green_background" android:paddingStart="14dp" android:paddingEnd="6dp"
+    android:paddingTop="10dp" android:paddingBottom="14dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:gravity="center_vertical">
+        <ImageView android:id="@+id/widget_icon" android:layout_width="36dp" android:layout_height="36dp" android:padding="8dp"
+            android:background="@drawable/widget_icon_plate" android:src="@drawable/ms_water_full" android:tint="@color/widget_on_primary"
+            android:importantForAccessibility="no" />
+        <TextView android:id="@+id/widget_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginStart="10dp" android:text="@string/b5_widget_water" android:maxLines="1" android:ellipsize="end"
+            android:textSize="14sp" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+        <TextView android:id="@+id/widget_footer" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" android:maxLines="1" android:ellipsize="end" android:textSize="12sp" android:alpha="0.75"
+            android:fontFamily="@font/roboto_flex_400" android:textColor="@color/widget_on_primary" android:visibility="gone" />
+        <ImageView android:id="@+id/widget_config" android:layout_width="40dp" android:layout_height="40dp" android:padding="10dp"
+            android:src="@drawable/ms_more_vert" android:tint="@color/widget_on_primary" android:contentDescription="@string/widget_customize" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="horizontal" android:gravity="center_vertical" android:paddingEnd="10dp">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/widget_value" android:layout_width="match_parent" android:layout_height="40dp"
+                android:gravity="center_vertical|start" android:maxLines="1" android:includeFontPadding="false" android:text="1 250"
+                android:autoSizeTextType="uniform" android:autoSizeMinTextSize="18sp" android:autoSizeMaxTextSize="34sp"
+                android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+            <TextView android:id="@+id/widget_unit" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:maxLines="1" android:ellipsize="end" android:textSize="12sp" android:alpha="0.8" android:text="@string/unit_ml"
+                android:fontFamily="@font/roboto_flex_500" android:textColor="@color/widget_on_primary" />
+            <ProgressBar android:id="@+id/widget_progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
+                android:layout_height="10dp" android:layout_marginTop="8dp" android:progressDrawable="@drawable/widget_progress_track"
+                android:progressTint="@color/widget_on_primary" android:max="100" android:progress="62" />
+            <TextView android:id="@+id/widget_detail" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" android:maxLines="2" android:ellipsize="end" android:textSize="12sp" android:alpha="0.85"
+                android:fontFamily="@font/roboto_flex_400" android:textColor="@color/widget_on_primary" android:visibility="gone" />
+        </LinearLayout>
+        <FrameLayout android:id="@+id/widget_ring_box" android:layout_width="56dp" android:layout_height="56dp"
+            android:layout_marginStart="10dp">
+            <ProgressBar android:id="@+id/widget_ring" style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent" android:layout_height="match_parent" android:indeterminate="false"
+                android:progressDrawable="@drawable/widget_ring" android:progressTint="@color/widget_on_primary" android:max="100"
+                android:progress="62" />
+            <TextView android:id="@+id/widget_percent" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:gravity="center" android:maxLines="1" android:textSize="13sp" android:text="62%"
+                android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_on_primary" />
+        </FrameLayout>
+    </LinearLayout>
+    <ImageView android:id="@+id/widget_chart" android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp" android:scaleType="fitXY" android:visibility="gone" android:importantForAccessibility="no" />
+    <TextView android:id="@+id/widget_action" android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp" android:background="@drawable/widget_action_background" android:gravity="center" android:textSize="14sp"
+        android:text="+250" android:fontFamily="@font/roboto_flex_600" android:textColor="@color/widget_primary_container" />
+</LinearLayout>

@@ -51,6 +51,6 @@ fun DayPageTopBar(todayTitle: String, dayTitle: String, selectedDay: Long, onCho
     Box(Modifier.fillMaxWidth().leafHeaderScrim(MaterialTheme.colorScheme.surface, headerState)
         .statusBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp)) {
         DaySectionHeader(todayTitle, dayTitle, selectedDay, onChooseDate,
-            modifier = Modifier.height(appHeaderHeight()), compact = true, headerState = headerState)
+            modifier = Modifier.heightIn(min = appHeaderHeight()), compact = true, headerState = headerState)
     }
 }

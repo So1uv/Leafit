@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -13,6 +14,11 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <application android:name=".LeafitApplication" android:allowBackup="true" android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name" android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true" android:enableOnBackInvokedCallback="true"
@@ -24,6 +30,9 @@
         </service>
         <receiver android:name=".workout.WorkoutTimerActionReceiver" android:exported="false" />
         <receiver android:name=".workout.RestTimerReceiver" android:exported="false" />
+        <activity android:name=".widgets.WidgetConfigurationActivity" android:exported="true">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" /></intent-filter>
+        </activity>
         <activity android:name=".sharing.WorkoutShareActivity" android:exported="false" />
         <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.workout.cards"
             android:exported="false" android:grantUriPermissions="true">
@@ -46,10 +55,52 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
+        <service android:name=".sleep.SleepTrackingService" android:exported="false"
+            android:foregroundServiceType="microphone|specialUse" android:stopWithTask="false">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-started overnight sleep tracking session with a visible stop control: keeps the sleep timer, movement log and wake-up alarm running while the screen is off." />
+        </service>
+        <receiver android:name=".sleep.SleepAlarmReceiver" android:exported="false" />
+        <activity android:name=".sleep.SleepAlarmActivity" android:exported="false" android:launchMode="singleInstance"
+            android:excludeFromRecents="true" android:showWhenLocked="true" android:turnScreenOn="true"
+            android:taskAffinity="" android:theme="@style/Theme.FitnessTracker" />
         <receiver android:name=".utils.BedtimeReminderReceiver" android:exported="false" />
         <receiver android:name=".utils.WaterReminderReceiver" android:exported="false" />
+        <receiver android:name=".utils.WaterNotificationActionReceiver" android:exported="false" />
+        <receiver android:name=".widgets.WaterWidget" android:label="@string/b5_widget_water" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_water_info" />
+        </receiver>
+        <receiver android:name=".widgets.NutritionWidget" android:label="@string/b5_widget_nutrition" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_nutrition_info" />
+        </receiver>
+        <receiver android:name=".widgets.WeekWidget" android:label="@string/b5_widget_week" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_week_info" />
+        </receiver>
         <receiver android:name=".widgets.TodayWidget" android:label="@string/widget_today" android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

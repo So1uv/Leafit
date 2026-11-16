@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b10_note_thoughts">Мысли</string>
+    <string name="b10_note_moments">Хроника дня</string>
+    <string name="b10_note_tasks">Задачи</string>
+    <string name="b10_note_add_item">Добавить пункт</string>
+    <string name="b10_note_add_moment">Что произошло сейчас?</string>
+    <string name="b10_note_add_block">Добавить в заметку</string>
+    <string name="b10_note_tag_hint">Пара слов…</string>
+    <string name="b10_result_hero">Отличная работа!</string>
+    <string name="b10_result_summary">Итоги</string>
+    <string name="b10_result_note">Заметка</string>
+    <string name="b10_result_sets">Подходов: %1$d</string>
+    <string name="b10_matrix_streak">Серия: %1$d дн.</string>
+    <string name="b10_matrix_weeks">7 недель</string>
+</resources>

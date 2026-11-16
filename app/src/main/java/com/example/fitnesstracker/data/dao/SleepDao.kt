@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SleepDao {
+    @Query("SELECT * FROM sleep_records WHERE wakeTime >= :start AND wakeTime < :end ORDER BY wakeTime ASC")
+    fun getBetween(start: Long, end: Long): Flow<List<SleepRecord>>
+
     @Query("SELECT * FROM sleep_records ORDER BY bedTime DESC")
     fun getAll(): Flow<List<SleepRecord>>
 

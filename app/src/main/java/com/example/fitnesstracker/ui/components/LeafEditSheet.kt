@@ -20,13 +20,19 @@ fun LeafEditSheet(onDismissRequest: () -> Unit, title: (@Composable () -> Unit)?
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         tonalElevation = 0.dp) {
-        Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 24.dp)) {
+        Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 20.dp)) {
             if (title != null) {
-                ProvideTextStyle(MaterialTheme.typography.headlineSmall) { title() }
-                Spacer(Modifier.height(20.dp))
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) { ProvideTextStyle(MaterialTheme.typography.titleLarge) { title() } }
+                    LeafIconButton(onClick = onDismissRequest) {
+                        Icon(LeafIcons.Close, androidx.compose.ui.res.stringResource(com.example.fitnesstracker.R.string.common_close))
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
             }
-            if (content != null) Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()), content = content)
-            FlowRow(Modifier.fillMaxWidth().padding(vertical = 20.dp),
+            if (content != null) Column(Modifier.weight(1f, fill = false).fillMaxWidth().verticalScroll(rememberScrollState())
+                .padding(vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(14.dp), content = content)
+            FlowRow(Modifier.fillMaxWidth().padding(vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 dismissButton?.invoke(); confirmButton()

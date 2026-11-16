@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="shortcut_water_background">#294A47</color>
-    <color name="shortcut_water_foreground">#BAE7DD</color>
-    <color name="shortcut_workout_background">#314F41</color>
-    <color name="shortcut_workout_foreground">#C6F2D2</color>
-    <color name="shortcut_sleep_background">#494052</color>
-    <color name="shortcut_sleep_foreground">#E8DFF0</color>
+    <color name="shortcut_water_background">#3C4A40</color>
+    <color name="shortcut_water_foreground">#D7E7D9</color>
+    <color name="shortcut_workout_background">#314D3B</color>
+    <color name="shortcut_workout_foreground">#BDEECC</color>
+    <color name="shortcut_sleep_background">#4B435D</color>
+    <color name="shortcut_sleep_foreground">#E9DDFF</color>
 </resources>

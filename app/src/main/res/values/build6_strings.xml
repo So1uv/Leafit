@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="b6_duration">Тривалість</string>
+  <string name="b6_cycles">Цикли</string>
+  <string name="b6_cycles_hint">Ілюстрація типового чергування стадій. Це не виміряні фази вашого сну.</string>
+  <string name="b6_deep">Глибокий</string>
+  <string name="b6_light">Легкий</string>
+  <string name="b6_rem">REM</string>
+  <string name="b6_awake">Неспання</string>
+  <string name="b6_body">Моє тіло</string>
+  <string name="b6_weight">Вага</string>
+  <string name="b6_measures">Заміри та фото</string>
+  <string name="b6_consumed">Спожито</string>
+  <string name="b6_daily_goal">Денний орієнтир · %1$d ккал</string>
+  <string name="b6_release">Оновлені кольори, перемикання графіка сну та спільний розділ ваги й замірів.</string>
+</resources>

@@ -1,5 +1,7 @@
 package com.example.fitnesstracker.tracking
 
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
 import com.example.fitnesstracker.ui.theme.LeafSurface as Surface
 import com.example.fitnesstracker.ui.components.LeafSwitch
 import com.example.fitnesstracker.ui.components.LeafButton

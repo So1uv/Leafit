@@ -19,7 +19,7 @@ fun MetricText(
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.headlineSmall,
     color: Color = MaterialTheme.colorScheme.onSurface,
-    weight: FontWeight = FontWeight.Medium
+    weight: FontWeight = FontWeight.SemiBold
 ) {
     Text(
         text = text,

@@ -82,18 +82,25 @@ object GoalPreferences {
 
     fun getStepsGoal(context: Context): Int =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_STEPS, 10000)
-    fun setStepsGoal(context: Context, value: Int) =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_STEPS, value).apply()
+    fun setStepsGoal(context: Context, value: Int) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_STEPS, value.coerceAtLeast(1)).apply()
+        com.example.fitnesstracker.widgets.LeafWidgets.requestUpdate(context)
+    }
 
     fun getWaterGoal(context: Context): Int =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_WATER, 2000)
-    fun setWaterGoal(context: Context, value: Int) =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_WATER, value).apply()
+    fun setWaterGoal(context: Context, value: Int) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_WATER, value.coerceAtLeast(1)).apply()
+        com.example.fitnesstracker.widgets.LeafWidgets.requestUpdate(context)
+        if (WaterReminder.isEnabled(context)) WaterReminder.scheduleNext(context)
+    }
 
     fun getSleepGoalMinutes(context: Context): Int =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_SLEEP, 480)
-    fun setSleepGoalMinutes(context: Context, value: Int) =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_SLEEP, value).apply()
+    fun setSleepGoalMinutes(context: Context, value: Int) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putInt(KEY_SLEEP, value.coerceAtLeast(1)).apply()
+        com.example.fitnesstracker.widgets.LeafWidgets.requestUpdate(context)
+    }
 }
 
 object MeasurementHistory {

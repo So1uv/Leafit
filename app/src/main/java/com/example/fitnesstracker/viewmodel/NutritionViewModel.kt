@@ -29,40 +29,40 @@ class NutritionViewModel(
 
     val meals: StateFlow<List<Meal>> = _selectedDay
         .flatMapLatest { day -> mealRepo.getMealsForDay(day) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val availableDates: StateFlow<List<Long>> = mealRepo.getAvailableDates()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val profile: StateFlow<UserProfile?> = userRepo.getProfile()
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     val dailyCalorieGoal: StateFlow<Float> = profile.map { p ->
         p?.let { HealthCalc.dailyCalories(it.weightKg, it.heightCm, it.age, it.gender) } ?: 2000f
-    }.stateIn(viewModelScope, SharingStarted.Lazily, 2000f)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 2000f)
 
     val totalCalories: StateFlow<Float> = meals
         .map { list -> list.sumOf { it.calories.toDouble() }.toFloat() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
     val totalProteins: StateFlow<Float> = meals
         .map { list -> list.sumOf { it.proteins.toDouble() }.toFloat() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
     val totalFats: StateFlow<Float> = meals
         .map { list -> list.sumOf { it.fats.toDouble() }.toFloat() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
     val totalCarbs: StateFlow<Float> = meals
         .map { list -> list.sumOf { it.carbs.toDouble() }.toFloat() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
     val savedMeals: StateFlow<List<com.example.fitnesstracker.data.entities.SavedMeal>> = mealRepo.getSavedMeals()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val weightHistory: StateFlow<List<com.example.fitnesstracker.data.entities.WeightRecord>> =
         extrasRepo.getWeightHistory()
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun addWeight(kg: Float) {
         viewModelScope.launch {
@@ -77,25 +77,36 @@ class NutritionViewModel(
     val waterMlToday: StateFlow<Int> = _selectedDay
         .flatMapLatest { day -> waterRepo.getForDay(day) }
         .map { list -> list.sumOf { it.amountMl } }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     val waterGoalMl: StateFlow<Int> = profile.map { p ->
         com.example.fitnesstracker.utils.GoalPreferences.getWaterGoal(appContext)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, 2000)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 2000)
 
     fun selectDay(ts: Long) { _selectedDay.value = DateUtils.dayStart(ts) }
 
     fun addWater(ml: Int) {
         viewModelScope.launch {
-            // stamp the record with midday of the selected day so history stays browsable
             val ts = if (_selectedDay.value == DateUtils.todayStart()) System.currentTimeMillis()
                      else _selectedDay.value + 12 * 3600_000L
             waterRepo.insert(com.example.fitnesstracker.data.entities.WaterRecord(timestamp = ts, amountMl = ml))
+            if (_selectedDay.value == DateUtils.todayStart()) {
+                val amount = waterRepo.getForDay(_selectedDay.value).first().sumOf { it.amountMl }
+                com.example.fitnesstracker.utils.WaterReminder.onWaterChanged(appContext, amount,
+                    com.example.fitnesstracker.utils.GoalPreferences.getWaterGoal(appContext))
+            }
         }
     }
 
     fun removeWater() {
-        viewModelScope.launch { waterRepo.removeLastForDay(_selectedDay.value) }
+        viewModelScope.launch {
+            waterRepo.removeLastForDay(_selectedDay.value)
+            if (_selectedDay.value == DateUtils.todayStart()) {
+                val amount = waterRepo.getForDay(_selectedDay.value).first().sumOf { it.amountMl }
+                com.example.fitnesstracker.utils.WaterReminder.onWaterChanged(appContext, amount,
+                    com.example.fitnesstracker.utils.GoalPreferences.getWaterGoal(appContext))
+            }
+        }
     }
 
     fun saveMealTemplate(meal: Meal) {
@@ -113,7 +124,7 @@ class NutritionViewModel(
 
     val products: StateFlow<List<com.example.fitnesstracker.data.entities.FoodProduct>> =
         extrasRepo.getProducts()
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun addProduct(p: com.example.fitnesstracker.data.entities.FoodProduct) {
         viewModelScope.launch { extrasRepo.insertProduct(p) }
@@ -151,6 +162,16 @@ class NutritionViewModel(
                 calories = saved.calories, proteins = saved.proteins, fats = saved.fats, carbs = saved.carbs
             ))
             achievementRepo.unlock("first_meal")
+        }
+    }
+
+    fun addPlannedMeal(meal: Meal, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val saved = try { mealRepo.insert(meal); true }
+                catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                catch (_: Exception) { false }
+            onResult(saved)
+            if (saved) runCatching { achievementRepo.unlock("first_meal") }
         }
     }
 

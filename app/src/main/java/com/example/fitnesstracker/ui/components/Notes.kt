@@ -1,5 +1,10 @@
 package com.example.fitnesstracker.ui.components
 
+import com.example.fitnesstracker.ui.components.LeafIconButton as IconButton
+import com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton as FilledTonalIconButton
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+import com.example.fitnesstracker.ui.components.LeafConfirmDialog as AlertDialog
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -34,23 +39,45 @@ fun DayNoteCard(note: DayNote?, onSave: (String) -> Unit, onHistory: () -> Unit,
     onDelete: (DayNote) -> Unit, onTogglePin: (DayNote) -> Unit) {
     var editing by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    var seed by rememberSaveable { mutableStateOf("") }
     val colors = MaterialTheme.colorScheme
-    LeafSurface(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), shape = RoundedCornerShape(30.dp),
+    LeafSurface(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), shape = RoundedCornerShape(28.dp),
         color = colors.surfaceContainer) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                LeafSurface(shape = LeafRosette(), color = colors.tertiaryContainer) {
-                    Box(Modifier.size(48.dp), Alignment.Center) { Icon(LeafIcons.EditNote, null, tint = colors.onTertiaryContainer) }
-                }
+                LeafIconBadge(noteMoodIcon(note?.text) ?: LeafIcons.EditNote, tone = LeafTone.Tertiary)
                 Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.home_day_note), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(stringResource(R.string.common_today), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+                    Text(stringResource(R.string.home_day_note), style = MaterialTheme.typography.titleMedium)
+                    Text(if (note != null) stringResource(R.string.common_today) + " · " +
+                        stringResource(R.string.b8_note_stats, NoteFormat.words(note.text), note.text.length)
+                        else stringResource(R.string.common_today),
+                        style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
                 }
                 FilledTonalIconButton(onClick = onHistory) { Icon(LeafIcons.History, stringResource(R.string.home_note_history)) }
             }
-            Text(note?.text?.takeIf { it.isNotBlank() } ?: stringResource(R.string.home_day_note_hint),
-                style = MaterialTheme.typography.bodyLarge, maxLines = 5, overflow = TextOverflow.Ellipsis,
-                color = if (note == null) colors.onSurfaceVariant else colors.onSurface)
+            if (note != null && NoteFormat.body(note.text).isNotBlank()) {
+                LeafSurface(onClick = { editing = true }, shape = RoundedCornerShape(20.dp), color = colors.surfaceContainerHigh) {
+                    NotePreview(note.text, maxLines = 6, onToggleTask = { line -> onSave(NoteFormat.toggleTask(note.text, line)) },
+                        modifier = Modifier.fillMaxWidth().padding(16.dp))
+                }
+            } else {
+                Text(stringResource(R.string.home_day_note_hint), style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant)
+                val prompts = listOf(stringResource(R.string.b8_note_prompt_1), stringResource(R.string.b8_note_prompt_2),
+                    stringResource(R.string.b8_note_prompt_3))
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    prompts.forEachIndexed { index, prompt ->
+                        LeafSurface(onClick = { seed = "$prompt\n"; editing = true }, shape = groupedLeafShape(index, prompts.size),
+                            color = colors.surfaceContainerHigh) {
+                            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Icon(LeafIcons.Lightbulb, null, Modifier.size(20.dp), tint = colors.tertiary)
+                                Text(prompt, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                                Icon(LeafIcons.ChevronRight, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
+                            }
+                        }
+                    }
+                }
+            }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 if (note != null) {
                     IconButton(onClick = { onTogglePin(note) }) {
@@ -69,16 +96,8 @@ fun DayNoteCard(note: DayNote?, onSave: (String) -> Unit, onHistory: () -> Unit,
             }
         }
     }
-    if (editing) {
-        var draft by rememberSaveable { mutableStateOf(note?.text.orEmpty()) }
-        LeafEditSheet(onDismissRequest = { editing = false }, title = { Text(stringResource(R.string.home_day_note)) },
-            content = { AppTextField(draft, { draft = it.take(20000) }, label = stringResource(R.string.home_day_note),
-                modifier = Modifier.fillMaxWidth(), singleLine = false, minLines = 6, maxLines = 16,
-                supportingText = stringResource(R.string.notes_character_count, draft.length)) },
-            confirmButton = { LeafButton(enabled = draft.isNotBlank(), onClick = { onSave(draft.trim()); editing = false }) {
-                Text(stringResource(R.string.common_save))
-            } }, dismissButton = { TextButton(onClick = { editing = false }) { Text(stringResource(R.string.common_cancel)) } })
-    }
+    if (editing) LeafNoteEditor(initial = note?.text ?: seed, title = stringResource(R.string.home_day_note),
+        onDismiss = { editing = false; seed = "" }) { onSave(it); editing = false; seed = "" }
     if (confirmDelete && note != null) NoteDeleteDialog(note, { confirmDelete = false }) {
         onDelete(note); confirmDelete = false
     }
@@ -90,7 +109,7 @@ private fun NoteDeleteDialog(note: DayNote, onDismiss: () -> Unit, onConfirm: ()
         title = { Text(stringResource(R.string.notes_delete_title)) },
         text = { Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(DateUtils.formatDate(note.dayStart), style = MaterialTheme.typography.labelLarge)
-            Text(note.text, maxLines = 3, overflow = TextOverflow.Ellipsis)
+            Text(NoteFormat.headline(note.text), maxLines = 3, overflow = TextOverflow.Ellipsis)
         } },
         confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } })
@@ -105,7 +124,6 @@ fun NoteHistoryDialog(notes: List<DayNote>, onDismiss: () -> Unit,
     var newestFirst by rememberSaveable { mutableStateOf(true) }
     var openedDay by rememberSaveable { mutableStateOf<Long?>(null) }
     var editing by rememberSaveable { mutableStateOf(false) }
-    var draft by rememberSaveable { mutableStateOf("") }
     var pendingDelete by remember { mutableStateOf<DayNote?>(null) }
     val colors = MaterialTheme.colorScheme
     val locale = appLocale()
@@ -131,9 +149,7 @@ fun NoteHistoryDialog(notes: List<DayNote>, onDismiss: () -> Unit,
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (opened != null) FilledTonalIconButton(onClick = { openedDay = null; editing = false }) {
                     Icon(LeafIcons.ArrowBack, stringResource(R.string.common_back))
-                } else LeafSurface(shape = LeafRosette(), color = colors.tertiaryContainer) {
-                    Box(Modifier.size(48.dp), Alignment.Center) { Icon(LeafIcons.EditNote, null, tint = colors.onTertiaryContainer) }
-                }
+                } else LeafIconBadge(LeafIcons.EditNote, tone = LeafTone.Tertiary)
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.home_note_history), style = MaterialTheme.typography.titleLarge)
                     Text(if (opened != null) DateUtils.formatDate(opened.dayStart) else stringResource(R.string.home_notes_count, notes.size),
@@ -148,20 +164,13 @@ fun NoteHistoryDialog(notes: List<DayNote>, onDismiss: () -> Unit,
                     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
                         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 20.dp)) {
                             item(key = opened.dayStart) {
-                                if (editing) AppTextField(draft, { draft = it.take(20000) },
-                                    label = stringResource(R.string.home_day_note), modifier = Modifier.fillMaxWidth(),
-                                    singleLine = false, minLines = 8, maxLines = Int.MAX_VALUE)
-                                else SelectionContainer { Text(opened.text, style = MaterialTheme.typography.bodyLarge) }
+                                NotePreview(opened.text, maxLines = Int.MAX_VALUE,
+                                    onToggleTask = { line -> onSave(opened.copy(text = NoteFormat.toggleTask(opened.text, line))) },
+                                    modifier = Modifier.fillMaxWidth())
                             }
                         }
                         Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            if (editing) {
-                                TextButton(onClick = { editing = false }) { Text(stringResource(R.string.common_cancel)) }
-                                Spacer(Modifier.weight(1f))
-                                LeafButton(enabled = draft.isNotBlank(), onClick = {
-                                    onSave(opened.copy(text = draft.trim())); editing = false
-                                }) { Text(stringResource(R.string.common_save)) }
-                            } else {
+                            run {
                                 IconButton(onClick = { clipboard.setText(AnnotatedString(opened.text)) }) { Icon(LeafIcons.ContentCopy, stringResource(R.string.notes_copy)) }
                                 IconButton(onClick = { onTogglePin(opened) }) {
                                     Icon(if (opened.isPinned) LeafIcons.Bookmark else LeafIcons.BookmarkBorder,
@@ -169,7 +178,10 @@ fun NoteHistoryDialog(notes: List<DayNote>, onDismiss: () -> Unit,
                                 }
                                 IconButton(onClick = { pendingDelete = opened }) { Icon(LeafIcons.DeleteOutline, stringResource(R.string.common_delete)) }
                                 Spacer(Modifier.weight(1f))
-                                LeafTonalButton(onClick = { draft = opened.text; editing = true }) { Text(stringResource(R.string.notes_edit_short)) }
+                                LeafTonalButton(onClick = { editing = true }) {
+                                    Icon(LeafIcons.Edit, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
+                                    Text(stringResource(R.string.notes_edit_short))
+                                }
                             }
                         }
                     }
@@ -212,8 +224,8 @@ fun NoteHistoryDialog(notes: List<DayNote>, onDismiss: () -> Unit,
                                                     Text(date.format(DateTimeFormatter.ofPattern("EEE", locale)), style = MaterialTheme.typography.labelSmall)
                                                 }
                                             }
-                                            Text(note.text, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium,
-                                                maxLines = 3, overflow = TextOverflow.Ellipsis)
+                                            NoteSummary(note.text, Modifier.weight(1f))
+                                            noteMoodIcon(note.text)?.let { Icon(it, null, Modifier.size(20.dp), tint = colors.tertiary) }
                                             Icon(if (note.isPinned) LeafIcons.Bookmark else LeafIcons.ChevronRight, null, Modifier.size(18.dp))
                                         }
                                     }
@@ -225,4 +237,6 @@ fun NoteHistoryDialog(notes: List<DayNote>, onDismiss: () -> Unit,
             }
         }
     }
+    if (editing && opened != null) LeafNoteEditor(initial = opened.text, title = DateUtils.formatDate(opened.dayStart),
+        onDismiss = { editing = false }) { onSave(opened.copy(text = it)); editing = false }
 }

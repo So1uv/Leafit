@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b8_note_clear">Clear</string>
+    <string name="b8_note_mood">Mood</string>
+    <string name="b8_note_placeholder">Write freely: what went well, what got in the way, how you feel</string>
+    <string name="b8_note_stats">%1$d words · %2$d chars</string>
+    <string name="b8_note_list">List</string>
+    <string name="b8_note_task">Task</string>
+    <string name="b8_note_time">Time</string>
+    <string name="b8_note_tag_workout">Workout</string>
+    <string name="b8_note_tag_food">Food</string>
+    <string name="b8_note_tag_sleep">Sleep</string>
+    <string name="b8_note_tag_feeling">Feeling</string>
+    <string name="b8_note_tag_gratitude">Gratitude</string>
+    <string name="b8_note_prompt_1">What went well today?</string>
+    <string name="b8_note_prompt_2">How does your body feel?</string>
+    <string name="b8_note_prompt_3">What’s the plan for tomorrow?</string>
+    <string name="b8_notif_steps_headline">Steps today</string>
+    <string name="b8_notif_of_goal">of %1$s</string>
+    <string name="b8_notif_km">%1$.1f km</string>
+    <string name="b8_notif_kcal">%1$d kcal</string>
+    <string name="b8_notif_left">%1$s to go</string>
+    <string name="b8_notif_goal_done">Goal ✓</string>
+    <string name="b8_notif_water_headline">Water today</string>
+    <string name="b8_notif_glasses">≈%1$d × %2$d ml</string>
+    <string name="b8_notif_ago">%1$d:%2$02d ago</string>
+    <string name="b8_notif_water_tip">Small sips every hour absorb better than a lot at once</string>
+    <string name="b8_widget_sizes_hint">The widget adapts to its size: from 1×1 (goal ring) up to 4×2 and larger (details, chart, button).</string>
+</resources>

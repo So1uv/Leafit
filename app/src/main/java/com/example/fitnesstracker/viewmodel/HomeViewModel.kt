@@ -26,11 +26,11 @@ class HomeViewModel(
 
     val todayNote: kotlinx.coroutines.flow.StateFlow<com.example.fitnesstracker.data.entities.DayNote?> =
         com.example.fitnesstracker.utils.currentDayFlow().flatMapLatest { extrasRepo.getNote(it) }
-            .stateIn(viewModelScope, SharingStarted.Lazily, null)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), null)
 
     val noteHistory: kotlinx.coroutines.flow.StateFlow<List<com.example.fitnesstracker.data.entities.DayNote>> =
         extrasRepo.getAllNotes()
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     fun saveNote(text: String) {
         viewModelScope.launch {
@@ -53,7 +53,7 @@ class HomeViewModel(
     }
 
     val weightHistory = extrasRepo.getWeightHistory()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     fun addWeight(kg: Float) {
         if (!kg.isFinite() || kg !in 20f..350f) return
@@ -98,27 +98,36 @@ class HomeViewModel(
 
     val weekSteps: StateFlow<List<com.example.fitnesstracker.data.entities.StepRecord>> =
         stepRepo.getSinceWeekStart()
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     val profile: StateFlow<UserProfile?> = userRepo.getProfile()
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), null)
 
     val totalWaterMl: StateFlow<Int> = waterRepo.totalMlToday()
         .map { it ?: 0 }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), 0)
 
     val todayWorkouts: StateFlow<List<Workout>> = workoutRepo.getTodayWorkouts()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
+
+    val weekWorkouts = workoutRepo.workoutsThisWeek()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
+    val allWorkouts = workoutRepo.getAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
+    val allSleep = sleepRepo.getAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
+    val allSteps = stepRepo.getAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     val todayCaloriesBurned: StateFlow<Float> = todayWorkouts
         .map { list -> list.sumOf { it.caloriesBurned.toDouble() }.toFloat() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), 0f)
 
     val lastSleep: StateFlow<SleepRecord?> = sleepRepo.getLatest()
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), null)
 
     val unlockedAchievements: StateFlow<List<Achievement>> = achievementRepo.getUnlocked()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     val workoutCount = workoutRepo.getAll().map { it.size }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
@@ -126,7 +135,7 @@ class HomeViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     val allAchievements: StateFlow<List<Achievement>> = achievementRepo.getAll()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), emptyList())
 
     val weekActivityMinutes: StateFlow<List<Float>> = workoutRepo.workoutsThisWeek()
         .map { list ->
@@ -134,7 +143,7 @@ class HomeViewModel(
             list.forEach { w -> byDay[DateUtils.getDayOfWeek(w.startTime)] += w.durationSeconds / 60f }
             byDay.toList()
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, List(7) { 0f })
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), List(7) { 0f })
 
     val steps: StateFlow<Int> = stepCounter.stepsToday
     val stepsSensorAvailable: StateFlow<Boolean> = stepCounter.available
@@ -145,7 +154,7 @@ class HomeViewModel(
             records.forEach { r -> byDay[DateUtils.getDayOfWeek(r.dayStart)] = r.steps }
             byDay.toList()
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, List(7) { 0 })
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), List(7) { 0 })
 
     fun startStepTracking() {
         if (com.example.fitnesstracker.utils.StepTrackingPreferences.isBackgroundEnabled(appContext)) {
@@ -157,11 +166,21 @@ class HomeViewModel(
     fun stopStepTracking()  { stepCounter.stop() }
 
     fun addWater(ml: Int) {
-        viewModelScope.launch { waterRepo.insert(WaterRecord(amountMl = ml)) }
+        viewModelScope.launch {
+            waterRepo.insert(WaterRecord(amountMl = ml))
+            val total = waterRepo.getForDay(DateUtils.todayStart()).first().sumOf { it.amountMl }
+            com.example.fitnesstracker.utils.WaterReminder.onWaterChanged(appContext, total,
+                com.example.fitnesstracker.utils.GoalPreferences.getWaterGoal(appContext))
+        }
     }
 
     fun removeLastWater() {
-        viewModelScope.launch { waterRepo.removeLastToday() }
+        viewModelScope.launch {
+            waterRepo.removeLastToday()
+            val total = waterRepo.getForDay(DateUtils.todayStart()).first().sumOf { it.amountMl }
+            com.example.fitnesstracker.utils.WaterReminder.onWaterChanged(appContext, total,
+                com.example.fitnesstracker.utils.GoalPreferences.getWaterGoal(appContext))
+        }
     }
 
     override fun onCleared() {

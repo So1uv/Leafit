@@ -9,3 +9,6 @@ __MACOSX/
 *.jks
 *.keystore
 secrets.properties
+app/release/
+*.apk
+*.aab

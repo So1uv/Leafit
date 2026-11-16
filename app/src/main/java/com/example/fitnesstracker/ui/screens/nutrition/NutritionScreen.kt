@@ -1,5 +1,8 @@
 package com.example.fitnesstracker.ui.screens.nutrition
 
+import com.example.fitnesstracker.ui.components.LeafTextButton as TextButton
+
+import com.example.fitnesstracker.ui.components.collectAsLeafState
 import com.example.fitnesstracker.ui.components.LeafScreenScaffold
 import com.example.fitnesstracker.ui.components.rememberLeafHeaderState
 import com.example.fitnesstracker.ui.theme.LeafCard as Card
@@ -23,9 +26,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,11 +41,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,22 +77,24 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun NutritionScreen(vm: NutritionViewModel) {
-    val meals        by vm.meals.collectAsState()
-    val selectedDay  by vm.selectedDay.collectAsState()
-    val goal         by vm.dailyCalorieGoal.collectAsState()
-    val totalCal     by vm.totalCalories.collectAsState()
-    val proteins     by vm.totalProteins.collectAsState()
-    val fats         by vm.totalFats.collectAsState()
-    val carbs        by vm.totalCarbs.collectAsState()
-    val dates        by vm.availableDates.collectAsState()
-    val waterMl      by vm.waterMlToday.collectAsState()
-    val waterGoal    by vm.waterGoalMl.collectAsState()
-    val savedMeals   by vm.savedMeals.collectAsState()
-    val products     by vm.products.collectAsState()
+    val meals        by vm.meals.collectAsLeafState()
+    val profile      by vm.profile.collectAsLeafState()
+    val selectedDay  by vm.selectedDay.collectAsLeafState()
+    val goal         by vm.dailyCalorieGoal.collectAsLeafState()
+    val totalCal     by vm.totalCalories.collectAsLeafState()
+    val proteins     by vm.totalProteins.collectAsLeafState()
+    val fats         by vm.totalFats.collectAsLeafState()
+    val carbs        by vm.totalCarbs.collectAsLeafState()
+    val dates        by vm.availableDates.collectAsLeafState()
+    val waterMl      by vm.waterMlToday.collectAsLeafState()
+    val waterGoal    by vm.waterGoalMl.collectAsLeafState()
+    val savedMeals   by vm.savedMeals.collectAsLeafState()
+    val products     by vm.products.collectAsLeafState()
+    val mealsByType = remember(meals) { meals.groupBy { it.mealType } }
     val context      = LocalContext.current
 
     var showDatePicker by remember { mutableStateOf(false) }
-    var expandedType   by remember { mutableStateOf<String?>(null) }
+    var expandedType   by rememberSaveable { mutableStateOf<String?>(null) }
 
     val listState = rememberLazyListState()
     val mealTypes = listOf(stringResource(R.string.nutrition_breakfast), stringResource(R.string.nutrition_lunch), stringResource(R.string.nutrition_snack), stringResource(R.string.nutrition_dinner))
@@ -124,17 +131,19 @@ fun NutritionScreen(vm: NutritionViewModel) {
 
 
 
-            item {
+            item(key = "nutrition_summary", contentType = "nutrition_summary") {
                 NutritionSummaryCard(
                     totalCal = totalCal,
                     goal = goal,
                     proteins = proteins,
                     fats = fats,
-                    carbs = carbs
+                    carbs = carbs,
+                    recordsCount = meals.size,
+                    hasProfile = profile != null
                 )
             }
 
-            item {
+            item(key = "hydration", contentType = "hydration") {
                 com.example.fitnesstracker.ui.components.HydrationCard(
                     waterMl = waterMl,
                     goalMl = waterGoal,
@@ -144,7 +153,7 @@ fun NutritionScreen(vm: NutritionViewModel) {
             }
 
             if (savedMeals.isNotEmpty()) {
-                item {
+                item(key = "saved_meals", contentType = "saved_meals") {
                     SavedMealsRow(
                         saved = savedMeals,
                         onAdd = { saved, factor ->
@@ -156,14 +165,14 @@ fun NutritionScreen(vm: NutritionViewModel) {
                 }
             }
 
-            item {
-                Text(stringResource(R.string.nutrition_meals_section), style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 4.dp, top = 8.dp))
+            item(key = "meals_header", contentType = "meals_header") {
+                com.example.fitnesstracker.ui.components.HistorySectionLabel(
+                    stringResource(R.string.nutrition_meals_section), meals.size, LeafIcons.Restaurant)
             }
 
             mealTypes.forEach { type ->
-                val typeMeals = meals.filter { it.mealType == type }
-                item(key = type) {
+                val typeMeals = mealsByType[type].orEmpty()
+                item(key = type, contentType = "meal_section") {
                     MealSection(
                         type = type,
                         meals = typeMeals,
@@ -181,93 +190,136 @@ fun NutritionScreen(vm: NutritionViewModel) {
                 }
             }
 
+            item(key = "recipes", contentType = "recipes") {
+                RecipePlannerCard(selectedDay, mealTypes, products, vm::addPlannedMeal)
+            }
+
 
         }
     }
 }
 
 @Composable
-private fun NutritionSummaryCard(totalCal: Float, goal: Float, proteins: Float, fats: Float, carbs: Float) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Column(Modifier.padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.primaryContainer) {
-                    Box(Modifier.size(40.dp), Alignment.Center) {
-                        Icon(LeafIcons.Restaurant, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(22.dp))
+private fun NutritionSummaryCard(totalCal: Float, goal: Float, proteins: Float, fats: Float, carbs: Float,
+    recordsCount: Int, hasProfile: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    val consumed = totalCal.takeIf { it.isFinite() }?.coerceAtLeast(0f) ?: 0f
+    val target = goal.takeIf { it.isFinite() && it > 0f } ?: 1f
+    val over = consumed > target
+    val fraction = (consumed / target).coerceIn(0f, 1f)
+    val animated = androidx.compose.animation.core.animateFloatAsState(fraction,
+        androidx.compose.animation.core.spring(dampingRatio = .8f, stiffness = 120f), label = "nutritionProgress")
+    val locale = com.example.fitnesstracker.ui.components.appLocale()
+    val numberFormat = remember(locale) { java.text.NumberFormat.getIntegerInstance(locale) }
+    val arcColor = if (over) colors.tertiary else colors.primary
+    val track = colors.onPrimaryContainer.copy(alpha = .12f)
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        com.example.fitnesstracker.ui.theme.LeafSurface(shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp,
+            bottomStart = 8.dp, bottomEnd = 8.dp), color = colors.primaryContainer, contentColor = colors.onPrimaryContainer) {
+            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.nutrition_energy_title), Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleMedium)
+                    com.example.fitnesstracker.ui.components.MetricExplanation(
+                        stringResource(R.string.nutrition_calories_label),
+                        listOf(stringResource(R.string.metric_meals_count, recordsCount),
+                            stringResource(R.string.metric_calorie_formula)),
+                        if (hasProfile) null else stringResource(R.string.metric_profile_missing))
+                }
+                Row(Modifier.padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                    Box(Modifier.size(124.dp), contentAlignment = Alignment.Center) {
+                        androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                            val stroke = 14.dp.toPx()
+                            val inset = stroke / 2f
+                            val arc = androidx.compose.ui.geometry.Size(size.width - stroke, size.height - stroke)
+                            val origin = androidx.compose.ui.geometry.Offset(inset, inset)
+                            drawArc(track, 135f, 270f, false, origin, arc,
+                                style = androidx.compose.ui.graphics.drawscope.Stroke(stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round))
+                            if (animated.value > .005f) drawArc(arcColor, 135f, 270f * animated.value, false, origin, arc,
+                                style = androidx.compose.ui.graphics.drawscope.Stroke(stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round))
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            com.example.fitnesstracker.ui.components.LeafIconBadge(LeafIcons.LocalFireDepartment,
+                                size = com.example.fitnesstracker.ui.components.LeafIconSize.Small,
+                                tone = com.example.fitnesstracker.ui.components.LeafTone.Solid,
+                                shape = com.example.fitnesstracker.ui.components.LeafRosette(8))
+                            Text("${(consumed * 100f / target).roundToInt().coerceIn(0, 999)}%", style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(stringResource(R.string.b6_consumed), style = MaterialTheme.typography.labelLarge)
+                        com.example.fitnesstracker.ui.components.LeafFitText(numberFormat.format(consumed.roundToInt()),
+                            style = MaterialTheme.typography.displayMedium.copy(fontFamily = com.example.fitnesstracker.ui.theme.NumericFontFamily))
+                        Text(stringResource(R.string.unit_kcal), style = MaterialTheme.typography.titleSmall)
                     }
                 }
-                Text(stringResource(R.string.nutrition_calories_label), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-            }
-            Spacer(Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                RollingNumber(totalCal.roundToInt(), style = MaterialTheme.typography.headlineLarge)
-                Text("/ ${goal.roundToInt()} " + stringResource(R.string.unit_kcal),
-                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 4.dp))
-            }
-            Spacer(Modifier.height(14.dp))
-            val budgetFrac = (totalCal / goal.coerceAtLeast(1f)).coerceIn(0f, 1.2f)
-            val heroColor = MaterialTheme.colorScheme.primary
-            GlowProgressBar(
-                progress = budgetFrac.coerceIn(0f, 1f),
-                color = heroColor,
-                height = 8.dp
-            )
-            Spacer(Modifier.height(8.dp))
-            if (totalCal < goal) {
-                Row(verticalAlignment = Alignment.Bottom) {
-                    RollingNumber(
-                        (goal - totalCal).roundToInt(),
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = heroColor,
-                        weight = FontWeight.Medium
-                    )
-                    Text(
-                        " " + stringResource(R.string.nutrition_remaining_suffix),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                Row(Modifier.fillMaxWidth().padding(end = 8.dp), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                    EnergyStat(stringResource(if (over) R.string.b12_energy_over else R.string.b12_energy_left),
+                        numberFormat.format(kotlin.math.abs(target - consumed).roundToInt()), 0, Modifier.weight(1f))
+                    EnergyStat(stringResource(R.string.b12_energy_goal), numberFormat.format(goal.roundToInt()), 1, Modifier.weight(1f))
+                    EnergyStat(stringResource(R.string.b12_energy_meals), recordsCount.toString(), 2, Modifier.weight(1f))
                 }
-            } else {
-                Text(
-                    stringResource(R.string.nutrition_goal_reached),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Normal,
-                    color = heroColor
-                )
             }
-            Spacer(Modifier.height(14.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MacroItem(stringResource(R.string.nutrition_proteins), proteins, MaterialTheme.colorScheme.primary, Modifier.weight(1f))
-                MacroItem(stringResource(R.string.nutrition_fats), fats, MaterialTheme.colorScheme.secondary, Modifier.weight(1f))
-                MacroItem(stringResource(R.string.nutrition_carbs), carbs, MaterialTheme.colorScheme.tertiary, Modifier.weight(1f))
+        }
+        val energy = listOf(proteins * 4f, fats * 9f, carbs * 4f).map { it.takeIf { v -> v.isFinite() && v > 0f } ?: 0f }
+        val total = energy.sum()
+        val tones = listOf(colors.primary, colors.secondary, colors.tertiary)
+        if (total > 0f) Row(Modifier.fillMaxWidth().height(12.dp), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+            energy.forEachIndexed { index, value ->
+                if (value > 0f) Box(Modifier.weight(value / total).fillMaxHeight().background(tones[index], RoundedCornerShape(6.dp)))
             }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            MacroItem(stringResource(R.string.nutrition_proteins), proteins, colors.primary, Modifier.weight(1f), 0,
+                if (total > 0f) (energy[0] * 100f / total).roundToInt() else null)
+            MacroItem(stringResource(R.string.nutrition_fats), fats, colors.secondary, Modifier.weight(1f), 1,
+                if (total > 0f) (energy[1] * 100f / total).roundToInt() else null)
+            MacroItem(stringResource(R.string.nutrition_carbs), carbs, colors.tertiary, Modifier.weight(1f), 2,
+                if (total > 0f) (energy[2] * 100f / total).roundToInt() else null)
         }
     }
 }
 
 @Composable
-private fun MacroItem(label: String, value: Float, color: Color, modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .background(color.copy(alpha = 0.14f))
-            .padding(horizontal = 10.dp, vertical = 10.dp)
-    ) {
-        MetricValueWithSuffix(
-            value = "%.0f".format(value),
-            suffix = " " + stringResource(R.string.unit_g),
-            valueStyle = MaterialTheme.typography.titleMedium,
-            suffixStyle = MaterialTheme.typography.labelSmall,
-            color = color
-        )
-        Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun EnergyStat(label: String, value: String, index: Int, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    com.example.fitnesstracker.ui.theme.LeafSurface(modifier, shape = RoundedCornerShape(
+        topStart = if (index == 0) 20.dp else 6.dp, bottomStart = if (index == 0) 20.dp else 6.dp,
+        topEnd = if (index == 2) 20.dp else 6.dp, bottomEnd = if (index == 2) 20.dp else 6.dp),
+        color = colors.surface.copy(alpha = .55f), contentColor = colors.onSurface) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+            com.example.fitnesstracker.ui.components.LeafFitText(value, style = MaterialTheme.typography.titleMedium)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        }
+    }
+}
+
+@Composable
+private fun MacroItem(label: String, value: Float, color: Color, modifier: Modifier = Modifier, index: Int = 1, share: Int? = null) {
+    val locale = com.example.fitnesstracker.ui.components.appLocale()
+    val format = remember(locale) { java.text.NumberFormat.getIntegerInstance(locale) }
+    com.example.fitnesstracker.ui.theme.LeafSurface(modifier, color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp,
+            bottomStart = if (index == 0) 28.dp else 8.dp,
+            bottomEnd = if (index == 2) 28.dp else 8.dp)) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Box(Modifier.size(10.dp).background(color, androidx.compose.foundation.shape.CircleShape))
+                Text(label, Modifier.weight(1f), style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            }
+            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(format.format(value.toDouble()), style = MaterialTheme.typography.titleLarge,
+                    fontFamily = com.example.fitnesstracker.ui.theme.NumericFontFamily, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.unit_g), Modifier.padding(bottom = 3.dp), style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            if (share != null) Text("$share%", style = MaterialTheme.typography.labelMedium, color = color)
+        }
     }
 }
 
@@ -286,140 +338,111 @@ private fun MealSection(
     onDeleteProduct: (com.example.fitnesstracker.data.entities.FoodProduct) -> Unit = {},
     onAddFromProduct: (com.example.fitnesstracker.data.entities.FoodProduct, Float) -> Unit = { _, _ -> }
 ) {
-    val haptic = LocalHapticFeedback.current
-    val arrowRotation by animateFloatAsState(if (expanded) 180f else 0f, spring(dampingRatio = .85f, stiffness = 500f), label = "arrow")
-
-    Card(
+    val colors = MaterialTheme.colorScheme
+    val arrowRotation by animateFloatAsState(if (expanded) 180f else 0f, spring(dampingRatio = .7f, stiffness = 400f), label = "arrow")
+    val filled = meals.isNotEmpty()
+    val kcal = meals.sumOf { it.calories.toDouble() }.toInt()
+    val mealIcon = when (type) {
+        stringResource(R.string.nutrition_breakfast) -> LeafIcons.Coffee
+        stringResource(R.string.nutrition_lunch) -> LeafIcons.LunchDining
+        stringResource(R.string.nutrition_snack) -> LeafIcons.Cookie
+        stringResource(R.string.nutrition_dinner) -> LeafIcons.RamenDining
+        else -> LeafIcons.Restaurant
+    }
+    com.example.fitnesstracker.ui.theme.LeafSurface(
         modifier = Modifier.fillMaxWidth().animateContentSize(spring(dampingRatio = .9f, stiffness = 500f)),
-        shape = RoundedCornerShape(if (expanded) 28.dp else 24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
+        shape = RoundedCornerShape(28.dp), color = colors.surfaceContainer) {
         Column {
-            val (mealIcon, mealTint) = when (type) {
-                stringResource(R.string.nutrition_breakfast) -> LeafIcons.WbSunny to MaterialTheme.colorScheme.tertiary
-                stringResource(R.string.nutrition_lunch)     -> LeafIcons.LunchDining to MaterialTheme.colorScheme.primary
-                stringResource(R.string.nutrition_snack)  -> LeafIcons.BakeryDining to MaterialTheme.colorScheme.secondary
-                stringResource(R.string.nutrition_dinner)  -> LeafIcons.DinnerDining to MaterialTheme.colorScheme.secondary
-                else       -> LeafIcons.Restaurant to MaterialTheme.colorScheme.primary
-            }
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .background(if (expanded) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainer)
-                    .bouncyClick { onToggle() }
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    Modifier.size(42.dp).clip(RoundedCornerShape(15.dp))
-                        .background(mealTint.copy(alpha = 0.16f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(mealIcon, null, tint = mealTint, modifier = Modifier.size(22.dp))
-                }
-                Spacer(Modifier.size(12.dp))
+            Row(Modifier.fillMaxWidth().bouncyClick { onToggle() }.padding(16.dp), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                com.example.fitnesstracker.ui.components.LeafIconBadge(mealIcon,
+                    tone = if (filled) com.example.fitnesstracker.ui.components.LeafTone.Solid
+                        else com.example.fitnesstracker.ui.components.LeafTone.Primary,
+                    shape = if (filled) com.example.fitnesstracker.ui.components.LeafRosette(8) else null)
                 Column(Modifier.weight(1f)) {
-                    Text(type, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
-                    Text(
-                        if (meals.isNotEmpty()) stringResource(R.string.nutrition_meal_summary, meals.sumOf { it.calories.toDouble() }.toInt(), meals.size) else stringResource(R.string.nutrition_meal_empty),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text(type, style = MaterialTheme.typography.titleMedium)
+                    Text(if (filled) stringResource(R.string.b15_meal_count, meals.size) else stringResource(R.string.nutrition_meal_empty),
+                        style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 }
-                if (meals.isNotEmpty()) {
-                    Surface(
-                        shape = RoundedCornerShape(50),
-                        color = mealTint.copy(alpha = 0.14f),
-                        modifier = Modifier.padding(end = 6.dp)
-                    ) {
-                        Text(
-                            "${meals.sumOf { it.calories.toDouble() }.toInt()}",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Normal,
-                            color = mealTint,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                        )
+                if (filled) com.example.fitnesstracker.ui.theme.LeafSurface(shape = CircleShape, color = colors.primaryContainer,
+                    contentColor = colors.onPrimaryContainer) {
+                    Text("$kcal " + stringResource(R.string.unit_kcal), Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelLarge, maxLines = 1)
+                }
+                Box(Modifier.size(36.dp).background(colors.surfaceContainerHighest, CircleShape), contentAlignment = Alignment.Center) {
+                    Icon(LeafIcons.ExpandMore, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(22.dp).rotate(arrowRotation))
+                }
+            }
+            if (filled) {
+                val parts = listOf(meals.sumOf { it.proteins.toDouble() }.toFloat() * 4f, meals.sumOf { it.fats.toDouble() }.toFloat() * 9f,
+                    meals.sumOf { it.carbs.toDouble() }.toFloat() * 4f)
+                val total = parts.sum()
+                val tones = listOf(colors.primary, colors.secondary, colors.tertiary)
+                if (total > 0f) Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 14.dp).height(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    parts.forEachIndexed { index, value ->
+                        if (value > 0f) Box(Modifier.weight(value / total).fillMaxHeight().background(tones[index], RoundedCornerShape(4.dp)))
                     }
                 }
-                Icon(
-                    com.example.fitnesstracker.ui.components.LeafIcons.ExpandMore,
-                    null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.rotate(arrowRotation)
-                )
             }
-
             AnimatedVisibility(visible = expanded) {
-                Column {
-                    Spacer(Modifier.height(8.dp))
-                    if (meals.isEmpty()) {
-                        Text(
-                            stringResource(R.string.nutrition_no_records),
-                            Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else {
-                        meals.forEach { meal ->
-                            key(meal.id) {
-                                var visible by remember { mutableStateOf(false) }
-                                LaunchedEffect(Unit) { visible = true }
-                                AnimatedVisibility(
-                                    visible = visible,
-                                    enter = androidx.compose.animation.fadeIn(tween(280)) +
-                                            androidx.compose.animation.slideInVertically(
-                                                spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)
-                                            ) { it / 2 }
-                                ) {
-                                    MealRow(meal = meal, onDelete = onDelete, onEdit = onEdit, onSaveTemplate = onSaveTemplate)
-                                }
-                            }
+                Column(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    meals.forEachIndexed { index, meal ->
+                        key(meal.id) {
+                            MealRow(meal = meal, index = index, count = meals.size, onDelete = onDelete, onEdit = onEdit,
+                                onSaveTemplate = onSaveTemplate)
                         }
                     }
-                    InlineAddMealForm(type = type, onAdd = onAdd, products = products, onCreateProduct = onCreateProduct, onDeleteProduct = onDeleteProduct, onAddFromProduct = onAddFromProduct)
+                    if (filled) Spacer(Modifier.height(8.dp))
+                    InlineAddMealForm(type = type, onAdd = onAdd, products = products, onCreateProduct = onCreateProduct,
+                        onDeleteProduct = onDeleteProduct, onAddFromProduct = onAddFromProduct)
                 }
             }
         }
     }
 }
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-private fun MealRow(meal: Meal, onDelete: (Meal) -> Unit, onEdit: (Meal) -> Unit, onSaveTemplate: (Meal) -> Unit) {
+private fun MealRow(meal: Meal, index: Int, count: Int, onDelete: (Meal) -> Unit, onEdit: (Meal) -> Unit, onSaveTemplate: (Meal) -> Unit) {
+    val colors = MaterialTheme.colorScheme
     var showEdit by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(false) }
     if (showEdit) {
         EditMealDialog(meal = meal, onSave = { onEdit(it); showEdit = false }, onDismiss = { showEdit = false })
     }
-    Row(
-        Modifier.fillMaxWidth().bouncyClick { showEdit = true }.padding(horizontal = 14.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(meal.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Normal)
-            Spacer(Modifier.height(3.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
-                MacroPill("${meal.calories.roundToInt()}", stringResource(R.string.unit_kcal), MaterialTheme.colorScheme.secondary)
-                MacroPill("${meal.proteins.toInt()}", stringResource(R.string.macro_p), MaterialTheme.colorScheme.primary)
-                MacroPill("${meal.fats.toInt()}", stringResource(R.string.macro_f), MaterialTheme.colorScheme.error)
-                MacroPill("${meal.carbs.toInt()}", stringResource(R.string.macro_c), MaterialTheme.colorScheme.tertiary)
+    com.example.fitnesstracker.ui.theme.LeafSurface(onClick = { showEdit = true }, modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(topStart = if (index == 0) 20.dp else 6.dp, topEnd = if (index == 0) 20.dp else 6.dp,
+            bottomStart = if (index == count - 1) 20.dp else 6.dp, bottomEnd = if (index == count - 1) 20.dp else 6.dp),
+        color = colors.surfaceContainerHigh) {
+        Row(Modifier.padding(start = 16.dp, end = 4.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(meal.name, style = MaterialTheme.typography.titleSmall, maxLines = 2,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    MacroPill("${meal.proteins.toInt()}", stringResource(R.string.macro_p), colors.primary)
+                    MacroPill("${meal.fats.toInt()}", stringResource(R.string.macro_f), colors.secondary)
+                    MacroPill("${meal.carbs.toInt()}", stringResource(R.string.macro_c), colors.tertiary)
+                }
             }
-        }
-        Box(Modifier.size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.14f)).bouncyClick {
-                onSaveTemplate(meal); saved = true
-            },
-            contentAlignment = Alignment.Center) {
-            Icon(if (saved) LeafIcons.Bookmark else LeafIcons.BookmarkBorder, null,
-                tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(15.dp))
-        }
-        Box(Modifier.size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)).bouncyClick { showEdit = true },
-            contentAlignment = Alignment.Center) {
-            Icon(com.example.fitnesstracker.ui.components.LeafIcons.Edit, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(15.dp))
-        }
-        Box(Modifier.size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.25f)).bouncyClick { onDelete(meal) },
-            contentAlignment = Alignment.Center) {
-            Icon(com.example.fitnesstracker.ui.components.LeafIcons.Close, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(15.dp))
+            Column(horizontalAlignment = Alignment.End) {
+                Text("${meal.calories.roundToInt()}", style = MaterialTheme.typography.titleLarge,
+                    fontFamily = com.example.fitnesstracker.ui.theme.NumericFontFamily)
+                Text(stringResource(R.string.unit_kcal), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
+            }
+            Column {
+                com.example.fitnesstracker.ui.components.LeafIconButton(onClick = { onSaveTemplate(meal); saved = true },
+                    modifier = Modifier.size(40.dp)) {
+                    Icon(if (saved) LeafIcons.Bookmark else LeafIcons.BookmarkBorder, stringResource(R.string.b7_save_template),
+                        tint = colors.primary, modifier = Modifier.size(20.dp))
+                }
+                com.example.fitnesstracker.ui.components.LeafIconButton(onClick = { onDelete(meal) }, modifier = Modifier.size(40.dp)) {
+                    Icon(LeafIcons.DeleteOutline, stringResource(R.string.common_delete), tint = colors.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp))
+                }
+            }
         }
     }
 }
@@ -490,123 +513,72 @@ private fun InlineAddMealForm(
             onDismiss = { showProducts = false }
         )
     }
-    var name     by remember(type) { mutableStateOf("") }
-    var calories by remember(type) { mutableStateOf("") }
-    var proteins by remember(type) { mutableStateOf("") }
-    var fats     by remember(type) { mutableStateOf("") }
-    var carbs    by remember(type) { mutableStateOf("") }
+    var name by rememberSaveable(type) { mutableStateOf("") }
+    var calories by rememberSaveable(type) { mutableStateOf("") }
+    var proteins by rememberSaveable(type) { mutableStateOf("") }
+    var fats by rememberSaveable(type) { mutableStateOf("") }
+    var carbs by rememberSaveable(type) { mutableStateOf("") }
+    var manual by rememberSaveable(type) { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.72f)
-    ) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    Modifier.size(28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(com.example.fitnesstracker.ui.components.LeafIcons.Add, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(16.dp))
+    val colors = MaterialTheme.colorScheme
+    fun reset() { name = ""; calories = ""; proteins = ""; fats = ""; carbs = "" }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+            com.example.fitnesstracker.ui.theme.LeafSurface(onClick = { showProducts = true }, modifier = Modifier.weight(1f).height(56.dp),
+                shape = RoundedCornerShape(topStart = 28.dp, bottomStart = 28.dp, topEnd = 8.dp, bottomEnd = 8.dp),
+                color = colors.secondaryContainer, contentColor = colors.onSecondaryContainer) {
+                Row(Modifier.padding(horizontal = 12.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                    Icon(LeafIcons.Skillet, null, Modifier.size(20.dp)); Spacer(Modifier.width(8.dp))
+                    com.example.fitnesstracker.ui.components.LeafFitText(stringResource(R.string.nutrition_from_product),
+                        style = MaterialTheme.typography.labelLarge)
                 }
-                Spacer(Modifier.size(8.dp))
-                Text(stringResource(R.string.nutrition_add_to, type), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
-                Surface(
-                    shape = RoundedCornerShape(50),
-                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.14f),
-                    modifier = Modifier.bouncyClick { showProducts = true }
-                ) {
-                    Row(Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(LeafIcons.Kitchen, null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(14.dp))
-                        Text(stringResource(R.string.nutrition_from_product),
-                            style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.tertiary)
+            }
+            com.example.fitnesstracker.ui.theme.LeafSurface(onClick = { manual = !manual }, modifier = Modifier.weight(1f).height(56.dp),
+                shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp, topEnd = 28.dp, bottomEnd = 28.dp),
+                color = if (manual) colors.primary else colors.primaryContainer,
+                contentColor = if (manual) colors.onPrimary else colors.onPrimaryContainer) {
+                Row(Modifier.padding(horizontal = 12.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                    Icon(if (manual) LeafIcons.Close else LeafIcons.Add, null, Modifier.size(20.dp)); Spacer(Modifier.width(8.dp))
+                    com.example.fitnesstracker.ui.components.LeafFitText(stringResource(R.string.b15_meal_manual),
+                        style = MaterialTheme.typography.labelLarge)
+                }
+            }
+        }
+        AnimatedVisibility(visible = manual) {
+            com.example.fitnesstracker.ui.theme.LeafSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
+                color = colors.surfaceContainerHigh) {
+                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(stringResource(R.string.nutrition_add_to, type), style = MaterialTheme.typography.titleSmall, maxLines = 2)
+                    AppTextField(value = name, onValueChange = { name = it }, label = stringResource(R.string.nutrition_dish_name),
+                        modifier = Modifier.fillMaxWidth())
+                    StepperDecimalField(value = calories, onChange = { calories = it.filter { c -> c.isDigit() || c == '.' } },
+                        label = stringResource(R.string.nutrition_calories_kcal), step = 10f, max = 5000f, modifier = Modifier.fillMaxWidth())
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        AppTextField(value = proteins, onValueChange = { proteins = it.filter { c -> c.isDigit() || c == '.' } },
+                            label = stringResource(R.string.nutrition_proteins), keyboardType = KeyboardType.Decimal, modifier = Modifier.weight(1f))
+                        AppTextField(value = fats, onValueChange = { fats = it.filter { c -> c.isDigit() || c == '.' } },
+                            label = stringResource(R.string.nutrition_fats), keyboardType = KeyboardType.Decimal, modifier = Modifier.weight(1f))
+                        AppTextField(value = carbs, onValueChange = { carbs = it.filter { c -> c.isDigit() || c == '.' } },
+                            label = stringResource(R.string.nutrition_carbs), keyboardType = KeyboardType.Decimal, modifier = Modifier.weight(1f))
                     }
-                }
-            }
-            AppTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = stringResource(R.string.nutrition_dish_name),
-                modifier = Modifier.fillMaxWidth()
-            )
-            StepperDecimalField(
-                value = calories,
-                onChange = { calories = it.filter { c -> c.isDigit() || c == '.' } },
-                label = stringResource(R.string.nutrition_calories_kcal),
-                step = 10f,
-                max = 5000f,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AppTextField(
-                    value = proteins,
-                    onValueChange = { proteins = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = stringResource(R.string.nutrition_proteins),
-                    keyboardType = KeyboardType.Decimal,
-                    modifier = Modifier.weight(1f)
-                )
-                AppTextField(
-                    value = fats,
-                    onValueChange = { fats = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = stringResource(R.string.nutrition_fats),
-                    keyboardType = KeyboardType.Decimal,
-                    modifier = Modifier.weight(1f)
-                )
-                AppTextField(
-                    value = carbs,
-                    onValueChange = { carbs = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = stringResource(R.string.nutrition_carbs),
-                    keyboardType = KeyboardType.Decimal,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                LeafButton(
-                    onClick = {
-                        if (name.isNotBlank()) {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            onAdd(
-                                Meal(
-                                    name = name.trim(),
-                                    mealType = type,
-                                    calories = calories.toFloatOrNull() ?: 0f,
-                                    proteins = proteins.toFloatOrNull() ?: 0f,
-                                    fats = fats.toFloatOrNull() ?: 0f,
-                                    carbs = carbs.toFloatOrNull() ?: 0f
-                                )
-                            )
-                            name = ""
-                            calories = ""
-                            proteins = ""
-                            fats = ""
-                            carbs = ""
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        com.example.fitnesstracker.ui.components.LeafFilledTonalIconButton(onClick = { reset() }, modifier = Modifier.size(52.dp)) {
+                            Icon(LeafIcons.Restore, stringResource(R.string.common_clear))
                         }
-                    },
-                    enabled = name.isNotBlank(),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier.weight(1f).height(46.dp)
-                ) {
-                    Text(stringResource(R.string.common_add))
-                }
-                LeafTonalButton(
-                    onClick = {
-                        name = ""
-                        calories = ""
-                        proteins = ""
-                        fats = ""
-                        carbs = ""
-                    },
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier.weight(1f).height(46.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                ) {
-                    Text(stringResource(R.string.common_clear))
+                        LeafButton(enabled = name.isNotBlank(), onClick = {
+                            if (name.isNotBlank()) {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onAdd(Meal(name = name.trim(), mealType = type, calories = calories.toFloatOrNull() ?: 0f,
+                                    proteins = proteins.toFloatOrNull() ?: 0f, fats = fats.toFloatOrNull() ?: 0f,
+                                    carbs = carbs.toFloatOrNull() ?: 0f))
+                                reset()
+                                manual = false
+                            }
+                        }, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) {
+                            Icon(LeafIcons.Check, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.common_add))
+                        }
+                    }
                 }
             }
         }
@@ -621,14 +593,15 @@ private fun DateSelectDialog(dates: List<Long>, selectedDay: Long, onSelect: (Lo
 
 @Composable
 private fun MacroPill(value: String, label: String, color: Color) {
-    Surface(shape = RoundedCornerShape(50), color = color.copy(alpha = 0.14f)) {
+    Surface(shape = RoundedCornerShape(50), color = color.copy(alpha = 0.12f)) {
         Row(
-            Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(2.dp)
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            Text(value, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal, color = color)
-            Text(label, style = MaterialTheme.typography.labelSmall, color = color.copy(alpha = 0.75f), fontWeight = FontWeight.Medium)
+            Text(value, style = MaterialTheme.typography.labelMedium, color = color,
+                fontFamily = com.example.fitnesstracker.ui.theme.NumericFontFamily)
+            Text(label, style = MaterialTheme.typography.labelMedium, color = color.copy(alpha = 0.75f))
         }
     }
 }
@@ -664,7 +637,6 @@ private fun SavedMealsRow(
                                     Text(
                                         if (factor % 1f == 0f) "×${factor.toInt()}" else "×$factor",
                                         style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Medium,
                                         color = if (factor == 1f) MaterialTheme.colorScheme.onPrimaryContainer
                                                 else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -684,12 +656,8 @@ private fun SavedMealsRow(
     Column {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)) {
-            Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
-                Box(Modifier.size(28.dp), Alignment.Center) {
-                    Icon(LeafIcons.Bookmark, null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.size(16.dp))
-                }
-            }
-            Text(stringResource(R.string.nutrition_saved_meals), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            com.example.fitnesstracker.ui.components.LeafIconBadge(LeafIcons.Bookmark, size = com.example.fitnesstracker.ui.components.LeafIconSize.Small, tone = com.example.fitnesstracker.ui.components.LeafTone.Secondary)
+            Text(stringResource(R.string.nutrition_saved_meals), style = MaterialTheme.typography.titleSmall)
         }
         androidx.compose.foundation.lazy.LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -708,7 +676,7 @@ private fun SavedMealsRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Column {
-                            Text(item.name, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                            Text(item.name, style = MaterialTheme.typography.labelLarge, maxLines = 1)
                             Text("${item.calories.roundToInt()} ${stringResource(R.string.unit_kcal)}",
                                 style = MaterialTheme.typography.labelSmall.copy(fontFeatureSettings = "tnum"),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -751,7 +719,7 @@ private fun ProductsPickerDialog(
         content = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 gramsFor?.let { target ->
-                    Text(target.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
+                    Text(target.name, style = MaterialTheme.typography.titleSmall)
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         AppTextField(
                             value = grams,
@@ -828,7 +796,7 @@ private fun ProductsPickerDialog(
                                 Row(Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f)) {
-                                        Text(p.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Normal)
+                                        Text(p.name, style = MaterialTheme.typography.bodyMedium)
                                         Text("${p.caloriesPer100.roundToInt()} ${stringResource(R.string.unit_kcal)} / 100 ${stringResource(R.string.unit_g)}",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b16_step">Шаг %1$d из %2$d</string>
+    <string name="b16_optional">Необязательно — можно заполнить позже в профиле</string>
+    <string name="b16_bmi">Индекс массы тела</string>
+    <string name="b16_photo">Фото профиля</string>
+    <string name="b16_photo_hint">Нажмите, чтобы выбрать</string>
+    <string name="b16_about_you">О вас</string>
+</resources>

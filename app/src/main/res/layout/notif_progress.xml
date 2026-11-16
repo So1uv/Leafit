@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+    android:gravity="center_vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <ImageView android:id="@+id/notif_icon" android:layout_width="36dp" android:layout_height="36dp" android:padding="8dp"
+            android:background="@drawable/notif_plate" android:tint="@color/notif_bar" android:importantForAccessibility="no" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginStart="10dp" android:orientation="vertical">
+            <TextView android:id="@+id/notif_title" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Compat.Notification.Info" android:maxLines="1" android:ellipsize="end" />
+            <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextView android:id="@+id/notif_value" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Compat.Notification.Title" android:textSize="18sp"
+                    android:fontFamily="@font/roboto_flex_600" android:maxLines="1" android:includeFontPadding="false" />
+                <Chronometer android:id="@+id/notif_clock" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Compat.Notification.Title" android:textSize="18sp"
+                    android:fontFamily="@font/roboto_flex_600" android:maxLines="1" android:includeFontPadding="false"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+        <TextView android:id="@+id/notif_caption" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" android:maxWidth="140dp"
+            android:textAppearance="@style/TextAppearance.Compat.Notification.Info" android:maxLines="1" android:ellipsize="end" />
+        <TextView android:id="@+id/notif_percent" android:layout_width="wrap_content" android:layout_height="24dp"
+            android:layout_marginStart="8dp" android:background="@drawable/notif_pill" android:gravity="center"
+            android:paddingHorizontal="10dp" android:textSize="12sp" android:fontFamily="@font/roboto_flex_600"
+            android:textColor="@color/notif_on_bar" android:maxLines="1" android:includeFontPadding="false" android:visibility="gone" />
+    </LinearLayout>
+    <ProgressBar android:id="@+id/notif_bar" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
+        android:layout_height="10dp" android:layout_marginTop="6dp" android:progressDrawable="@drawable/notif_progress"
+        android:max="100" android:progress="0" android:visibility="gone" />
+</LinearLayout>

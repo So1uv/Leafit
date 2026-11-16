@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b15_summary_no_day">За %1$s запису сну немає</string>
+    <string name="b15_meal_count">Страв: %1$d</string>
+    <string name="b15_meal_manual">Вручну</string>
+    <string name="b15_per_100">На 100 г</string>
+</resources>

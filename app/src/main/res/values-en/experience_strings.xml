@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="experience_title">Touch and quick access</string>
-    <string name="haptic_title">Haptic textures</string>
+    <string name="experience_title">Feedback and widgets</string>
+    <string name="haptic_title">Haptics</string>
     <string name="haptic_hint">Gentle patterns for selection, pause and confirmation. Respects system touch vibration settings.</string>
     <string name="haptic_strength">Feedback strength</string>
     <string name="haptic_preview">Try the texture</string>
@@ -18,7 +18,7 @@
     <string name="timer_rest_channel">Rest timer alerts</string>
     <string name="timer_rest_done">Rest timer finished</string>
     <string name="timer_rest_done_hint">Resume when ready, or take more time.</string>
-    <string name="timer_settings_title">Timers outside the app</string>
+    <string name="timer_settings_title">Background timers</string>
     <string name="timer_settings_hint">The notification follows workout, set and rest timers. Exact alarm access helps deliver rest alerts with the screen locked. Android may delay alerts without it.</string>
     <string name="timer_notification_settings">Notification settings</string>
     <string name="timer_exact_settings">Exact timers</string>
@@ -42,7 +42,7 @@
     <string name="widget_gps">Recording route</string>
     <string name="widget_distance">%1$s km · GPS</string>
     <string name="widget_sets">Sets: %1$d / %2$d</string>
-    <string name="share_workout">Share workout</string>
+    <string name="share_workout">Leafit Wrapped</string>
     <string name="share_card_brand">MY MOVEMENT</string>
     <string name="share_duration">Duration</string>
     <string name="share_km">kilometres</string>
@@ -60,7 +60,7 @@
     <string name="share_error">Could not create or open the card. Please try again.</string>
     <string name="share_preview_description">Workout card preview</string>
     <string name="share_send">Share PNG</string>
-    <string name="share_customize">Customize card</string>
+    <string name="share_customize">Style</string>
     <string name="share_card_options">Card appearance</string>
     <string name="share_dark_card">Dark card</string>
     <string name="share_map">With map</string>

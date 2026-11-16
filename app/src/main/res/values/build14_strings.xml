@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b14_stat_clips">записів</string>
+    <string name="b14_stat_quiet">тиші, %</string>
+    <string name="b14_stat_talk">хв голосу</string>
+    <string name="b14_player_title">Запис %1$d з %2$d</string>
+    <string name="b14_player_play">Слухати</string>
+    <string name="b14_player_stop">Зупинити</string>
+    <string name="b14_player_prev">Попередній запис</string>
+    <string name="b14_player_next">Наступний запис</string>
+    <string name="b14_player_chain">Відтворювати записи підряд</string>
+    <string name="b14_player_empty">За цю ніч немає записів: мікрофон не почув звуків, гучніших за фон.</string>
+    <string name="b14_chart_title">Гучність у кімнаті</string>
+    <string name="b14_chart_hint">Лінія — шум по хвилинах, точки — звуки. Натисніть точку, щоб прослухати.</string>
+    <string name="b14_chart_point">%1$s · %2$d дБ</string>
+    <string name="b14_chart_loud">гучно</string>
+    <string name="b14_chart_quiet">тихо</string>
+    <string name="b14_events_title">Усі звуки: %1$d</string>
+    <string name="b14_summary_title">Ваш сон</string>
+    <string name="b14_summary_last">Минула ніч</string>
+    <string name="b14_summary_goal">Ціль %1$d год %2$d хв</string>
+    <string name="b14_summary_duration">%1$d год %2$d хв</string>
+    <string name="b14_summary_average">середнє за 7 ночей</string>
+    <string name="b14_summary_debt">недосип за тиждень</string>
+    <string name="b14_summary_bedtime">зазвичай лягаєте</string>
+    <string name="b14_summary_regular">регулярність</string>
+    <string name="b14_summary_advice">Ляжте до %1$s, щоб виспатися до будильника о %2$s</string>
+    <string name="b14_summary_empty">Додайте першу ніч — тут зʼявляться середні та поради</string>
+    <string name="b14_regular_high">висока</string>
+    <string name="b14_regular_mid">середня</string>
+    <string name="b14_regular_low">низька</string>
+</resources>

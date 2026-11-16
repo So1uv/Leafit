@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
-/** One semantic/touch target for the label and checkbox. */
 @Composable
 fun LeafCheckboxRow(checked: Boolean, onCheckedChange: (Boolean) -> Unit, label: String,
                     modifier: Modifier = Modifier, enabled: Boolean = true) {
