@@ -32,8 +32,8 @@ all in one calm interface inspired by **Material 3 Expressive**. Local-first. No
 </p>
 
 <p align="center">
-  <a href="https://github.com/So1uv/Leafit/releases/latest"><img src="docs/readme/badge-github.png" height="56" alt="Get it on GitHub" /></a>&nbsp;&nbsp;
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.example.fitnesstracker%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FSo1uv%2FLeafit%22%2C%22author%22%3A%22Soluv%22%2C%22name%22%3A%22Leafit%22%7D"><img src="docs/readme/badge-obtainium.png" height="56" alt="Get it on Obtainium" /></a>
+  <a href="https://github.com/So1uv/Leafit/releases/latest"><img src="docs/readme/badge-download.svg" height="40" alt="Download APK" /></a>&nbsp;&nbsp;
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.example.fitnesstracker%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FSo1uv%2FLeafit%22%2C%22author%22%3A%22Soluv%22%2C%22name%22%3A%22Leafit%22%7D"><img src="docs/readme/badge-obtainium.svg" height="40" alt="Get it on Obtainium" /></a>
 </p>
 
 [What's new](#whats-new) &nbsp;·&nbsp; [Screens](#screens) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Data & privacy](#data) &nbsp;·&nbsp; [For developers](#developers) &nbsp;·&nbsp; [Download](#download)
@@ -369,8 +369,8 @@ Beyond emulators, Leafit is tested on physical devices across different Android 
 </a>
 
 <p align="center">
-  <a href="https://github.com/So1uv/Leafit/releases/latest"><img src="docs/readme/badge-github.png" height="64" alt="Get it on GitHub" /></a>&nbsp;&nbsp;
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.example.fitnesstracker%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FSo1uv%2FLeafit%22%2C%22author%22%3A%22Soluv%22%2C%22name%22%3A%22Leafit%22%7D"><img src="docs/readme/badge-obtainium.png" height="64" alt="Get it on Obtainium" /></a>
+  <a href="https://github.com/So1uv/Leafit/releases/latest"><img src="docs/readme/badge-download.svg" height="40" alt="Download APK" /></a>&nbsp;&nbsp;
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.example.fitnesstracker%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FSo1uv%2FLeafit%22%2C%22author%22%3A%22Soluv%22%2C%22name%22%3A%22Leafit%22%7D"><img src="docs/readme/badge-obtainium.svg" height="40" alt="Get it on Obtainium" /></a>
 </p>
 
 <p align="center"><sub>Obtainium installs Leafit straight from GitHub Releases and keeps it updated. No store account needed.</sub></p>
