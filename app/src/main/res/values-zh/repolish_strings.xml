@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nutrition_energy_title">每日能量</string>
+    <string name="water_daily_target">每日参考 · %1$d 毫升</string>
+</resources>

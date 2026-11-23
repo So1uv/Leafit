@@ -29,6 +29,7 @@ fun languageName(language: AppLanguage): String = stringResource(when (language)
     AppLanguage.UKRAINIAN -> R.string.settings_language_uk
     AppLanguage.RUSSIAN -> R.string.settings_language_ru
     AppLanguage.ENGLISH -> R.string.settings_language_en
+    AppLanguage.CHINESE -> R.string.settings_language_zh
 })
 
 @Composable
@@ -78,6 +79,27 @@ fun LanguageFlag(language: AppLanguage, modifier: Modifier = Modifier) {
                     }
                 }
             }
+            AppLanguage.CHINESE -> {
+                val red = androidx.compose.ui.graphics.Color(0xFFDE2910)
+                val yellow = androidx.compose.ui.graphics.Color(0xFFFFDE00)
+                drawRect(red)
+                fun star(cx: Float, cy: Float, r: Float) {
+                    val path = androidx.compose.ui.graphics.Path()
+                    repeat(5) { point ->
+                        val angle = -kotlin.math.PI / 2 + point * 2 * kotlin.math.PI / 5
+                        val x = cx + kotlin.math.cos(angle).toFloat() * r
+                        val y = cy + kotlin.math.sin(angle).toFloat() * r
+                        if (point == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                    }
+                    path.close(); drawPath(path, yellow)
+                }
+                val unit = size.height / 12f
+                star(size.width * .2f, size.height * .26f, unit * 1.6f)
+                star(size.width * .38f, size.height * .12f, unit * .6f)
+                star(size.width * .5f, size.height * .25f, unit * .6f)
+                star(size.width * .5f, size.height * .44f, unit * .6f)
+                star(size.width * .38f, size.height * .55f, unit * .6f)
+            }
         }
     }
 }
@@ -85,8 +107,9 @@ fun LanguageFlag(language: AppLanguage, modifier: Modifier = Modifier) {
 @Composable
 fun LanguageOptions(current: AppLanguage, onSelect: (AppLanguage) -> Unit) {
     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val languages = listOf(AppLanguage.UKRAINIAN, AppLanguage.RUSSIAN, AppLanguage.ENGLISH, AppLanguage.CHINESE)
     Column(Modifier.fillMaxWidth().selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        listOf(AppLanguage.UKRAINIAN, AppLanguage.RUSSIAN, AppLanguage.ENGLISH).forEachIndexed { index, language ->
+        languages.forEachIndexed { index, language ->
             val selected = current == language
             val interactions = remember { MutableInteractionSource() }
             val tone by animateColorAsState(if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer,
@@ -94,7 +117,7 @@ fun LanguageOptions(current: AppLanguage, onSelect: (AppLanguage) -> Unit) {
             val innerCorner by animateDpAsState(if (selected) 22.dp else 10.dp, spring(.9f, 500f), label = "languageShape")
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(
                 topStart = if (index == 0) 28.dp else innerCorner, topEnd = if (index == 0) 28.dp else innerCorner,
-                bottomStart = if (index == 2) 28.dp else innerCorner, bottomEnd = if (index == 2) 28.dp else innerCorner))
+                bottomStart = if (index == languages.lastIndex) 28.dp else innerCorner, bottomEnd = if (index == languages.lastIndex) 28.dp else innerCorner))
                 .background(tone)
                 .selectable(selected, role = Role.RadioButton, interactionSource = interactions, indication = null, onClick = { if (!selected) { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove); onSelect(language) } })
                 .heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 8.dp),

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_app_description">按自己的节奏运动与休息。</string>
+    <string name="release_build">版本 %1$d</string>
+    <string name="release_description">记录路线与组数、睡眠日记，还有关于每一天的笔记。</string>
+    <string name="release_backup_export_hint">保存一份记录副本</string>
+    <string name="release_backup_import_hint">从文件恢复记录</string>
+</resources>

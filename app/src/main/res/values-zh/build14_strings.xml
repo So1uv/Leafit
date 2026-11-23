@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b14_stat_clips">片段</string>
+    <string name="b14_stat_quiet">安静占比，%</string>
+    <string name="b14_stat_talk">人声时长（分钟）</string>
+    <string name="b14_player_title">第 %1$d 段，共 %2$d 段</string>
+    <string name="b14_player_play">播放</string>
+    <string name="b14_player_stop">停止</string>
+    <string name="b14_player_prev">上一段</string>
+    <string name="b14_player_next">下一段</string>
+    <string name="b14_player_chain">连续播放片段</string>
+    <string name="b14_player_empty">当晚没有录到片段：麦克风没有捕捉到高于背景音的声音。</string>
+    <string name="b14_chart_title">环境音量</string>
+    <string name="b14_chart_hint">折线是每分钟噪音，圆点是声音事件。点击圆点即可收听。</string>
+    <string name="b14_chart_point">%1$s · %2$d 分贝</string>
+    <string name="b14_chart_loud">吵闹</string>
+    <string name="b14_chart_quiet">安静</string>
+    <string name="b14_events_title">声音总数：%1$d</string>
+    <string name="b14_summary_title">你的睡眠</string>
+    <string name="b14_summary_last">昨晚</string>
+    <string name="b14_summary_goal">目标 %1$d 小时 %2$d 分钟</string>
+    <string name="b14_summary_duration">%1$d 小时 %2$d 分钟</string>
+    <string name="b14_summary_average">近 7 晚平均</string>
+    <string name="b14_summary_debt">每周睡眠负债</string>
+    <string name="b14_summary_bedtime">通常入睡时间</string>
+    <string name="b14_summary_regular">规律性</string>
+    <string name="b14_summary_advice">在 %1$s 前入睡，才能在 %2$s 闹钟响起时精神饱满</string>
+    <string name="b14_summary_empty">记录第一晚睡眠后，即可查看平均值和建议</string>
+    <string name="b14_regular_high">高</string>
+    <string name="b14_regular_mid">中</string>
+    <string name="b14_regular_low">低</string>
+</resources>

@@ -47,6 +47,7 @@
     <string name="settings_language_uk">Українська</string>
     <string name="settings_language_ru">Русский</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_zh">中文</string>
     <string name="settings_version">Версія</string>
     <string name="profile_name">Ім\'я або нікнейм</string>
     <string name="profile_age">Вік (років)</string>

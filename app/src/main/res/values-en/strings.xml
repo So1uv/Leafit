@@ -47,6 +47,7 @@
     <string name="settings_language_uk">Українська</string>
     <string name="settings_language_ru">Русский</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_zh">中文</string>
     <string name="settings_version">Version</string>
     <string name="profile_name">Name or nickname</string>
     <string name="profile_age">Age (years)</string>
