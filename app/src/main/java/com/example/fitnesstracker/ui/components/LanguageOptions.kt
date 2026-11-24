@@ -30,6 +30,7 @@ fun languageName(language: AppLanguage): String = stringResource(when (language)
     AppLanguage.RUSSIAN -> R.string.settings_language_ru
     AppLanguage.ENGLISH -> R.string.settings_language_en
     AppLanguage.CHINESE -> R.string.settings_language_zh
+    AppLanguage.CHINESE_TRADITIONAL -> R.string.settings_language_zh_tw
 })
 
 @Composable
@@ -79,7 +80,7 @@ fun LanguageFlag(language: AppLanguage, modifier: Modifier = Modifier) {
                     }
                 }
             }
-            AppLanguage.CHINESE -> {
+            AppLanguage.CHINESE, AppLanguage.CHINESE_TRADITIONAL -> {
                 val red = androidx.compose.ui.graphics.Color(0xFFDE2910)
                 val yellow = androidx.compose.ui.graphics.Color(0xFFFFDE00)
                 drawRect(red)
@@ -107,7 +108,7 @@ fun LanguageFlag(language: AppLanguage, modifier: Modifier = Modifier) {
 @Composable
 fun LanguageOptions(current: AppLanguage, onSelect: (AppLanguage) -> Unit) {
     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
-    val languages = listOf(AppLanguage.UKRAINIAN, AppLanguage.RUSSIAN, AppLanguage.ENGLISH, AppLanguage.CHINESE)
+    val languages = listOf(AppLanguage.UKRAINIAN, AppLanguage.RUSSIAN, AppLanguage.ENGLISH, AppLanguage.CHINESE, AppLanguage.CHINESE_TRADITIONAL)
     Column(Modifier.fillMaxWidth().selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         languages.forEachIndexed { index, language ->
             val selected = current == language

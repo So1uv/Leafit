@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b12_sleep_finish_short">完成</string>
+    <string name="b12_sleep_math_task">%1$d + %2$d = ？</string>
+    <string name="b12_sleep_tab_tracking">記錄</string>
+    <string name="b12_sleep_start_delay">錄製延遲（分鐘）</string>
+    <string name="b12_sleep_record_filter">保留內容</string>
+    <string name="b12_sleep_filter_all">全部</string>
+    <string name="b12_sleep_filter_voice">鼾聲與人聲</string>
+    <string name="b12_sleep_filter_snore">鼾聲</string>
+    <string name="b12_sleep_filter_talk">人聲</string>
+    <string name="b12_sleep_clip_length">片段時長（秒）</string>
+    <string name="b12_sleep_ringtone">鈴聲</string>
+    <string name="b12_sleep_volume">音量，%</string>
+    <string name="b12_sleep_ramp">漸強時長（秒）</string>
+    <string name="b12_sleep_strong_vibration">強震動</string>
+    <string name="b12_sleep_math">數學題解鎖</string>
+    <string name="b12_sleep_math_hint">答對後才能在應用內關閉鬧鐘</string>
+    <string name="b12_sleep_snooze_limit">貪睡次數上限</string>
+    <string name="b12_sleep_keep_nights">保留晚數</string>
+    <string name="b12_sleep_nights">夜晚與錄音</string>
+    <string name="b12_sleep_nights_hint">點選某一晚收聽當晚聲音</string>
+    <string name="b12_sleep_nights_empty">記錄第一晚後顯示</string>
+    <string name="b12_sleep_night_row">%1$s · %2$d 次聲音 · %3$d 段錄音</string>
+    <string name="b12_sleep_recordings_title">錄音：%1$d 段</string>
+    <string name="b12_sleep_no_events">未捕捉到聲音</string>
+    <string name="b12_sleep_manual">手動新增記錄</string>
+    <string name="b12_sleep_manual_hint">無需記錄器，直接填寫時間、質量和標籤</string>
+    <string name="b12_energy_left">剩餘</string>
+    <string name="b12_energy_over">超出目標</string>
+    <string name="b12_energy_goal">目標</string>
+    <string name="b12_energy_meals">餐食</string>
+    <string name="b12_water_left">還剩 %1$d 毫升</string>
+    <string name="b12_water_done">目標達成</string>
+    <string name="b12_water_glasses">杯數：%1$d</string>
+    <string name="b12_water_custom">自定義用量</string>
+    <string name="b12_water_default">預設用量</string>
+    <string name="b12_water_undo">撤銷上一次</string>
+</resources>

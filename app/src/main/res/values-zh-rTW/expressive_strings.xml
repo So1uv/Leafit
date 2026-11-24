@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="week_previous">上一週</string>
+    <string name="week_next">下一週</string>
+    <string name="history_expand">展開記錄</string>
+    <string name="history_collapse">收起記錄</string>
+</resources>

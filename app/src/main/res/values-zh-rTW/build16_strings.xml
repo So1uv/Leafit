@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b16_step">第 %1$d 步，共 %2$d 步</string>
+    <string name="b16_optional">可選——稍後可在個人資料中填寫</string>
+    <string name="b16_bmi">身體質量指數（BMI）</string>
+    <string name="b16_photo">頭像</string>
+    <string name="b16_photo_hint">點選選擇</string>
+    <string name="b16_about_you">關於你</string>
+</resources>

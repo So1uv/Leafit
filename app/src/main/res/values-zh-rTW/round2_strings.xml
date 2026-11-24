@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sleep_duration_compact">%1$d 小時 %2$d 分鐘</string>
+    <string name="sleep_awake_short">清醒</string>
+    <string name="profile_basics">關於你</string>
+    <string name="profile_body">身體資訊</string>
+    <string name="setup_intro">打造屬於你的應用</string>
+    <string name="setup_intro_hint">你的個人資料將決定你的專屬目標。</string>
+    <string name="setup_body_hint">填寫三項資訊，生成你的每日目標。</string>
+    <string name="setup_measure_hint">現在或稍後在個人資料中新增圍度資料。</string>
+    <string name="widget_customize">小元件外觀</string>
+    <string name="widget_tone">顏色</string>
+    <string name="widget_green">綠色</string>
+    <string name="widget_lavender">薰衣草紫</string>
+    <string name="widget_neutral">中性灰</string>
+    <string name="widget_details">詳細資訊</string>
+    <string name="widget_water_amount">快捷新增量</string>
+    <string name="widget_config_hint">在主螢幕上調整大小，內容會自動適配。</string>
+</resources>
