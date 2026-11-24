@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b10_note_thoughts">想法</string>
+    <string name="b10_note_moments">今日時間線</string>
+    <string name="b10_note_tasks">任務</string>
+    <string name="b10_note_add_item">新增條目</string>
+    <string name="b10_note_add_moment">剛剛發生了什麼？</string>
+    <string name="b10_note_add_block">新增到筆記</string>
+    <string name="b10_note_tag_hint">簡單寫幾句……</string>
+    <string name="b10_result_hero">太棒了！</string>
+    <string name="b10_result_summary">彙總</string>
+    <string name="b10_result_note">備註</string>
+    <string name="b10_result_sets">組數：%1$d</string>
+    <string name="b10_matrix_streak">連續：%1$d 天</string>
+    <string name="b10_matrix_weeks">7 周</string>
+</resources>

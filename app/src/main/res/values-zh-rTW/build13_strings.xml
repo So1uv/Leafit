@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b13_alarm_dismiss">關閉</string>
+    <string name="b13_alarms">鬧鐘</string>
+    <string name="b13_alarms_empty">新增一個鬧鐘吧——即使不開啟睡眠記錄也會響</string>
+    <string name="b13_alarm_next">距下次 %1$d 小時 %2$d 分鐘</string>
+    <string name="b13_alarm_add">新增鬧鐘</string>
+    <string name="b13_alarm_edit">鬧鐘設定</string>
+    <string name="b13_alarm_once">僅一次</string>
+    <string name="b13_alarm_daily">每天</string>
+    <string name="b13_alarm_label">標籤</string>
+    <string name="b13_alarm_repeat">重複</string>
+    <string name="b13_alarm_smart">智慧喚醒</string>
+    <string name="b13_alarm_smart_hint">開啟記錄後，可能在淺睡階段提前響起</string>
+    <string name="b13_alarm_exact">請允許精確鬧鐘，否則系統可能延遲響鈴</string>
+    <string name="b13_alarm_exact_action">允許</string>
+    <string name="b13_alarm_test">測試鬧鐘</string>
+    <string name="b13_alarm_ring">響鈴中</string>
+    <string name="b13_sleep_moves">翻身次數：%1$d</string>
+    <string name="b13_sleep_lullaby">助眠音</string>
+    <string name="b13_sleep_lullaby_on">助眠音正在播放</string>
+    <string name="b13_lullaby_off">關閉</string>
+    <string name="b13_lullaby_white">白噪音</string>
+    <string name="b13_lullaby_pink">粉噪音</string>
+    <string name="b13_lullaby_brown">棕噪音</string>
+    <string name="b13_lullaby_minutes">播放時長（分鐘）</string>
+    <string name="b13_lullaby_volume">音量，%</string>
+    <string name="b13_history_all">全部</string>
+    <string name="b13_history_tracked">自動記錄</string>
+    <string name="b13_history_manual">手動新增</string>
+    <string name="b13_history_filter_empty">該分類下暫無記錄</string>
+    <string name="b13_tracked_badge">由記錄器自動記錄</string>
+    <string name="b13_stat_moves">翻身次數</string>
+    <string name="b13_stat_loudest">峰值噪音（分貝）</string>
+    <string name="b13_stat_average">平均噪音（分貝）</string>
+    <string name="b13_stat_efficiency">安穩睡眠佔比，%</string>
+    <string name="b13_chart_noise">夜間聲音</string>
+    <string name="b13_chart_phases">根據體動推測的階段</string>
+    <string name="b13_phase_deep">深睡 %1$d 分鐘</string>
+    <string name="b13_phase_light">淺睡 %1$d 分鐘</string>
+    <string name="b13_phase_restless">不安穩 %1$d 分鐘</string>
+    <string name="b13_chart_empty">當晚麥克風未捕捉到資料</string>
+    <string name="b13_alarm_rings">%2$s 響起（%1$s）——還有 %3$d 小時 %4$d 分鐘</string>
+    <string name="b13_alarm_when">響鈴時間</string>
+</resources>

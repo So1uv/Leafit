@@ -7,7 +7,9 @@ import java.util.Locale
 enum class AppLanguage(val code: String) {
     UKRAINIAN("uk"),
     RUSSIAN("ru"),
-    ENGLISH("en");
+    ENGLISH("en"),
+    CHINESE("zh"),
+    CHINESE_TRADITIONAL("zh-TW");
 
     companion object {
         fun fromCode(code: String?): AppLanguage =
@@ -31,7 +33,7 @@ object LanguagePreferences {
 
     fun applyTo(context: Context): Context {
         val language = get(context)
-        val locale = Locale(language.code)
+        val locale = Locale.forLanguageTag(language.code)
         Locale.setDefault(locale)
         val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
@@ -41,7 +43,7 @@ object LanguagePreferences {
 
     fun localizedContext(context: Context): Context {
         val language = get(context)
-        val locale = Locale(language.code)
+        val locale = Locale.forLanguageTag(language.code)
         val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
         return context.createConfigurationContext(config)

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b15_summary_no_day">%1$s 没有睡眠记录</string>
+    <string name="b15_meal_count">菜品：%1$d</string>
+    <string name="b15_meal_manual">手动添加</string>
+    <string name="b15_per_100">每 100 克</string>
+</resources>

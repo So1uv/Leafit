@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="b6_duration">时长</string>
+  <string name="b6_cycles">周期</string>
+  <string name="b6_cycles_hint">睡眠阶段变化的示意图，并非你实际睡眠阶段的测量结果。</string>
+  <string name="b6_deep">深睡</string>
+  <string name="b6_light">浅睡</string>
+  <string name="b6_rem">快速眼动</string>
+  <string name="b6_awake">清醒</string>
+  <string name="b6_body">我的身体</string>
+  <string name="b6_weight">体重</string>
+  <string name="b6_measures">围度与照片</string>
+  <string name="b6_consumed">已摄入</string>
+  <string name="b6_daily_goal">每日参考 · %1$d 千卡</string>
+  <string name="b6_release">优化配色、可切换的睡眠图表，并统一体重与围度板块。</string>
+</resources>

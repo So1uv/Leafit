@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b8_note_clear">清空</string>
+    <string name="b8_note_mood">心情</string>
+    <string name="b8_note_placeholder">盡情書寫：順利的事、遇到的阻礙、當下的感受</string>
+    <string name="b8_note_stats">%1$d 詞 · %2$d 字元</string>
+    <string name="b8_note_list">列表</string>
+    <string name="b8_note_task">任務</string>
+    <string name="b8_note_time">時間</string>
+    <string name="b8_note_tag_workout">運動</string>
+    <string name="b8_note_tag_food">飲食</string>
+    <string name="b8_note_tag_sleep">睡眠</string>
+    <string name="b8_note_tag_feeling">心情</string>
+    <string name="b8_note_tag_gratitude">感恩</string>
+    <string name="b8_note_prompt_1">今天有什麼順利的事？</string>
+    <string name="b8_note_prompt_2">身體感覺怎麼樣？</string>
+    <string name="b8_note_prompt_3">明天有什麼計劃？</string>
+    <string name="b8_notif_steps_headline">今日步數</string>
+    <string name="b8_notif_of_goal">目標 %1$s</string>
+    <string name="b8_notif_km">%1$.1f 公里</string>
+    <string name="b8_notif_kcal">%1$d 千卡</string>
+    <string name="b8_notif_left">還差 %1$s</string>
+    <string name="b8_notif_goal_done">目標達成 ✓</string>
+    <string name="b8_notif_water_headline">今日飲水</string>
+    <string name="b8_notif_glasses">≈%1$d × %2$d 毫升</string>
+    <string name="b8_notif_ago">%1$d 小時 %2$02d 分鐘前</string>
+    <string name="b8_notif_water_tip">每小時小口喝，比一次喝大量更容易吸收</string>
+    <string name="b8_widget_sizes_hint">小元件會隨尺寸自適應：從 1×1（目標圓環）到 4×2 及更大（詳情、圖表、按鈕）。</string>
+</resources>

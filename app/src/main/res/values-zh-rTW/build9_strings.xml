@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b9_note_tasks_done">已完成 %1$d / %2$d</string>
+    <string name="b9_note_add_task">新增任務</string>
+    <string name="b9_wrap_tab_style">樣式</string>
+    <string name="b9_wrap_tab_data">資料</string>
+    <string name="b9_wrap_tab_words">文字</string>
+    <string name="b9_wrap_tab_format">尺寸</string>
+    <string name="b9_wrap_format_auto">卡片</string>
+    <string name="b9_wrap_format_story">9:16</string>
+    <string name="b9_wrap_format_post">4:5</string>
+    <string name="b9_wrap_format_square">1:1</string>
+    <string name="b9_wrap_sticker">貼紙（無背景）</string>
+    <string name="b9_wrap_sticker_hint">透明 PNG——在快拍中將卡片疊放到你自己的照片上。</string>
+    <string name="b9_wrap_insights">對比與紀錄</string>
+    <string name="b9_wrap_insights_empty">運動記錄還不夠，暫時無法對比。</string>
+    <string name="b9_wrap_context">資料對比</string>
+    <string name="b9_wrap_vs_last">%1$s，與上次相比</string>
+    <string name="b9_wrap_record_duration">時長新高</string>
+    <string name="b9_wrap_record_distance">距離新高</string>
+    <string name="b9_wrap_week_count">本週第 %1$d 次運動</string>
+    <string name="b9_wrap_streak">連續 %1$d 天</string>
+    <string name="b9_wrap_save">儲存</string>
+    <string name="b9_wrap_saved">已儲存到 Pictures/Leafit</string>
+    <string name="b9_wrap_share">分享</string>
+    <string name="b9_wrap_caption_ideas">配文靈感</string>
+    <string name="b9_wrap_idea_1">離目標又近一步</string>
+    <string name="b9_wrap_idea_2">完成，不找藉口</string>
+    <string name="b9_wrap_idea_3">新的個人最佳！</string>
+    <string name="b9_wrap_idea_4">運動即是好心情</string>
+</resources>

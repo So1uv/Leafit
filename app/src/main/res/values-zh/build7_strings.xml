@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="b7_settings_activity">活动</string>
+    <string name="b7_settings_interaction">交互</string>
+    <string name="b7_settings_about">关于</string>
+    <string name="b7_haptic_soft">轻柔</string>
+    <string name="b7_haptic_medium">中等</string>
+    <string name="b7_haptic_strong">强烈</string>
+    <string name="b7_workout_kind">运动类型</string>
+    <string name="b7_save_template">存为模板</string>
+    <string name="b7_info_caption">计算方式说明</string>
+    <string name="b7_info_ok">知道了</string>
+    <string name="b7_notif_water_channel_desc">包含今日进度提醒的饮水通知</string>
+    <string name="b7_notif_water_progress">目前已喝 %1$s / %2$s 毫升</string>
+    <string name="b7_notif_water_left">还差 %1$s 毫升 · 目标完成 %2$d%%</string>
+    <string name="b7_notif_water_since">上次喝水在 %1$d 小时 %2$d 分钟前</string>
+    <string name="b7_notif_water_add">+%1$d 毫升</string>
+    <string name="b7_notif_snooze_hour">1 小时后</string>
+    <string name="b7_notif_bed_text">现在睡觉，约 %1$s 醒来（目标 %2$d 小时 %3$d 分钟）</string>
+    <string name="b7_notif_bed_details">约等于 %1$.1f 个睡眠周期。放下手机，调暗灯光。</string>
+    <string name="b7_notif_bed_log">记录睡眠</string>
+    <string name="b7_notif_steps_title">今日 %1$s 步</string>
+    <string name="b7_notif_steps_left">还差 %1$s 步 · 目标 %2$s</string>
+    <string name="b7_notif_steps_done">已达成 %1$s 步的目标</string>
+    <string name="b7_notif_steps_details">约 %1$.1f 公里</string>
+    <string name="b7_notif_sets">第 %1$d/%2$d 组</string>
+    <string name="b7_notif_exercise">动作：%1$s</string>
+    <string name="b7_notif_pace">%1$d:%2$02d /公里</string>
+    <string name="b7_notif_gps_wait">正在定位 GPS</string>
+    <string name="b7_notif_gps_weak">GPS 信号弱</string>
+    <string name="b7_notif_gps_ok">GPS 已就绪</string>
+</resources>
